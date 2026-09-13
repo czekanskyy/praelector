@@ -8,7 +8,12 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 from praelector.domain.enums import (
+    BlockKind,
+    Gender,
+    GenderDetector,
     SourceFormat,
+    SpanKind,
+    SpanOrigin,
     VoiceMode,
 )
 
@@ -241,3 +246,256 @@ class CapabilitiesResponse(BaseModel):
     keyring: KeyringProbe
     runtime: RuntimeProbe
     system_info: dict[str, Any] = Field(default_factory=dict)
+
+
+# ---------------------------------------------------------------------------
+# Ingest Models (EB-01 .. EB-08)
+# ---------------------------------------------------------------------------
+
+
+class DrmStatus(BaseModel):
+    """DRM inspection findings."""
+
+    detected: bool = False
+    reason: str | None = None
+    file: str | None = None
+
+
+class MetadataPreview(BaseModel):
+    """Metadata extracted during ebook probe."""
+
+    title: str
+    authors: list[str] = Field(default_factory=list)
+    language: str = "pl"
+    chapter_count: int = 0
+    total_chars: int = 0
+    cover_detected: bool = False
+
+
+class IngestProbeRequest(BaseModel):
+    """Payload for probing a book file before import."""
+
+    path: str
+
+
+class IngestProbeResponse(BaseModel):
+    """Probe result returned to the user before confirming ingest."""
+
+    format: SourceFormat
+    needs_conversion: bool
+    drm: DrmStatus = Field(default_factory=DrmStatus)
+    has_text_layer: bool = True
+    metadata_preview: MetadataPreview | None = None
+
+
+class IngestConvertOptions(BaseModel):
+    """Conversion settings for formats requiring Calibre."""
+
+    enabled: bool = False
+    engine: str = "calibre"
+
+
+class IngestRequest(BaseModel):
+    """Payload to import an ebook file into an open project."""
+
+    path: str
+    convert: IngestConvertOptions = Field(default_factory=IngestConvertOptions)
+
+
+class IngestResponse(BaseModel):
+    """Result of importing an ebook into a project."""
+
+    project_id: str
+    format: SourceFormat
+    chapter_count: int
+    total_chars: int
+    working_epub_path: str
+
+
+class ProjectSourceResponse(BaseModel):
+    """Information about the source and working documents in the project."""
+
+    original_path: str | None = None
+    working_epub_path: str | None = None
+    imported_at: str | None = None
+    converter: str | None = None
+
+
+# ---------------------------------------------------------------------------
+# Chapters, Blocks, Spans Models (ED-01 .. ED-09)
+# ---------------------------------------------------------------------------
+
+
+class ChapterResponse(BaseModel):
+    """Chapter tree item returned by the API."""
+
+    id: str
+    ordinal: int
+    title: str
+    included: bool = True
+    block_count: int = 0
+    char_count: int = 0
+    est_audio_s: float = 0.0
+
+
+class ChapterUpdate(BaseModel):
+    """Payload for renaming or including/excluding a chapter."""
+
+    title: str | None = None
+    included: bool | None = None
+
+
+class ChapterReorderRequest(BaseModel):
+    """Payload for updating chapter ordinal sequence."""
+
+    order: list[str]
+
+
+class ChapterSplitRequest(BaseModel):
+    """Payload for splitting a chapter at a given block and offset."""
+
+    block_id: str
+    offset: int = 0
+
+
+class ChapterMergeRequest(BaseModel):
+    """Payload for merging multiple chapters in sequence."""
+
+    ids: list[str]
+
+
+class BlockResponse(BaseModel):
+    """A semantic text block in a chapter."""
+
+    id: str
+    ordinal: int
+    kind: BlockKind
+    heading_level: int | None = None
+    text: str
+    source_ref_json: str | None = None
+
+
+class ChapterTextResponse(BaseModel):
+    """Chapter content for editing or reading."""
+
+    view: str = "display"
+    blocks: list[BlockResponse] = Field(default_factory=list)
+    text: str
+
+
+class ChapterTextUpdate(BaseModel):
+    """Payload for updating a chapter's plain text."""
+
+    text: str
+    base_revision: int
+
+
+class ChapterTextUpdateResponse(BaseModel):
+    """Result of chapter plain text update."""
+
+    revision: int
+    orphaned_span_ids: list[str] = Field(default_factory=list)
+
+
+class SpanResponse(BaseModel):
+    """A span annotation within a block."""
+
+    id: str
+    block_id: str
+    start: int
+    end: int
+    kind: SpanKind
+    gender: Gender | None = None
+    gender_confidence: float | None = None
+    gender_detector: GenderDetector | None = None
+    speaker_id: str | None = None
+    spoken: str | None = None
+    pause_ms: int | None = None
+    origin: SpanOrigin
+    orphaned: bool = False
+
+
+class SpanCreate(BaseModel):
+    """Payload for creating a manual span."""
+
+    block_id: str
+    start: int
+    end: int
+    kind: SpanKind
+    gender: Gender | None = None
+    speaker_id: str | None = None
+    spoken: str | None = None
+    pause_ms: int | None = None
+
+
+class SpanUpdate(BaseModel):
+    """Payload for modifying an existing span."""
+
+    kind: SpanKind | None = None
+    gender: Gender | None = None
+    speaker_id: str | None = None
+    spoken: str | None = None
+    pause_ms: int | None = None
+
+
+# ---------------------------------------------------------------------------
+# Search and Replace Models (ED-05)
+# ---------------------------------------------------------------------------
+
+
+class SearchRequest(BaseModel):
+    """Query payload for text search."""
+
+    query: str
+    regex: bool = False
+    case_sensitive: bool = False
+    scope: str = "book"
+    chapter_id: str | None = None
+
+
+class SearchHit(BaseModel):
+    """A search match location and snippet."""
+
+    chapter_id: str
+    chapter_title: str
+    block_id: str
+    start: int
+    end: int
+    text_match: str
+    context: str
+
+
+class SearchResponse(BaseModel):
+    """Results returned by search endpoint."""
+
+    count: int
+    hits: list[SearchHit] = Field(default_factory=list)
+
+
+class ReplaceRequest(BaseModel):
+    """Query payload for search and replace with dry-run support."""
+
+    query: str
+    replacement: str
+    regex: bool = False
+    case_sensitive: bool = False
+    scope: str = "book"
+    chapter_id: str | None = None
+    dry_run: bool = True
+
+
+class ReplacePreview(BaseModel):
+    """Preview of a single block replacement."""
+
+    chapter_id: str
+    block_id: str
+    original: str
+    proposed: str
+
+
+class ReplaceResponse(BaseModel):
+    """Result of search and replace operation."""
+
+    count: int
+    previews: list[ReplacePreview] = Field(default_factory=list)
+    revision: int | None = None
