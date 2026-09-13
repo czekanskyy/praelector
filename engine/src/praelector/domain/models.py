@@ -9,11 +9,14 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from praelector.domain.enums import (
     BlockKind,
+    DetectorKind,
     Gender,
     GenderDetector,
     SourceFormat,
     SpanKind,
     SpanOrigin,
+    SuggestionCategory,
+    SuggestionStatus,
     VoiceMode,
 )
 
@@ -499,3 +502,137 @@ class ReplaceResponse(BaseModel):
     count: int
     previews: list[ReplacePreview] = Field(default_factory=list)
     revision: int | None = None
+
+
+# ---------------------------------------------------------------------------
+# Suggestion Models (AI-04, AI-06)
+# ---------------------------------------------------------------------------
+
+
+class SuggestionRange(BaseModel):
+    """Character offsets for a suggestion within its parent block."""
+
+    start: int
+    end: int
+
+
+class SuggestionResponse(BaseModel):
+    """A suggestion item surfaced in the review queue."""
+
+    id: str
+    project_id: str
+    chapter_id: str
+    block_id: str
+    start: int
+    end: int
+    range: SuggestionRange | None = None
+    category: SuggestionCategory
+    original: str
+    proposed: str | None = None
+    payload_json: str | None = None
+    rationale: str | None = None
+    confidence: float
+    detector: DetectorKind
+    status: SuggestionStatus = SuggestionStatus.PENDING
+    error_code: str | None = None
+    llm_profile_id: str | None = None
+    prompt_version: str | None = None
+    batch_id: str | None = None
+    base_revision: int
+    applied_in_revision: int | None = None
+    created_at: str
+
+
+class SuggestionCreate(BaseModel):
+    """Payload for creating a suggestion."""
+
+    project_id: str
+    chapter_id: str
+    block_id: str
+    start: int
+    end: int
+    category: SuggestionCategory
+    original: str
+    proposed: str | None = None
+    payload_json: str | None = None
+    rationale: str | None = None
+    confidence: float
+    detector: DetectorKind = DetectorKind.HEURISTIC
+    status: SuggestionStatus = SuggestionStatus.PENDING
+    error_code: str | None = None
+    llm_profile_id: str | None = None
+    prompt_version: str | None = None
+    batch_id: str | None = None
+    base_revision: int = 0
+
+
+class SuggestionUpdate(BaseModel):
+    """Payload for patching a suggestion's status or proposed text."""
+
+    status: SuggestionStatus
+    proposed: str | None = None
+
+
+class SuggestionBulkAction(BaseModel):
+    """Payload for bulk operations on suggestions."""
+
+    category: SuggestionCategory | None = None
+    status: SuggestionStatus | None = None
+    chapter_id: str | None = None
+    detector: DetectorKind | None = None
+    action: str  # "accept" | "reject"
+    limit: int | None = None
+
+
+class SuggestionBulkResponse(BaseModel):
+    """Result of bulk suggestion action."""
+
+    batch_id: str
+    affected: int
+
+
+# ---------------------------------------------------------------------------
+# Lexicon Models (AI-09)
+# ---------------------------------------------------------------------------
+
+
+class LexiconEntryResponse(BaseModel):
+    """A dictionary entry in the pronunciation lexicon."""
+
+    id: str
+    project_id: str | None = None
+    pattern: str
+    is_regex: bool = False
+    spoken: str
+    language: str = "pl"
+    category: str = "dict_hit"
+    auto_apply: bool = False
+    case_sensitive: bool = False
+    priority: int = 100
+    created_at: str
+
+
+class LexiconEntryCreate(BaseModel):
+    """Payload to create a lexicon rule."""
+
+    pattern: str = Field(min_length=1)
+    is_regex: bool = False
+    spoken: str = Field(min_length=1)
+    language: str = "pl"
+    category: str = "dict_hit"
+    auto_apply: bool = False
+    case_sensitive: bool = False
+    priority: int = 100
+
+
+class LexiconEntryUpdate(BaseModel):
+    """Payload to update an existing lexicon rule."""
+
+    pattern: str | None = None
+    is_regex: bool | None = None
+    spoken: str | None = None
+    language: str | None = None
+    category: str | None = None
+    auto_apply: bool | None = None
+    case_sensitive: bool | None = None
+    priority: int | None = None

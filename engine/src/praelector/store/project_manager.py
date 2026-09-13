@@ -33,7 +33,9 @@ from praelector.store.project_dir import (
     list_project_dirs,
 )
 from praelector.store.repositories.chapters import ChapterRepository
+from praelector.store.repositories.lexicon import LexiconRepository
 from praelector.store.repositories.project import ProjectRepository
+from praelector.store.repositories.suggestions import SuggestionRepository
 from praelector.store.settings import SettingsStore
 
 
@@ -55,6 +57,8 @@ class ProjectManager:
         self.active_engine: Engine | None = None
         self.active_repo: ProjectRepository | None = None
         self.active_chapter_repo: ChapterRepository | None = None
+        self.active_suggestion_repo: SuggestionRepository | None = None
+        self.active_lexicon_repo: LexiconRepository | None = None
 
     @property
     def is_open(self) -> bool:
@@ -199,6 +203,9 @@ class ProjectManager:
             engine = create_project_engine(paths.db)
             repo = ProjectRepository(engine)
             chapter_repo = ChapterRepository(engine)
+            suggestion_repo = SuggestionRepository(engine)
+            config_dir = self.settings_store.get_settings().config_dir
+            lexicon_repo = LexiconRepository(config_dir, project_engine=engine)
 
             self.active_project_id = project_id
             self.active_paths = paths
@@ -206,6 +213,8 @@ class ProjectManager:
             self.active_engine = engine
             self.active_repo = repo
             self.active_chapter_repo = chapter_repo
+            self.active_suggestion_repo = suggestion_repo
+            self.active_lexicon_repo = lexicon_repo
 
             return self.get_project(project_id)
         except Exception:
@@ -229,6 +238,8 @@ class ProjectManager:
         self.active_paths = None
         self.active_repo = None
         self.active_chapter_repo = None
+        self.active_suggestion_repo = None
+        self.active_lexicon_repo = None
 
     def get_open_chapter_repo(self, project_id: str) -> tuple[ChapterRepository, ProjectPaths]:
         """Ensure project is open and return active ChapterRepository and ProjectPaths."""
@@ -243,6 +254,33 @@ class ProjectManager:
                 detail={"project_id": project_id, "message": "Project must be opened first."},
             )
         return self.active_chapter_repo, self.active_paths
+
+    def get_open_suggestion_repo(
+        self, project_id: str
+    ) -> tuple[SuggestionRepository, ProjectPaths]:
+        """Ensure project is open and return active SuggestionRepository and ProjectPaths."""
+        if (
+            self.active_project_id != project_id
+            or self.active_suggestion_repo is None
+            or self.active_paths is None
+        ):
+            raise AppError(
+                "project.not_open",
+                status_code=400,
+                detail={"project_id": project_id, "message": "Project must be opened first."},
+            )
+        return self.active_suggestion_repo, self.active_paths
+
+    def get_lexicon_repo(self, project_id: str | None = None) -> LexiconRepository:
+        """Return LexiconRepository for global scope or specific project scope."""
+        config_dir = self.settings_store.get_settings().config_dir
+        if project_id and self.active_project_id == project_id and self.active_engine is not None:
+            return LexiconRepository(config_dir, project_engine=self.active_engine)
+        elif project_id:
+            paths = self.find_project_dir(project_id)
+            engine = create_project_engine(paths.db)
+            return LexiconRepository(config_dir, project_engine=engine)
+        return LexiconRepository(config_dir)
 
     def get_project(self, project_id: str) -> ProjectResponse:
         """Retrieve project status, manifest, and counts."""
