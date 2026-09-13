@@ -8,10 +8,16 @@ recognition, and user lexicon application without mutating underlying blocks.
 
 from __future__ import annotations
 
-from praelector.domain.enums import DetectorKind, SuggestionCategory, SuggestionStatus
+from praelector.domain.enums import DetectorKind, SuggestionCategory, SuggestionStatus, VoiceMode
 from praelector.domain.models import SuggestionCreate
 from praelector.text.acronyms import detect_acronyms
+from praelector.text.dialogue import detect_dialogue_suggestions
 from praelector.text.foreign import detect_foreign_words
+from praelector.text.gender import (
+    ChapterSpeakerMap,
+    generate_gender_suggestions,
+    resolve_speaker_gender,
+)
 from praelector.text.lexicon import LexiconMatcher
 from praelector.text.normalise import normalise_text
 from praelector.text.numerals_pl import detect_numerals
@@ -32,6 +38,9 @@ class DeterministicPrepassPipeline:
         chapter_id: str,
         block_id: str,
         base_revision: int = 0,
+        chapter_speaker_map: ChapterSpeakerMap | None = None,
+        adjacent_context: str | None = None,
+        voice_mode: VoiceMode = VoiceMode.NARRATOR_MALE_FEMALE,
     ) -> list[SuggestionCreate]:
         """Run all deterministic detectors on a block and return suggestions.
 
@@ -98,7 +107,36 @@ class DeterministicPrepassPipeline:
                 occupied_spans.append((sm.start, sm.end))
                 return suggestions
 
-        # 3. Lexicon dictionary hits (AI-09) - highest priority user rules
+        # 3. Dialogue segmentation & speaker gender (DG-01..DG-06)
+        split_res, diag_sugs = detect_dialogue_suggestions(
+            text=text,
+            project_id=project_id,
+            chapter_id=chapter_id,
+            block_id=block_id,
+            base_revision=base_revision,
+        )
+        for ds in diag_sugs:
+            suggestions.append(ds)
+
+        if split_res.has_dialogue:
+            resolve_speaker_gender(
+                segments=split_res.segments,
+                block_text=text,
+                chapter_speaker_map=chapter_speaker_map,
+                adjacent_context=adjacent_context,
+                voice_mode=voice_mode,
+            )
+            gender_sugs = generate_gender_suggestions(
+                segments=split_res.segments,
+                project_id=project_id,
+                chapter_id=chapter_id,
+                block_id=block_id,
+                base_revision=base_revision,
+            )
+            for gs in gender_sugs:
+                suggestions.append(gs)
+
+        # 4. Lexicon dictionary hits (AI-09) - highest priority user rules
         lex_matches = self.lexicon_matcher.match(text)
         for lm in lex_matches:
             status = SuggestionStatus.ACCEPTED if lm.auto_apply else SuggestionStatus.PENDING
@@ -208,3 +246,34 @@ class DeterministicPrepassPipeline:
         # Sort all suggestions by start offset
         suggestions.sort(key=lambda s: s.start)
         return suggestions
+
+    def process_chapter_blocks(
+        self,
+        blocks: list[tuple[str, str]],
+        project_id: str,
+        chapter_id: str,
+        base_revision: int = 0,
+        voice_mode: VoiceMode = VoiceMode.NARRATOR_MALE_FEMALE,
+    ) -> dict[str, list[SuggestionCreate]]:
+        """Process all blocks of a chapter sharing a single ChapterSpeakerMap (DG-04)."""
+        chapter_speaker_map = ChapterSpeakerMap()
+        results: dict[str, list[SuggestionCreate]] = {}
+        for idx, (b_id, b_text) in enumerate(blocks):
+            adj_parts: list[str] = []
+            if idx > 0:
+                adj_parts.append(blocks[idx - 1][1])
+            if idx + 1 < len(blocks):
+                adj_parts.append(blocks[idx + 1][1])
+            adj_ctx = " ".join(adj_parts)
+
+            results[b_id] = self.process_block(
+                text=b_text,
+                project_id=project_id,
+                chapter_id=chapter_id,
+                block_id=b_id,
+                base_revision=base_revision,
+                chapter_speaker_map=chapter_speaker_map,
+                adjacent_context=adj_ctx,
+                voice_mode=voice_mode,
+            )
+        return results
