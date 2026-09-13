@@ -35,6 +35,8 @@ jobs:
           components: rustfmt, clippy
 
       - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "apps/desktop -> target"
 
       - name: Linux WebKit dependencies
         if: runner.os == 'Linux'

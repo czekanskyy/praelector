@@ -47,7 +47,7 @@ jobs:
         run: uv run --project engine ruff format --check .
 
       - name: Type check with mypy
-        run: uv run --project engine mypy --strict src
+        run: uv run --project engine mypy --strict engine/src
 
       - name: Assert no torch in core lockfile
         run: uv run python scripts/assert_no_torch.py engine/uv.lock
