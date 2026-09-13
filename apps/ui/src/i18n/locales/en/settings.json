@@ -1,0 +1,11 @@
+{
+  "title": "Settings",
+  "language": "Interface Language",
+  "llmProviders": "LLM Providers",
+  "llmSubscriptionNotice": "ChatGPT Plus, Claude Pro, Gemini Advanced, and Cursor subscriptions do not grant API access. Configure an API key or use a local runner (Ollama, LM Studio).",
+  "ttsBackends": "TTS Backends & Runtimes",
+  "gpuPolicy": "GPU Policy & VRAM Budget",
+  "paths": "System Paths",
+  "about": "About Praelector",
+  "freeTierOnRamps": "Free and low-cost API on-ramps: Groq (free tier), Google AI Studio (free tier), OpenRouter (:free)."
+}

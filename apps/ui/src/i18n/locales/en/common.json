@@ -1,0 +1,19 @@
+{
+  "appName": "Praelector",
+  "tagline": "Prepare the page. Cast the voice.",
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "retry": "Retry",
+    "confirm": "Confirm",
+    "close": "Close",
+    "browse": "Browse..."
+  },
+  "status": {
+    "connecting": "Connecting to engine...",
+    "ready": "Ready",
+    "error": "Engine Error",
+    "offline": "Engine Offline"
+  }
+}

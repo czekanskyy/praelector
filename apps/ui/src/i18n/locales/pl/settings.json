@@ -1,0 +1,11 @@
+{
+  "title": "Ustawienia",
+  "language": "Język interfejsu",
+  "llmProviders": "Dostawcy LLM",
+  "llmSubscriptionNotice": "Subskrypcje ChatGPT Plus, Claude Pro, Gemini Advanced oraz Cursor nie zapewniają dostępu do API. Skonfiguruj klucz API lub skorzystaj z lokalnego silnika (Ollama, LM Studio).",
+  "ttsBackends": "Silniki syntezy i środowiska",
+  "gpuPolicy": "Polityka GPU i budżet VRAM",
+  "paths": "Ścieżki systemowe",
+  "about": "O programie Praelector",
+  "freeTierOnRamps": "Darmowe i tanie opcje API: Groq (darmowy pakiet), Google AI Studio (darmowy pakiet), OpenRouter (:free)."
+}

@@ -1,0 +1,11 @@
+{
+  "name": "@praelector/schemas",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/generated/index.ts",
+  "types": "./src/generated/index.ts",
+  "scripts": {
+    "build": "echo 'Schemas generated via scripts/gen_ts_types.py'"
+  }
+}

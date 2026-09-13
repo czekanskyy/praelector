@@ -1,0 +1,8 @@
+{
+  "title": "Import Ebook",
+  "dropzone": "Drag and drop DRM-free EPUB, PDF, or MOBI here",
+  "selectFile": "Select File",
+  "formatsNotice": "Supports EPUB, PDF (with text layer), MOBI, AZW3",
+  "drmWarning": "DRM-protected files cannot be processed.",
+  "importing": "Importing ebook..."
+}

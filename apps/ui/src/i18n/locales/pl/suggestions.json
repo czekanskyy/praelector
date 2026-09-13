@@ -1,0 +1,13 @@
+{
+  "title": "Przegląd sugestii",
+  "queue": "Kolejka do przeglądu",
+  "accept": "Zaakceptuj",
+  "reject": "Odrzuć",
+  "edit": "Edytuj",
+  "acceptAll": "Zaakceptuj wszystkie w filtrze",
+  "undo": "Cofnij serię",
+  "filterByCategory": "Filtruj według kategorii",
+  "filterByStatus": "Filtruj według statusu",
+  "jumpToSpan": "Przejdź do fragmentu",
+  "noSuggestions": "Brak sugestii oczekujących na przegląd."
+}

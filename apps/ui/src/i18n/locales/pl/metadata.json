@@ -1,0 +1,12 @@
+{
+  "title": "Metadane i eksport audiobooka",
+  "bookTitle": "Tytuł książki",
+  "authors": "Autor(zy)",
+  "narrator": "Lektor",
+  "year": "Rok wydania",
+  "cover": "Okładka",
+  "exportM4b": "Eksportuj audiobook M4B",
+  "partialM4b": "Eksportuj częściowy M4B",
+  "exportEpub": "Eksportuj EPUB lektora",
+  "exporting": "Eksportowanie audiobooka..."
+}

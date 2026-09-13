@@ -1,0 +1,20 @@
+{
+  "auth": {
+    "unauthorized": "Uwierzytelnienie nie powiodło się. Nieprawidłowy lub brakujący token sesji.",
+    "forbidden_origin": "Połączenie odrzucone. Źródło żądania jest niedozwolone."
+  },
+  "ebook": {
+    "drm_detected": "Wykryto zabezpieczenie DRM. Praelector obsługuje wyłącznie pliki bez zabezpieczeń DRM.",
+    "no_text_layer": "Brak warstwy tekstowej w dokumencie PDF (brak obsługi OCR).",
+    "empty_text": "E-book nie zawiera czytelnego tekstu.",
+    "calibre_missing": "Narzędzie Calibre ebook-convert jest wymagane dla tego formatu, ale nie zostało znalezione."
+  },
+  "tts": {
+    "language_unsupported": "Wybrany silnik syntezy nie obsługuje języka projektu."
+  },
+  "internal": {
+    "not_found": "Żądany zasób nie został znaleziony.",
+    "unhandled_error": "Wystąpił nieoczekiwany błąd silnika."
+  },
+  "generic": "Wystąpił nieznany błąd."
+}

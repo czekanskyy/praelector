@@ -1,0 +1,15 @@
+{
+  "title": "Zadanie nagrywania",
+  "stage": "Etap",
+  "fragment": "Bieżący fragment",
+  "progress": "Postęp",
+  "rtf": "Współczynnik czasu rzeczywistego (RTF)",
+  "eta": "Szacowany pozostały czas (ETA)",
+  "vram": "Użycie pamięci VRAM",
+  "workers": "Aktywne procesy syntezy",
+  "start": "Rozpocznij nagrywanie",
+  "pause": "Wstrzymaj",
+  "resume": "Wznów",
+  "stop": "Zatrzymaj",
+  "noActiveJob": "Brak aktywnego zadania nagrywania."
+}

@@ -1,0 +1,12 @@
+{
+  "title": "Audiobook Metadata & Export",
+  "bookTitle": "Book Title",
+  "authors": "Author(s)",
+  "narrator": "Narrator",
+  "year": "Release Year",
+  "cover": "Cover Image",
+  "exportM4b": "Export M4B Audiobook",
+  "partialM4b": "Export Partial M4B",
+  "exportEpub": "Export Reader EPUB",
+  "exporting": "Exporting audiobook..."
+}

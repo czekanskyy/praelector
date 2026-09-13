@@ -1,0 +1,13 @@
+{
+  "title": "Suggestions Review",
+  "queue": "Review Queue",
+  "accept": "Accept",
+  "reject": "Reject",
+  "edit": "Edit",
+  "acceptAll": "Accept All in Filter",
+  "undo": "Undo Batch",
+  "filterByCategory": "Filter by Category",
+  "filterByStatus": "Filter by Status",
+  "jumpToSpan": "Jump to Span",
+  "noSuggestions": "No suggestions pending review."
+}

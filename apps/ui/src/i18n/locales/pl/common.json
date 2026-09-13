@@ -1,0 +1,19 @@
+{
+  "appName": "Praelector",
+  "tagline": "Przygotuj stronę. Obsadź głos.",
+  "actions": {
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "delete": "Usuń",
+    "retry": "Ponów",
+    "confirm": "Zatwierdź",
+    "close": "Zamknij",
+    "browse": "Przeglądaj..."
+  },
+  "status": {
+    "connecting": "Łączenie z silnikiem...",
+    "ready": "Gotowy",
+    "error": "Błąd silnika",
+    "offline": "Silnik niedostępny"
+  }
+}

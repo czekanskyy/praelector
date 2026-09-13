@@ -1,0 +1,10 @@
+{
+  "title": "Rozdziały",
+  "rename": "Zmień nazwę rozdziału",
+  "reorder": "Zmień kolejność rozdziałów",
+  "merge": "Połącz zaznaczone",
+  "split": "Podziel rozdział",
+  "include": "Uwzględnij w nagraniu",
+  "exclude": "Wyklucz z nagrania",
+  "noChapters": "Brak rozdziałów w projekcie."
+}

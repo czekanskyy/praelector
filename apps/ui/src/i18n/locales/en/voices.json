@@ -1,0 +1,11 @@
+{
+  "title": "Voice Profiles & Casting",
+  "narrator": "Narrator",
+  "dialogue": "Dialogue",
+  "male": "Male Dialogue",
+  "female": "Female Dialogue",
+  "uploadSample": "Upload Audio Sample",
+  "waveform": "Waveform Preview",
+  "previewSynthesis": "Preview Voice",
+  "backendSettings": "Backend Parameters"
+}

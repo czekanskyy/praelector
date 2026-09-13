@@ -1,0 +1,9 @@
+{
+  "title": "Projects Library",
+  "newProject": "New Project",
+  "openProject": "Open Project",
+  "recentProjects": "Recent Projects",
+  "noProjects": "No projects found. Create or open one to get started.",
+  "projectName": "Project Name",
+  "createDialogTitle": "Create New Audiobook Project"
+}

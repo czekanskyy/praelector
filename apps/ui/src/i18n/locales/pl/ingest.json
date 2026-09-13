@@ -1,0 +1,8 @@
+{
+  "title": "Importuj e-book",
+  "dropzone": "Przeciągnij i upuść plik EPUB, PDF lub MOBI bez DRM",
+  "selectFile": "Wybierz plik",
+  "formatsNotice": "Obsługiwane formaty: EPUB, PDF (z warstwą tekstową), MOBI, AZW3",
+  "drmWarning": "Pliki zabezpieczone DRM nie mogą być przetwarzane.",
+  "importing": "Importowanie e-booka..."
+}

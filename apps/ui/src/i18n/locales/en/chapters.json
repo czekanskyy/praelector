@@ -1,0 +1,10 @@
+{
+  "title": "Chapters",
+  "rename": "Rename Chapter",
+  "reorder": "Reorder Chapters",
+  "merge": "Merge Selected",
+  "split": "Split Chapter",
+  "include": "Include in Recording",
+  "exclude": "Exclude from Recording",
+  "noChapters": "No chapters found in project."
+}

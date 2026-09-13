@@ -1,0 +1,15 @@
+{
+  "title": "Recording Job",
+  "stage": "Stage",
+  "fragment": "Current Fragment",
+  "progress": "Progress",
+  "rtf": "Real-time Factor (RTF)",
+  "eta": "Estimated Time Remaining (ETA)",
+  "vram": "VRAM Usage",
+  "workers": "Active Workers",
+  "start": "Start Recording",
+  "pause": "Pause",
+  "resume": "Resume",
+  "stop": "Stop",
+  "noActiveJob": "No recording job currently active."
+}

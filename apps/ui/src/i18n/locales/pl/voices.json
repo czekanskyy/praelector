@@ -1,0 +1,11 @@
+{
+  "title": "Profile głosów i obsada",
+  "narrator": "Narrator",
+  "dialogue": "Dialog",
+  "male": "Głos męski",
+  "female": "Głos żeński",
+  "uploadSample": "Wgraj próbkę audio",
+  "waveform": "Podgląd fali dźwiękowej",
+  "previewSynthesis": "Odsłuchaj próbkę głosu",
+  "backendSettings": "Parametry silnika syntezy"
+}
