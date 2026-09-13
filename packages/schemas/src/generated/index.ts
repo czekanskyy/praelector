@@ -9,7 +9,10 @@ export type VoiceSlot = "narrator" | "dialogue" | "male" | "female";
 export type SourceFormat = "epub" | "pdf" | "mobi" | "azw3";
 export type BlockKind = "paragraph" | "heading" | "blockquote" | "list_item" | "caption";
 export type SpanKind = "narration" | "dialogue" | "pronunciation" | "pause" | "skip";
+export type SpanOrigin = "auto_frontmatter" | "auto_dialogue" | "auto_pronounce" | "manual";
 export type Gender = "male" | "female" | "unknown";
+export type GenderDetector = "regex_pl" | "heuristic" | "cloud_llm" | "manual";
+export type DrmReason = "font_obfuscation" | "encrypted_content" | "rights_xml" | "sinf_xml" | "unknown";
 export type SuggestionCategory =
   | "foreign_word"
   | "acronym"
@@ -223,4 +226,190 @@ export interface CapabilitiesResponse {
   keyring: KeyringProbe;
   runtime: RuntimeProbe;
   system_info?: Record<string, unknown>;
+}
+
+export interface DrmStatus {
+  detected?: boolean;
+  reason?: string | null;
+  file?: string | null;
+}
+
+export interface MetadataPreview {
+  title: string;
+  authors?: string[];
+  language?: string;
+  chapter_count?: number;
+  total_chars?: number;
+  cover_detected?: boolean;
+}
+
+export interface IngestProbeRequest {
+  path: string;
+}
+
+export interface IngestProbeResponse {
+  format: SourceFormat;
+  needs_conversion: boolean;
+  drm?: DrmStatus;
+  has_text_layer?: boolean;
+  metadata_preview?: MetadataPreview | null;
+}
+
+export interface IngestConvertOptions {
+  enabled?: boolean;
+  engine?: string;
+}
+
+export interface IngestRequest {
+  path: string;
+  convert?: IngestConvertOptions;
+}
+
+export interface IngestResponse {
+  project_id: string;
+  format: SourceFormat;
+  chapter_count: number;
+  total_chars: number;
+  working_epub_path: string;
+}
+
+export interface ProjectSourceResponse {
+  original_path?: string | null;
+  working_epub_path?: string | null;
+  imported_at?: string | null;
+  converter?: string | null;
+}
+
+export interface ChapterResponse {
+  id: string;
+  ordinal: number;
+  title: string;
+  included?: boolean;
+  block_count?: number;
+  char_count?: number;
+  est_audio_s?: number;
+}
+
+export interface ChapterUpdate {
+  title?: string | null;
+  included?: boolean | null;
+}
+
+export interface ChapterReorderRequest {
+  order: string[];
+}
+
+export interface ChapterSplitRequest {
+  block_id: string;
+  offset?: number;
+}
+
+export interface ChapterMergeRequest {
+  ids: string[];
+}
+
+export interface BlockResponse {
+  id: string;
+  ordinal: number;
+  kind: BlockKind;
+  heading_level?: number | null;
+  text: string;
+  source_ref_json?: string | null;
+}
+
+export interface ChapterTextResponse {
+  view?: string;
+  blocks?: BlockResponse[];
+  text: string;
+}
+
+export interface ChapterTextUpdate {
+  text: string;
+  base_revision: number;
+}
+
+export interface ChapterTextUpdateResponse {
+  revision: number;
+  orphaned_span_ids?: string[];
+}
+
+export interface SpanResponse {
+  id: string;
+  block_id: string;
+  start: number;
+  end: number;
+  kind: SpanKind;
+  gender?: Gender | null;
+  gender_confidence?: number | null;
+  gender_detector?: GenderDetector | null;
+  speaker_id?: string | null;
+  spoken?: string | null;
+  pause_ms?: number | null;
+  origin: SpanOrigin;
+  orphaned?: boolean;
+}
+
+export interface SpanCreate {
+  block_id: string;
+  start: number;
+  end: number;
+  kind: SpanKind;
+  gender?: Gender | null;
+  speaker_id?: string | null;
+  spoken?: string | null;
+  pause_ms?: number | null;
+}
+
+export interface SpanUpdate {
+  kind?: SpanKind | null;
+  gender?: Gender | null;
+  speaker_id?: string | null;
+  spoken?: string | null;
+  pause_ms?: number | null;
+}
+
+export interface SearchRequest {
+  query: string;
+  regex?: boolean;
+  case_sensitive?: boolean;
+  scope?: string;
+  chapter_id?: string | null;
+}
+
+export interface SearchHit {
+  chapter_id: string;
+  chapter_title: string;
+  block_id: string;
+  start: number;
+  end: number;
+  text_match: string;
+  context: string;
+}
+
+export interface SearchResponse {
+  count: number;
+  hits?: SearchHit[];
+}
+
+export interface ReplaceRequest {
+  query: string;
+  replacement: string;
+  regex?: boolean;
+  case_sensitive?: boolean;
+  scope?: string;
+  chapter_id?: string | null;
+  dry_run?: boolean;
+}
+
+export interface ReplacePreview {
+  chapter_id: string;
+  block_id: string;
+  original: string;
+  proposed: string;
+}
+
+export interface ReplaceResponse {
+  count: number;
+  previews?: ReplacePreview[];
+  revision?: number | null;
 }

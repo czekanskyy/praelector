@@ -30,7 +30,7 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
 
       - uses: actions/setup-node@v4
         with:
@@ -57,7 +57,7 @@ jobs:
         run: uv run python scripts/checksums.py dist/ > dist/SHA256SUMS.${{ matrix.artifact }}
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact }}
           path: dist/*
@@ -73,7 +73,7 @@ jobs:
         run: cat */SHA256SUMS.* > SHA256SUMS
 
       - name: Publish draft release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           draft: true
           generate_release_notes: false

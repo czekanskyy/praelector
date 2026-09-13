@@ -47,7 +47,7 @@ jobs:
         run: uv run --project engine ruff format --check .
 
       - name: Type check with mypy
-        run: uv run --project engine mypy --strict src
+        run: uv run --project engine mypy --strict engine/src
 
       - name: Assert no torch in core lockfile
         run: uv run python scripts/assert_no_torch.py engine/uv.lock
@@ -59,7 +59,7 @@ jobs:
         run: uv run --project engine pytest -m "not gpu" --cov=praelector --cov-report=xml
 
       - name: Upload test artifacts on failure
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: engine-test-output-${{ matrix.os }}
