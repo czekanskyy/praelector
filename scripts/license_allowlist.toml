@@ -1,0 +1,34 @@
+# SPDX-License-Identifier: Apache-2.0
+# License policy allowlist for review-class dependencies
+
+[allowed_licenses]
+names = [
+  "Apache-2.0",
+  "MIT",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "PSF-2.0",
+  "MPL-2.0",
+  "Unlicense",
+  "CC0-1.0",
+]
+
+[denied_licenses]
+names = [
+  "GPL-2.0",
+  "GPL-3.0",
+  "AGPL-3.0",
+  "SSPL",
+  "BUSL",
+  "CC-BY-NC-1.0",
+  "CC-BY-NC-2.0",
+  "CC-BY-NC-2.5",
+  "CC-BY-NC-3.0",
+  "CC-BY-NC-4.0",
+]
+
+# Exceptions for specific packages with written justification
+# [exceptions."package-name"]
+# license = "LGPL-2.1"
+# justification = "Reason..."

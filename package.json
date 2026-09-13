@@ -1,0 +1,12 @@
+{
+  "name": "praelector-monorepo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "just dev",
+    "build": "just build",
+    "test": "just test",
+    "lint": "just lint"
+  },
+  "packageManager": "pnpm@11.24.0"
+}

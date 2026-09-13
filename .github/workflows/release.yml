@@ -1,0 +1,83 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  bundle:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            targets: "nsis"
+            artifact: windows-x64
+          - os: ubuntu-22.04
+            targets: "appimage"
+            artifact: linux-x64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Freeze the engine
+        run: uv run python scripts/build_engine.py --onedir
+
+      - name: Bundle uv
+        run: uv run python scripts/fetch_uv.py --verify
+
+      - name: Tauri build bundles
+        run: pnpm tauri build --bundles ${{ matrix.targets }}
+
+      - name: Portable archive
+        run: uv run python scripts/make_portable.py --os ${{ matrix.artifact }}
+
+      - name: Checksums
+        shell: bash
+        run: uv run python scripts/checksums.py dist/ > dist/SHA256SUMS.${{ matrix.artifact }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/*
+
+  publish:
+    needs: bundle
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+
+      - name: Combine checksums
+        shell: bash
+        run: cat */SHA256SUMS.* > SHA256SUMS
+
+      - name: Publish draft release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          generate_release_notes: false
+          files: |
+            windows-x64/*
+            linux-x64/*
+            SHA256SUMS

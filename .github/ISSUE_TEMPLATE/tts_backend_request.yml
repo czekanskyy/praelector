@@ -1,0 +1,45 @@
+name: TTS Backend Request
+description: Propose a new text-to-speech backend plugin for Praelector
+labels: ["enhancement", "area:tts"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Praelector backends must comply with our licensing policy (Apache-2.0, MIT, or BSD) and support offline inference.
+  - type: input
+    id: model_name
+    attributes:
+      label: Model / Backend Name
+      placeholder: e.g. Kokoro, StyleTTS2, etc.
+    validations:
+      required: true
+  - type: input
+    id: repository_url
+    attributes:
+      label: Code & Weights Repository
+      placeholder: e.g. https://github.com/... or https://huggingface.co/...
+    validations:
+      required: true
+  - type: input
+    id: license
+    attributes:
+      label: License (Code & Weights)
+      description: What is the SPDX license of the code and the model weights? (Must be permissive; non-commercial weights cannot be shipped).
+      placeholder: e.g. Apache-2.0
+    validations:
+      required: true
+  - type: checkboxes
+    id: languages
+    attributes:
+      label: Language Support
+      options:
+        - label: Supports Polish (pl)
+        - label: Supports English (en)
+        - label: Multilingual (other languages)
+  - type: textarea
+    id: vram_requirements
+    attributes:
+      label: VRAM & Architecture Details
+      description: Estimated VRAM usage, checkpoint size, torch version requirements, and whether ROCm/CUDA are supported.
+    validations:
+      required: true

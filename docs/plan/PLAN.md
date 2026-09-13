@@ -1,7 +1,7 @@
 # Praelector — Implementation Plan (v1)
 
 **Tagline:** _Prepare the page. Cast the voice._
-**Scope:** v1 only, as defined by [PRD.md](../../PRD.md). This plan implements the PRD; where the PRD is silent, the simplest option is chosen and recorded in [§3 Decisions](#3-decisions).
+**Scope:** v1 only, as defined by [PRD.md](../PRD.md). This plan implements the PRD; where the PRD is silent, the simplest option is chosen and recorded in [§3 Decisions](#3-decisions).
 **Companion documents:** [REPO_LAYOUT.md](REPO_LAYOUT.md) · [DATA_MODEL.md](DATA_MODEL.md) · [OPENAPI_SKETCH.md](OPENAPI_SKETCH.md) · [CI_AND_RELEASE.md](CI_AND_RELEASE.md) · [SEQUENCES.md](SEQUENCES.md)
 
 ---

@@ -1,0 +1,81 @@
+name: Bug Report
+description: File a bug report to help us improve Praelector
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please ensure you are testing against a supported platform (Windows 11 x64 or Linux x64) and that your input file does not contain DRM.
+  - type: input
+    id: version
+    attributes:
+      label: Praelector Version
+      description: What version of Praelector are you running? (Found in Settings -> About or via `praelector-engine --version`)
+      placeholder: e.g. 0.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating System
+      description: Which OS are you running on?
+      options:
+        - Windows 11 x64
+        - Linux x64 (Arch / CachyOS)
+        - Linux x64 (Ubuntu / Debian)
+        - Linux x64 (Fedora)
+        - macOS (Unsupported best-effort)
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: gpu
+    attributes:
+      label: GPU Hardware & Driver
+      description: What GPU model and driver version are you using?
+      placeholder: e.g. NVIDIA RTX 4070 Ti 12GB (Driver 570.xx) / AMD RX 9060 XT 16GB (ROCm 7.14)
+    validations:
+      required: true
+  - type: dropdown
+    id: backend
+    attributes:
+      label: TTS Backend
+      description: Which TTS backend was selected when the issue occurred?
+      options:
+        - OmniVoice (Default)
+        - Chatterbox Multilingual
+        - Qwen3-TTS
+        - None / N/A (Ingestion / Text review issue)
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what happened.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Exact steps to reproduce the issue.
+      placeholder: |
+        1. Open project '...'
+        2. Ingest EPUB '...'
+        3. Click on '...'
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Logs & Output
+      description: Copy lines from the rolling log buffer or `%LOCALAPPDATA%\Praelector\logs` / `~/.local/state/praelector/logs`.
+      render: shell

@@ -1,0 +1,53 @@
+name: ui
+
+on:
+  pull_request:
+    paths:
+      - "apps/ui/**"
+      - "packages/schemas/**"
+      - "scripts/**"
+      - ".github/workflows/ci-ui.yml"
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint UI
+        run: pnpm -F ui lint
+
+      - name: Typecheck UI
+        run: pnpm -F ui typecheck
+
+      - name: Run Vitest tests
+        run: pnpm -F ui test -- --run
+
+      - name: Verify i18n key parity & completeness
+        run: node scripts/i18n_check.mjs
+
+      - name: Verify schemas are up to date
+        run: uv run python scripts/gen_ts_types.py && git diff --exit-code packages/schemas

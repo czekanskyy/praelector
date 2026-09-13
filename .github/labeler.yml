@@ -1,0 +1,27 @@
+"area:engine":
+  - changed-files:
+      - any-glob-to-any-file: "engine/**/*"
+
+"area:engine-tts":
+  - changed-files:
+      - any-glob-to-any-file: "engine-tts/**/*"
+
+"area:ui":
+  - changed-files:
+      - any-glob-to-any-file: "apps/ui/**/*"
+
+"area:desktop":
+  - changed-files:
+      - any-glob-to-any-file: "apps/desktop/**/*"
+
+"area:schemas":
+  - changed-files:
+      - any-glob-to-any-file: "packages/schemas/**/*"
+
+"area:docs":
+  - changed-files:
+      - any-glob-to-any-file: ["docs/**/*", "*.md"]
+
+"area:ci":
+  - changed-files:
+      - any-glob-to-any-file: [".github/**/*", "scripts/**/*", "justfile"]
