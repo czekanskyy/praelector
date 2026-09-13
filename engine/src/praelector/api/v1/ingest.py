@@ -34,6 +34,16 @@ from praelector.store.project_manager import ProjectManager
 router = APIRouter(tags=["ingest"])
 
 
+def _validate_safe_ebook_path(raw_path: str) -> Path:
+    """Validate and normalize user-provided file path."""
+    if not raw_path or "\0" in raw_path:
+        raise AppError("ebook.invalid_path", status_code=400, detail={"path": raw_path})
+    resolved = Path(raw_path).resolve()
+    if not resolved.is_file():
+        raise AppError("internal.not_found", status_code=404, detail={"path": str(resolved)})
+    return resolved
+
+
 @router.post(
     "/projects/{project_id}/ingest/probe",
     response_model=IngestProbeResponse,
@@ -46,9 +56,7 @@ def probe_ebook_file(
 ) -> IngestProbeResponse:
     """Probe an ebook file before import to check format, DRM, text layer, and metadata."""
     _ = pm.find_project_dir(project_id)
-    path = Path(payload.path)
-    if not path.is_file():
-        raise AppError("internal.not_found", status_code=404, detail={"path": str(path)})
+    path = _validate_safe_ebook_path(payload.path)
 
     # 1. Detect Format
     fmt = detect_format(path)
@@ -118,9 +126,7 @@ def ingest_ebook_file(
 ) -> IngestResponse:
     """Import an ebook file into an open project."""
     ch_repo, paths = pm.get_open_chapter_repo(project_id)
-    src_path = Path(payload.path)
-    if not src_path.is_file():
-        raise AppError("internal.not_found", status_code=404, detail={"path": str(src_path)})
+    src_path = _validate_safe_ebook_path(payload.path)
 
     # 1. Format detection & DRM inspection
     fmt = detect_format(src_path)
