@@ -1,15 +1,35 @@
 // SPDX-License-Identifier: Apache-2.0
 import React, { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { BookPlus, CheckCircle2, Folder, HardDrive, Key, Layers, Trash2, XCircle } from "lucide-react";
+import {
+  BookPlus,
+  CheckCircle2,
+  FileText,
+  Folder,
+  HardDrive,
+  Key,
+  Layers,
+  Trash2,
+  UploadCloud,
+  XCircle,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { VoiceMode } from "@praelector/schemas";
 import { api } from "../../lib/api/client";
+import { IngestModal } from "../ingest/IngestModal";
+import { useProjectStore } from "../../stores/projectStore";
 
-export function LibraryScreen(): React.ReactElement {
+interface LibraryScreenProps {
+  onNavigateToEditor?: (projectId: string) => void;
+}
+
+export function LibraryScreen({ onNavigateToEditor }: LibraryScreenProps): React.ReactElement {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const { setActiveProjectId } = useProjectStore();
+
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [ingestProjectId, setIngestProjectId] = useState<string | null>(null);
   const [projectName, setProjectName] = useState("");
   const [voiceMode, setVoiceMode] = useState<VoiceMode>("narrator_male_female");
   const [language, setLanguage] = useState("pl");
@@ -37,7 +57,8 @@ export function LibraryScreen(): React.ReactElement {
 
   const openMutation = useMutation({
     mutationFn: api.openProject,
-    onSuccess: () => {
+    onSuccess: (res) => {
+      setActiveProjectId(res.project.id);
       queryClient.invalidateQueries({ queryKey: ["projects"] });
       queryClient.invalidateQueries({ queryKey: ["health"] });
     },
@@ -46,6 +67,7 @@ export function LibraryScreen(): React.ReactElement {
   const closeMutation = useMutation({
     mutationFn: api.closeProject,
     onSuccess: () => {
+      setActiveProjectId(null);
       queryClient.invalidateQueries({ queryKey: ["projects"] });
       queryClient.invalidateQueries({ queryKey: ["health"] });
     },
@@ -202,13 +224,34 @@ export function LibraryScreen(): React.ReactElement {
                 </span>
                 <div className="flex items-center gap-2">
                   {project.is_open ? (
-                    <button
-                      onClick={() => closeMutation.mutate(project.id)}
-                      disabled={closeMutation.isPending}
-                      className="rounded px-3 py-1 text-xs font-medium border border-border hover:bg-muted"
-                    >
-                      {t("library:close")}
-                    </button>
+                    <>
+                      <button
+                        onClick={() => setIngestProjectId(project.id)}
+                        className="inline-flex items-center gap-1 rounded bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground hover:bg-secondary/80"
+                        title="Importuj książkę do projektu"
+                      >
+                        <UploadCloud className="h-3.5 w-3.5" />
+                        Importuj
+                      </button>
+                      <button
+                        onClick={() => {
+                          setActiveProjectId(project.id);
+                          onNavigateToEditor?.(project.id);
+                        }}
+                        className="inline-flex items-center gap-1 rounded bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground hover:bg-primary/90"
+                        title="Otwórz w edytorze"
+                      >
+                        <FileText className="h-3.5 w-3.5" />
+                        Edytor
+                      </button>
+                      <button
+                        onClick={() => closeMutation.mutate(project.id)}
+                        disabled={closeMutation.isPending}
+                        className="rounded px-2.5 py-1 text-xs font-medium border border-border hover:bg-muted"
+                      >
+                        {t("library:close")}
+                      </button>
+                    </>
                   ) : (
                     <button
                       onClick={() => openMutation.mutate(project.id)}
@@ -306,6 +349,23 @@ export function LibraryScreen(): React.ReactElement {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Ingest Ebook Modal */}
+      {ingestProjectId && (
+        <IngestModal
+          projectId={ingestProjectId}
+          isOpen={Boolean(ingestProjectId)}
+          onClose={() => setIngestProjectId(null)}
+          onSuccess={() => {
+            const pid = ingestProjectId;
+            setIngestProjectId(null);
+            if (onNavigateToEditor && pid) {
+              setActiveProjectId(pid);
+              onNavigateToEditor(pid);
+            }
+          }}
+        />
       )}
     </div>
   );

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 use std::io::{BufRead, BufReader};
+use std::path::PathBuf;
 use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
@@ -10,6 +11,41 @@ use rand::RngCore;
 use crate::engine::logbuf::RollingLogBuffer;
 use crate::engine::ready::{parse_ready_line, ReadyPayload};
 use crate::paths::get_data_dir;
+
+fn find_workspace_root() -> Option<PathBuf> {
+    if let Ok(root) = std::env::var("PRAELECTOR_WORKSPACE_ROOT") {
+        let p = PathBuf::from(root);
+        if p.join("engine").join("pyproject.toml").exists() {
+            return Some(p);
+        }
+    }
+    if let Ok(mut current) = std::env::current_dir() {
+        for _ in 0..5 {
+            if current.join("engine").join("pyproject.toml").exists() {
+                return Some(current);
+            }
+            if let Some(parent) = current.parent() {
+                current = parent.to_path_buf();
+            } else {
+                break;
+            }
+        }
+    }
+    if let Ok(exe) = std::env::current_exe() {
+        let mut current = exe;
+        for _ in 0..6 {
+            if current.join("engine").join("pyproject.toml").exists() {
+                return Some(current);
+            }
+            if let Some(parent) = current.parent() {
+                current = parent.to_path_buf();
+            } else {
+                break;
+            }
+        }
+    }
+    None
+}
 
 #[derive(Clone)]
 pub struct EngineHandle {
@@ -24,6 +60,8 @@ pub struct EngineSupervisor {
     child: Option<Child>,
     handle: EngineHandle,
     is_running: Arc<AtomicBool>,
+    #[cfg(windows)]
+    _job: Option<crate::engine::job_object_win::win::JobObject>,
 }
 
 impl EngineSupervisor {
@@ -49,6 +87,14 @@ impl EngineSupervisor {
             cmd.arg(arg);
         }
 
+        if let Some(workspace_root) = find_workspace_root() {
+            log::info!(
+                "Setting engine working directory to: {}",
+                workspace_root.display()
+            );
+            cmd.current_dir(&workspace_root);
+        }
+
         let parent_pid = std::process::id();
         let data_dir = get_data_dir();
         std::fs::create_dir_all(&data_dir).map_err(|e| e.to_string())?;
@@ -72,14 +118,19 @@ impl EngineSupervisor {
             .map_err(|e| format!("Failed to spawn engine: {}", e))?;
 
         #[cfg(windows)]
-        {
-            if let Ok(job) = crate::engine::job_object_win::win::JobObject::create() {
+        let job = match crate::engine::job_object_win::win::JobObject::create() {
+            Ok(job) => {
                 use std::os::windows::io::AsRawHandle;
                 unsafe {
                     let _ = job.assign_process(child.as_raw_handle() as _);
                 }
+                Some(job)
             }
-        }
+            Err(e) => {
+                log::warn!("Failed to create Windows Job Object: {}", e);
+                None
+            }
+        };
 
         let stdout = child
             .stdout
@@ -120,16 +171,53 @@ impl EngineSupervisor {
             }
         });
 
-        // Wait for handshake with 30s timeout
-        let ready_payload = ready_rx
-            .recv_timeout(Duration::from_secs(30))
-            .map_err(|_| {
-                let last_logs = log_buffer.lines().join("\n");
-                format!(
-                    "Timed out waiting for engine ready handshake (30s).\nLast engine output:\n{}",
-                    last_logs
-                )
-            })?;
+        // Wait for handshake with 30s timeout while checking child liveness
+        let start = Instant::now();
+        let timeout = Duration::from_secs(30);
+        let ready_payload = loop {
+            match ready_rx.recv_timeout(Duration::from_millis(100)) {
+                Ok(payload) => break payload,
+                Err(std::sync::mpsc::RecvTimeoutError::Timeout) => {
+                    // Check if child process has exited prematurely
+                    match child.try_wait() {
+                        Ok(Some(status)) => {
+                            std::thread::sleep(Duration::from_millis(150));
+                            let last_logs = log_buffer.lines().join("\n");
+                            return Err(format!(
+                                "Engine process exited prematurely with status: {}.\nEngine output:\n{}",
+                                status, last_logs
+                            ));
+                        }
+                        Ok(None) => {
+                            if start.elapsed() >= timeout {
+                                let last_logs = log_buffer.lines().join("\n");
+                                return Err(format!(
+                                    "Timed out waiting for engine ready handshake (30s).\nEngine output:\n{}",
+                                    last_logs
+                                ));
+                            }
+                        }
+                        Err(e) => {
+                            return Err(format!("Failed to monitor engine child process: {}", e));
+                        }
+                    }
+                }
+                Err(std::sync::mpsc::RecvTimeoutError::Disconnected) => {
+                    // Transmitter hung up without sending ready payload
+                    std::thread::sleep(Duration::from_millis(150));
+                    let status_str = match child.try_wait() {
+                        Ok(Some(status)) => format!("{}", status),
+                        Ok(None) => "still running (stdout closed)".to_string(),
+                        Err(e) => format!("unknown ({})", e),
+                    };
+                    let last_logs = log_buffer.lines().join("\n");
+                    return Err(format!(
+                        "Engine stdout closed unexpectedly without ready handshake (child status: {}).\nEngine output:\n{}",
+                        status_str, last_logs
+                    ));
+                }
+            }
+        };
 
         let base_url = format!("http://127.0.0.1:{}/v1", ready_payload.port);
         log::info!("Engine ready at {} (pid: {})", base_url, ready_payload.pid);
@@ -191,6 +279,8 @@ impl EngineSupervisor {
             child: Some(child),
             handle,
             is_running,
+            #[cfg(windows)]
+            _job: job,
         })
     }
 
@@ -240,5 +330,33 @@ impl EngineSupervisor {
 impl Drop for EngineSupervisor {
     fn drop(&mut self) {
         self.shutdown();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_find_workspace_root() {
+        let root = find_workspace_root();
+        assert!(root.is_some(), "Workspace root should be discovered");
+        let root = root.unwrap();
+        assert!(
+            root.join("engine").join("pyproject.toml").exists(),
+            "Discovered root {:?} does not contain engine/pyproject.toml",
+            root
+        );
+    }
+
+    #[test]
+    #[ignore]
+    fn test_engine_handshake_integration() {
+        let mut supervisor = EngineSupervisor::spawn().expect("Should spawn engine and handshake");
+        let handle = supervisor.handle();
+        assert!(handle.base_url.starts_with("http://127.0.0.1:"));
+        assert!(!handle.token.is_empty());
+        assert_eq!(handle.schema, 1);
+        supervisor.shutdown();
     }
 }
