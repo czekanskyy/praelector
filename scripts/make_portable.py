@@ -4,12 +4,15 @@
 from __future__ import annotations
 
 import argparse
-import sys
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Package portable distribution archives.")
-    parser.add_argument("--os", required=True, help="Target OS/architecture (e.g. windows-x64, linux-x64)")
+    parser.add_argument(
+        "--os",
+        required=True,
+        help="Target OS/architecture (e.g. windows-x64, linux-x64)",
+    )
     args = parser.parse_args()
 
     print(f"Creating portable archive for {args.os}...")

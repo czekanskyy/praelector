@@ -9,7 +9,10 @@ from pathlib import Path
 
 def main() -> int:
     if len(sys.argv) < 2:
-        print("Usage: python scripts/assert_no_torch.py <path/to/uv.lock>", file=sys.stderr)
+        print(
+            "Usage: python scripts/assert_no_torch.py <path/to/uv.lock>",
+            file=sys.stderr,
+        )
         return 1
 
     lockfile_path = Path(sys.argv[1])
@@ -19,10 +22,18 @@ def main() -> int:
 
     content = lockfile_path.read_text(encoding="utf-8")
     # Check for torch package definition in uv.lock
-    forbidden = ["name = \"torch\"", "name = 'torch'", "name = \"torchaudio\"", "name = \"torchvision\""]
+    forbidden = [
+        'name = "torch"',
+        "name = 'torch'",
+        'name = "torchaudio"',
+        'name = "torchvision"',
+    ]
     for pkg in forbidden:
         if pkg in content:
-            print(f"Assertion failed: Forbidden dependency {pkg} found in {lockfile_path}!", file=sys.stderr)
+            print(
+                f"Assertion failed: Forbidden dependency {pkg} found in {lockfile_path}!",
+                file=sys.stderr,
+            )
             print("The engine core must remain torch-free.", file=sys.stderr)
             return 1
 

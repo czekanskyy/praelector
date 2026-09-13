@@ -37,10 +37,7 @@ IGNORE_DIRS = {
 
 
 def should_ignore(path: Path) -> bool:
-    for part in path.parts:
-        if part in IGNORE_DIRS:
-            return True
-    return False
+    return any(part in IGNORE_DIRS for part in path.parts)
 
 
 def check_or_fix(root: Path, fix: bool = False) -> int:
@@ -79,7 +76,10 @@ def check_or_fix(root: Path, fix: bool = False) -> int:
         print("Missing SPDX license headers in the following files:", file=sys.stderr)
         for f in missing_files:
             print(f"  {f}", file=sys.stderr)
-        print("\nRun `python scripts/spdx_headers.py --fix` to add missing headers.", file=sys.stderr)
+        print(
+            "\nRun `python scripts/spdx_headers.py --fix` to add missing headers.",
+            file=sys.stderr,
+        )
         return 1
 
     print("All source files contain valid SPDX license headers.")
@@ -88,7 +88,9 @@ def check_or_fix(root: Path, fix: bool = False) -> int:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Check or fix SPDX license headers.")
-    parser.add_argument("--check", action="store_true", help="Check headers (exit 1 if any missing)")
+    parser.add_argument(
+        "--check", action="store_true", help="Check headers (exit 1 if any missing)"
+    )
     parser.add_argument("--fix", action="store_true", help="Automatically add missing headers")
     parser.add_argument("root", nargs="?", default=".", help="Root directory to scan")
     args = parser.parse_args()

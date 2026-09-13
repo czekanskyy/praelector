@@ -12,20 +12,27 @@ dev:
     uv run python scripts/dev.py
 
 # Run all test suites
-test: test-engine test-ui
+test: test-engine test-tts test-ui
 
 test-engine:
     uv run --project engine pytest -m "not gpu"
+
+test-tts:
+    uv run --project engine-tts pytest engine-tts/tests
 
 test-ui:
     pnpm -F ui test -- --run
 
 # Run all linters and code formatters
-lint: lint-engine lint-ui lint-desktop licenses
+lint: lint-engine lint-tts lint-ui lint-desktop licenses
 
 lint-engine:
     uv run --project engine ruff check .
     uv run --project engine ruff format --check .
+
+lint-tts:
+    uv run --project engine-tts ruff check .
+    uv run --project engine-tts ruff format --check .
 
 lint-ui:
     pnpm -F ui lint

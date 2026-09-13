@@ -67,7 +67,7 @@ $RECYCLE.BIN/
 *.db
 *.db-wal
 *.db-shm
-*.lock
+project.lock
 *.part
 output/
 runtimes/
