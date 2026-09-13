@@ -47,6 +47,7 @@ lerna-debug.log*
 # Rust & Tauri
 target/
 apps/desktop/target/
+apps/desktop/gen/
 apps/desktop/resources/engine/
 apps/desktop/resources/bin/
 
