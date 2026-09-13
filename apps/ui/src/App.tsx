@@ -6,6 +6,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { apiFetch, setEngineEndpoint } from "./lib/api/client";
 import { NAV_ITEMS, NavTab } from "./routes";
 import { LibraryScreen } from "./features/library/LibraryScreen";
+import { EditorScreen } from "./features/editor/EditorScreen";
 import type { HealthResponse, VersionResponse } from "@praelector/schemas";
 import { AlertTriangle, Globe, RefreshCw } from "lucide-react";
 
@@ -141,7 +142,7 @@ export function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto p-8">
-        <div className="mx-auto max-w-4xl space-y-6">
+        <div className={`mx-auto space-y-6 ${activeTab === "editor" ? "max-w-7xl" : "max-w-4xl"}`}>
           <header className="border-b border-border pb-4">
             <h2 className="text-2xl font-bold tracking-tight">
               {t(NAV_ITEMS.find((n) => n.id === activeTab)?.labelKey || "common:appName")}
@@ -151,7 +152,11 @@ export function App() {
             </p>
           </header>
 
-          {activeTab === "library" && <LibraryScreen />}
+          {activeTab === "library" && (
+            <LibraryScreen onNavigateToEditor={() => setActiveTab("editor")} />
+          )}
+
+          {activeTab === "editor" && <EditorScreen />}
 
           {activeTab === "settings" && (
             <div className="space-y-4 rounded-lg border border-border bg-card p-6">
@@ -165,7 +170,7 @@ export function App() {
             </div>
           )}
 
-          {activeTab !== "library" && activeTab !== "settings" && (
+          {activeTab !== "library" && activeTab !== "editor" && activeTab !== "settings" && (
             <div className="rounded-lg border border-border bg-card p-8 text-center text-muted-foreground">
               <p className="text-sm">
                 Module for {activeTab} will be initialized in upcoming milestone PRs.

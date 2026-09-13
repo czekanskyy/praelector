@@ -11,7 +11,9 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from praelector.api.v1.capabilities import router as capabilities_router
+from praelector.api.v1.chapters import router as chapters_router
 from praelector.api.v1.health import router as health_router
+from praelector.api.v1.ingest import router as ingest_router
 from praelector.api.v1.projects import router as projects_router
 from praelector.api.v1.settings import router as settings_router
 from praelector.api.v1.version import router as version_router
@@ -83,6 +85,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     v1_router.include_router(capabilities_router)
     v1_router.include_router(settings_router)
     v1_router.include_router(projects_router)
+    v1_router.include_router(ingest_router)
+    v1_router.include_router(chapters_router)
 
     app.include_router(v1_router)
 

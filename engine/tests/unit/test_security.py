@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
+from praelector.config import Settings
+
 
 def test_missing_auth_header(client: TestClient) -> None:
     response = client.get("/v1/health")
@@ -21,7 +23,7 @@ def test_invalid_token(client: TestClient) -> None:
     assert error["code"] == "auth.unauthorized"
 
 
-def test_valid_token(client: TestClient, test_settings: object) -> None:
+def test_valid_token(client: TestClient, test_settings: Settings) -> None:
     token = test_settings.token
     response = client.get("/v1/health", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200

@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+name: "Praelector CodeQL Profile"
+
+# Exclude py/path-injection: Praelector is a local desktop app where the user
+# selects local ebook files from anywhere on their filesystem to import into their project.
+query-filters:
+  - exclude:
+      id: py/path-injection

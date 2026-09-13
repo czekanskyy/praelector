@@ -32,6 +32,7 @@ from praelector.store.project_dir import (
     get_project_paths,
     list_project_dirs,
 )
+from praelector.store.repositories.chapters import ChapterRepository
 from praelector.store.repositories.project import ProjectRepository
 from praelector.store.settings import SettingsStore
 
@@ -53,6 +54,7 @@ class ProjectManager:
         self.active_lock: ProjectLock | None = None
         self.active_engine: Engine | None = None
         self.active_repo: ProjectRepository | None = None
+        self.active_chapter_repo: ChapterRepository | None = None
 
     @property
     def is_open(self) -> bool:
@@ -196,12 +198,14 @@ class ProjectManager:
 
             engine = create_project_engine(paths.db)
             repo = ProjectRepository(engine)
+            chapter_repo = ChapterRepository(engine)
 
             self.active_project_id = project_id
             self.active_paths = paths
             self.active_lock = lock
             self.active_engine = engine
             self.active_repo = repo
+            self.active_chapter_repo = chapter_repo
 
             return self.get_project(project_id)
         except Exception:
@@ -224,6 +228,21 @@ class ProjectManager:
         self.active_project_id = None
         self.active_paths = None
         self.active_repo = None
+        self.active_chapter_repo = None
+
+    def get_open_chapter_repo(self, project_id: str) -> tuple[ChapterRepository, ProjectPaths]:
+        """Ensure project is open and return active ChapterRepository and ProjectPaths."""
+        if (
+            self.active_project_id != project_id
+            or self.active_chapter_repo is None
+            or self.active_paths is None
+        ):
+            raise AppError(
+                "project.not_open",
+                status_code=400,
+                detail={"project_id": project_id, "message": "Project must be opened first."},
+            )
+        return self.active_chapter_repo, self.active_paths
 
     def get_project(self, project_id: str) -> ProjectResponse:
         """Retrieve project status, manifest, and counts."""
@@ -271,7 +290,7 @@ class ProjectManager:
             backend_params_json=db_fields.get("backend_params_json"),
             precision=db_fields.get("precision", "fp16"),
             cloud_llm_enabled=bool(db_fields.get("cloud_llm_enabled", 0)),
-            current_revision=manifest.current_revision,
+            current_revision=int(db_fields.get("current_revision", manifest.current_revision)),
             is_open=is_open,
             counts=counts,
         )

@@ -63,4 +63,7 @@ pub mod win {
             }
         }
     }
+
+    unsafe impl Send for JobObject {}
+    unsafe impl Sync for JobObject {}
 }
