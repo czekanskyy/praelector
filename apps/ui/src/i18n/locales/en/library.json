@@ -5,5 +5,30 @@
   "recentProjects": "Recent Projects",
   "noProjects": "No projects found. Create or open one to get started.",
   "projectName": "Project Name",
-  "createDialogTitle": "Create New Audiobook Project"
+  "createDialogTitle": "Create New Audiobook Project",
+  "emptyStateDescription": "Get started by creating your first audiobook project from a DRM-free ebook.",
+  "voiceMode": "Voice Mode",
+  "voiceModes": {
+    "single": "Single Narrator",
+    "narrator_dialogue": "Narrator + Dialogue",
+    "narrator_male_female": "Narrator + Male / Female"
+  },
+  "language": "Spoken Language",
+  "create": "Create",
+  "cancel": "Cancel",
+  "active": "Active",
+  "opened": "Open",
+  "delete": "Delete",
+  "close": "Close",
+  "systemStatus": "System Capabilities",
+  "ffmpeg": "FFmpeg Muxer",
+  "calibre": "Calibre Converter",
+  "keyring": "Credentials Store",
+  "detected": "Available",
+  "missing": "Not installed",
+  "optional": "Optional",
+  "encryptedFallback": "Encrypted file fallback",
+  "systemKeyring": "System keyring",
+  "updated": "Updated",
+  "revision": "Rev"
 }

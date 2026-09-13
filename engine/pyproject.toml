@@ -14,6 +14,11 @@ dependencies = [
     "platformdirs>=4.3.0",
     "httpx>=0.28.0",
     "numpy>=2.1.0",
+    "sqlalchemy>=2.0.35",
+    "sqlmodel>=0.0.22",
+    "alembic>=1.14.0",
+    "keyring>=24.3.0",
+    "cryptography>=43.0.0",
 ]
 
 [project.scripts]

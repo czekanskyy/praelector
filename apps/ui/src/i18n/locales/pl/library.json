@@ -5,5 +5,30 @@
   "recentProjects": "Ostatnie projekty",
   "noProjects": "Brak projektów. Utwórz lub otwórz projekt, aby rozpocząć.",
   "projectName": "Nazwa projektu",
-  "createDialogTitle": "Utwórz nowy projekt audiobooka"
+  "createDialogTitle": "Utwórz nowy projekt audiobooka",
+  "emptyStateDescription": "Rozpocznij od utworzenia pierwszego projektu audiobooka z e-booka bez DRM.",
+  "voiceMode": "Tryb głosowy",
+  "voiceModes": {
+    "single": "Jeden narrator",
+    "narrator_dialogue": "Narrator + Dialogi",
+    "narrator_male_female": "Narrator + Męski / Żeński"
+  },
+  "language": "Język czytany",
+  "create": "Utwórz",
+  "cancel": "Anuluj",
+  "active": "Aktywny",
+  "opened": "Otwarty",
+  "delete": "Usuń",
+  "close": "Zamknij",
+  "systemStatus": "Możliwości systemu",
+  "ffmpeg": "Mikser FFmpeg",
+  "calibre": "Konwerter Calibre",
+  "keyring": "Magazyn poświadczeń",
+  "detected": "Dostępny",
+  "missing": "Niezainstalowany",
+  "optional": "Opcjonalny",
+  "encryptedFallback": "Zaszyfrowany plik lokalny",
+  "systemKeyring": "Baza systemowa",
+  "updated": "Zaktualizowano",
+  "revision": "Wersja"
 }

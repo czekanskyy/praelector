@@ -45,7 +45,7 @@ lint-desktop:
 check: check-engine check-ui
 
 check-engine:
-    uv run --project engine mypy --strict src
+    uv run --project engine mypy --strict engine/src
 
 check-ui:
     pnpm -F ui typecheck
@@ -59,7 +59,7 @@ fmt:
 
 # Codegen (Pydantic -> JSON Schema -> TypeScript)
 codegen:
-    uv run python scripts/gen_ts_types.py
+    uv run --project engine python scripts/gen_ts_types.py
 
 # Dependency license policy check & NOTICE verification
 licenses:

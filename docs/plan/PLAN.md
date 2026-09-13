@@ -660,17 +660,17 @@ Each task lists the requirement IDs it satisfies. File paths are given where the
 
 ### M0 — Skeleton (week 1–2)
 
-- [ ] `chore`: monorepo scaffold per [REPO_LAYOUT.md](REPO_LAYOUT.md); `pnpm-workspace.yaml`, `justfile`, `.editorconfig`, `.gitignore` — PRD §8
-- [ ] `chore`: `LICENSE` (Apache-2.0), `NOTICE`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, issue/PR templates, `CODEOWNERS` — PRD §9
-- [ ] `chore`: CI workflows `ci-engine`, `ci-ui`, `ci-desktop`, `licenses`, `pr-title`, `release-please`, `release` — NF-09, PRD §9
-- [ ] `feat(engine)`: `uv` project, Python 3.12 pin, `pyproject.toml` with `dev` group; `praelector.app` FastAPI factory; `GET /v1/health`, `GET /v1/version`; bearer-token middleware + Origin check; structured error model; JSON logging with a secret-redaction filter — NF-01, LM-03, D-10, D-16
-- [ ] `feat(engine)`: `engine-tts` package skeleton with `cpu`/`cuda`/`rocm` conflicting extras and committed locks; `fake` backend; CI asserts core lock contains no `torch` — GPU-07, D-03
-- [ ] `feat(desktop)`: Tauri 2 app, `EngineSupervisor` (spawn, ready handshake, health poll, backoff, kill, Job Object / process group), `engine_endpoint` command, single-instance plugin, fatal-engine panel — PRD §8, §1.6
-- [ ] `feat(ui)`: Vite + React 19 + TS + Tailwind, shadcn-style primitives, router, TanStack Query API client, WS client with `seq` gap-fill, i18next with `en` + `pl` catalogues and the parity check — IX-01, IX-02, IX-04
-- [ ] `feat(engine)`: settings store (`config.json` + keyring), `GET/PUT /v1/settings`, paths resolution, ffmpeg/Calibre probes — MX-04, EB-03
-- [ ] `feat`: project create/open/close; `project.json` manifest + `project.db` with Alembic baseline; `project.lock`; Library screen — ED-07, D-02
-- [ ] `chore`: `scripts/gen_ts_types.py` (Pydantic → JSON Schema → TS) + staleness check in CI — PRD §8
-- [ ] `docs`: `dev-setup.md`, `architecture.md` stub, `README.md` with the tagline and platform table
+- [x] `chore`: monorepo scaffold per [REPO_LAYOUT.md](REPO_LAYOUT.md); `pnpm-workspace.yaml`, `justfile`, `.editorconfig`, `.gitignore` — PRD §8
+- [x] `chore`: `LICENSE` (Apache-2.0), `NOTICE`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, issue/PR templates, `CODEOWNERS` — PRD §9
+- [x] `chore`: CI workflows `ci-engine`, `ci-ui`, `ci-desktop`, `licenses`, `pr-title`, `release-please`, `release` — NF-09, PRD §9
+- [x] `feat(engine)`: `uv` project, Python 3.12 pin, `pyproject.toml` with `dev` group; `praelector.app` FastAPI factory; `GET /v1/health`, `GET /v1/version`; bearer-token middleware + Origin check; structured error model; JSON logging with a secret-redaction filter — NF-01, LM-03, D-10, D-16
+- [x] `feat(engine)`: `engine-tts` package skeleton with `cpu`/`cuda`/`rocm` conflicting extras and committed locks; `fake` backend; CI asserts core lock contains no `torch` — GPU-07, D-03
+- [x] `feat(desktop)`: Tauri 2 app, `EngineSupervisor` (spawn, ready handshake, health poll, backoff, kill, Job Object / process group), `engine_endpoint` command, single-instance plugin, fatal-engine panel — PRD §8, §1.6
+- [x] `feat(ui)`: Vite + React 19 + TS + Tailwind, shadcn-style primitives, router, TanStack Query API client, WS client with `seq` gap-fill, i18next with `en` + `pl` catalogues and the parity check — IX-01, IX-02, IX-04
+- [x] `feat(engine)`: settings store (`config.json` + keyring), `GET/PUT /v1/settings`, paths resolution, ffmpeg/Calibre probes — MX-04, EB-03
+- [x] `feat`: project create/open/close; `project.json` manifest + `project.db` with Alembic baseline; `project.lock`; Library screen — ED-07, D-02
+- [x] `chore`: `scripts/gen_ts_types.py` (Pydantic → JSON Schema → TS) + staleness check in CI — PRD §8
+- [x] `docs`: `dev-setup.md`, `architecture.md` stub, `README.md` with the tagline and platform table
 
 **Exit:** `just dev` opens the window; the UI shows engine version and GPU list; a project can be created and reopened; CI is green on Windows and Linux.
 

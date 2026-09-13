@@ -62,7 +62,8 @@ just dev
 
 For full setup guides and architecture documentation, see:
 - [Development Setup](docs/dev-setup.md)
-- [Architecture & Design](docs/plan/PLAN.md)
+- [Architecture Overview](docs/architecture.md)
+- [Architecture & Design Plan](docs/plan/PLAN.md)
 - [Repository Layout](docs/plan/REPO_LAYOUT.md)
 - [Data Model](docs/plan/DATA_MODEL.md)
 

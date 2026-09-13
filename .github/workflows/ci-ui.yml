@@ -50,4 +50,4 @@ jobs:
         run: node scripts/i18n_check.mjs
 
       - name: Verify schemas are up to date
-        run: uv run python scripts/gen_ts_types.py && git diff --exit-code packages/schemas
+        run: uv run --project engine python scripts/gen_ts_types.py && git diff --exit-code packages/schemas

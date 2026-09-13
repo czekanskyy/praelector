@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
 import { apiFetch, setEngineEndpoint } from "./lib/api/client";
 import { NAV_ITEMS, NavTab } from "./routes";
+import { LibraryScreen } from "./features/library/LibraryScreen";
 import type { HealthResponse, VersionResponse } from "@praelector/schemas";
 import { AlertTriangle, Globe, RefreshCw } from "lucide-react";
 
@@ -150,17 +151,7 @@ export function App() {
             </p>
           </header>
 
-          {activeTab === "library" && (
-            <div className="rounded-lg border border-dashed border-border p-12 text-center">
-              <h3 className="text-lg font-medium">{t("library:title")}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {t("library:noProjects")}
-              </p>
-              <button className="mt-4 inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-                {t("library:newProject")}
-              </button>
-            </div>
-          )}
+          {activeTab === "library" && <LibraryScreen />}
 
           {activeTab === "settings" && (
             <div className="space-y-4 rounded-lg border border-border bg-card p-6">
