@@ -1,16 +1,37 @@
 // SPDX-License-Identifier: Apache-2.0
 import type {
   AppSettings,
+  BlockResponse,
   CapabilitiesResponse,
+  ChapterMergeRequest,
+  ChapterReorderRequest,
+  ChapterResponse,
+  ChapterSplitRequest,
+  ChapterTextResponse,
+  ChapterTextUpdate,
+  ChapterTextUpdateResponse,
+  ChapterUpdate,
   ErrorEnvelope,
   HealthResponse,
+  IngestProbeRequest,
+  IngestProbeResponse,
+  IngestRequest,
+  IngestResponse,
   ProjectCreate,
   ProjectOpenResponse,
   ProjectResponse,
+  ProjectSourceResponse,
   ProjectStats,
   ProjectSummary,
   ProjectUpdate,
+  ReplaceRequest,
+  ReplaceResponse,
+  SearchRequest,
+  SearchResponse,
   SettingsUpdate,
+  SpanCreate,
+  SpanResponse,
+  SpanUpdate,
   VersionResponse,
 } from "@praelector/schemas";
 
@@ -135,4 +156,83 @@ export const api = {
     }),
   getProjectStats: (pid: string) =>
     apiFetch<ProjectStats>(`/projects/${pid}/stats`),
+
+  // Ebook Ingest (IN-01..IN-07)
+  probeIngest: (pid: string, data: IngestProbeRequest) =>
+    apiFetch<IngestProbeResponse>(`/projects/${pid}/ingest/probe`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  importIngest: (pid: string, data: IngestRequest) =>
+    apiFetch<IngestResponse>(`/projects/${pid}/ingest`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  getProjectSource: (pid: string) =>
+    apiFetch<ProjectSourceResponse>(`/projects/${pid}/source`),
+
+  // Chapters & Tree (ED-01)
+  listChapters: (pid: string) =>
+    apiFetch<ChapterResponse[]>(`/projects/${pid}/chapters`),
+  updateChapter: (cid: string, data: ChapterUpdate) =>
+    apiFetch<ChapterResponse>(`/chapters/${cid}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
+  reorderChapters: (pid: string, data: ChapterReorderRequest) =>
+    apiFetch<ChapterResponse[]>(`/projects/${pid}/chapters/reorder`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  splitChapter: (cid: string, data: ChapterSplitRequest) =>
+    apiFetch<ChapterResponse[]>(`/chapters/${cid}/split`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  mergeChapters: (pid: string, data: ChapterMergeRequest) =>
+    apiFetch<ChapterResponse>(`/projects/${pid}/chapters/merge`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+
+  // Blocks & Editor Text (ED-02, ED-06, ED-07)
+  getChapterBlocks: (cid: string) =>
+    apiFetch<BlockResponse[]>(`/chapters/${cid}/blocks`),
+  getChapterText: (cid: string, view: "display" | "spoken" = "display") =>
+    apiFetch<ChapterTextResponse>(`/chapters/${cid}/text?view=${view}`),
+  updateChapterText: (cid: string, data: ChapterTextUpdate) =>
+    apiFetch<ChapterTextUpdateResponse>(`/chapters/${cid}/text`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+
+  // Spans (ED-03, ED-04, ED-09)
+  listChapterSpans: (cid: string) =>
+    apiFetch<SpanResponse[]>(`/chapters/${cid}/spans`),
+  createSpan: (cid: string, data: SpanCreate) =>
+    apiFetch<SpanResponse>(`/chapters/${cid}/spans`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  updateSpan: (sid: string, data: SpanUpdate) =>
+    apiFetch<SpanResponse>(`/spans/${sid}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
+  deleteSpan: (sid: string) =>
+    apiFetch<void>(`/spans/${sid}`, {
+      method: "DELETE",
+    }),
+
+  // Search & Replace (ED-05)
+  searchProject: (pid: string, data: SearchRequest) =>
+    apiFetch<SearchResponse>(`/projects/${pid}/search`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  replaceProject: (pid: string, data: ReplaceRequest) =>
+    apiFetch<ReplaceResponse>(`/projects/${pid}/replace`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
 };
