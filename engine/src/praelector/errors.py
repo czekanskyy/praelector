@@ -66,6 +66,35 @@ class AppError(Exception):
         )
 
 
+class PraelectorError(AppError):
+    """Domain-specific error with optional human message and auto-mapped status code."""
+
+    def __init__(
+        self,
+        code: str,
+        message: str | None = None,
+        detail: dict[str, Any] | None = None,
+        status_code: int | None = None,
+        retryable: bool = False,
+    ) -> None:
+        det = dict(detail or {})
+        if message:
+            det["message"] = message
+        if status_code is None:
+            if "not_found" in code:
+                status_code = status.HTTP_404_NOT_FOUND
+            elif "already_active" in code or "conflict" in code:
+                status_code = status.HTTP_409_CONFLICT
+            elif "unauthorized" in code:
+                status_code = status.HTTP_401_UNAUTHORIZED
+            elif "forbidden" in code:
+                status_code = status.HTTP_403_FORBIDDEN
+            else:
+                status_code = status.HTTP_400_BAD_REQUEST
+        super().__init__(code=code, status_code=status_code, detail=det, retryable=retryable)
+        self.message = message or code
+
+
 async def app_error_handler(_request: Request, exc: AppError) -> JSONResponse:
     """Handler for custom AppError."""
     return JSONResponse(

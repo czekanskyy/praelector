@@ -694,20 +694,20 @@ Each task lists the requirement IDs it satisfies. File paths are given where the
 
 ### M2 — Suggestions, dialogue, gender (do not skip)
 
-- [ ] `feat(engine)`: `text/normalize.py`, `text/artifacts.py` — whitespace, soft hyphens, hyphenation joins, dash canonicalisation — AI-02
-- [ ] `feat(engine)`: `text/segment.py` — `pysbd` PL + abbreviation guard behind `SentenceSegmenter` — D-18
-- [ ] `feat(engine)`: `text/numerals_pl.py` — cardinals, ordinals (m/f/n), years, decimals, times, Roman numerals — AI-02, D-11
-- [ ] `feat(engine)`: `text/acronyms.py`, English-token + toponym detection — AI-02, AI-08, D-12
-- [ ] `feat(engine)`: `text/dialogue.py` — the §5.2 state machine — **DG-01, DG-02**
-- [ ] `feat(engine)`: `text/gender.py` — the §5.3 signal ladder, name lexicon with `-a` male exceptions, chapter speaker map — **DG-03, DG-04, DG-05, DG-06**
-- [ ] `feat(engine)`: `text/lexicon.py` — global + project lexicon, applied before and after the LLM — AI-09
-- [ ] `feat(engine)`: `llm/` — `LlmClient` protocol; `openai_compat` (Ollama, LM Studio, OpenAI, Groq, OpenRouter, xAI, vLLM), `anthropic`, `gemini`; profile CRUD + connection test; keyring secrets + encrypted fallback; per-task routing; usage counters; failover offer — LM-01…LM-07, AI-10
-- [ ] `feat(engine)`: `jobs/prep_job.py` — heuristic pass then LLM pass with bounded context, schema validation, one retry, `failed` suggestions; cancel and partial results — AI-01, AI-03, D-15
+- [x] `feat(engine)`: `text/normalize.py`, `text/artifacts.py` — whitespace, soft hyphens, hyphenation joins, dash canonicalisation — AI-02
+- [x] `feat(engine)`: `text/segment.py` — `pysbd` PL + abbreviation guard behind `SentenceSegmenter` — D-18
+- [x] `feat(engine)`: `text/numerals_pl.py` — cardinals, ordinals (m/f/n), years, decimals, times, Roman numerals — AI-02, D-11
+- [x] `feat(engine)`: `text/acronyms.py`, English-token + toponym detection — AI-02, AI-08, D-12
+- [x] `feat(engine)`: `text/dialogue.py` — the §5.2 state machine — **DG-01, DG-02**
+- [x] `feat(engine)`: `text/gender.py` — the §5.3 signal ladder, name lexicon with `-a` male exceptions, chapter speaker map — **DG-03, DG-04, DG-05, DG-06**
+- [x] `feat(engine)`: `text/lexicon.py` — global + project lexicon, applied before and after the LLM — AI-09
+- [x] `feat(engine)`: `llm/` — `LlmClient` protocol; `openai_compat` (Ollama, LM Studio, OpenAI, Groq, OpenRouter, xAI, vLLM), `anthropic`, `gemini`; profile CRUD + connection test; keyring secrets + encrypted fallback; per-task routing; usage counters; failover offer — LM-01…LM-07, AI-10
+- [x] `feat(engine)`: `jobs/prep_job.py` — heuristic pass then LLM pass with bounded context, schema validation, one retry, `failed` suggestions; cancel and partial results — AI-01, AI-03, D-15
 - [ ] `feat(engine)`: revisions and apply — SCD-2 block/span versioning, batch apply in reverse offset order, undo of a batch — AI-07
 - [ ] `feat(engine)`: reader EPUB export with `data-prl-*` attributes + `prl-spans.json` companion, and a "clean reader" variant — EX-01, EX-02, EX-03
 - [ ] `feat(ui)`: review queue with category/status/chapter filters, accept/reject/edit, accept-all-in-filter with undo, jump-to-span, per-category counts, keyboard shortcuts — AI-06, AI-11, ED-08, IX-03
-- [ ] `feat(ui)`: Settings → LLM providers, including the cheap/free on-ramp copy (Groq, Google AI Studio, OpenRouter `:free`) and the explicit statement that ChatGPT Plus / Claude Pro / Grok / Gemini / Cursor **subscriptions are not API access** — LM-05, LM-06
-- [ ] `test`: the Polish golden chapter (§10.1) and the dialogue case table (§10.2)
+- [x] `feat(ui)`: Settings → LLM providers, including the cheap/free on-ramp copy (Groq, Google AI Studio, OpenRouter `:free`) and the explicit statement that ChatGPT Plus / Claude Pro / Grok / Gemini / Cursor **subscriptions are not API access** — LM-05, LM-06
+- [x] `test`: the Polish golden chapter (§10.1) and the dialogue case table (§10.2)
 
 **Exit criterion (PRD):** a Polish novel chapter yields reviewable dialogue splits and gender tags.
 

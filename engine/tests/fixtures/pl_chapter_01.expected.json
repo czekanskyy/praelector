@@ -1,0 +1,178 @@
+{
+  "description": "Golden chapter assertions for pl_chapter_01.txt per PLAN.md section 10.1",
+  "cases": [
+    {
+      "id": 1,
+      "feature": "Heading ordinal",
+      "req": "AI-02",
+      "category": "ordinal_heading",
+      "original": "Rozdział 8",
+      "proposed": "Rozdział ósmy"
+    },
+    {
+      "id": 2,
+      "feature": "Double space",
+      "req": "AI-02",
+      "category": "conversion_artifact",
+      "original": "  ",
+      "proposed": " "
+    },
+    {
+      "id": 3,
+      "feature": "Paragraph-initial em dash",
+      "req": "DG-01",
+      "category": "dialogue_split",
+      "segments": [
+        {"kind": "dialogue", "text": "Nie zdążymy"},
+        {"kind": "narration", "text": "powiedziała cicho."},
+        {"kind": "dialogue", "text": "Deadline mamy o 18:00."}
+      ]
+    },
+    {
+      "id": 4,
+      "feature": "Gender from verb suffix",
+      "req": "DG-03, DG-04",
+      "category": "speaker_gender",
+      "target_dialogue": "Nie zdążymy",
+      "gender": "female",
+      "min_confidence": 0.95
+    },
+    {
+      "id": 5,
+      "feature": "English token",
+      "req": "AI-08, D-12",
+      "category": "foreign_word",
+      "original": "Deadline",
+      "proposed": "Dedlajn"
+    },
+    {
+      "id": 6,
+      "feature": "Time numeral",
+      "req": "AI-02, D-11",
+      "category": "numeral",
+      "original": "18:00",
+      "proposed": "osiemnastej"
+    },
+    {
+      "id": 7,
+      "feature": "Mid-paragraph dash after narration",
+      "req": "DG-02",
+      "category": "dialogue_split",
+      "segments": [
+        {"kind": "narration", "text": "Walker wzruszył ramionami."},
+        {"kind": "dialogue", "text": "A jednak spróbujemy"},
+        {"kind": "narration", "text": "mruknął i wyszedł na korytarz."}
+      ]
+    },
+    {
+      "id": 8,
+      "feature": "Gender male + speaker label",
+      "req": "DG-03, DG-06",
+      "category": "speaker_gender",
+      "target_dialogue": "A jednak spróbujemy",
+      "gender": "male",
+      "speaker_id": "Walker",
+      "min_confidence": 0.95
+    },
+    {
+      "id": 9,
+      "feature": "Foreign surname",
+      "req": "AI-02",
+      "category": "foreign_word",
+      "original": "Walker",
+      "proposed": "Łoker"
+    },
+    {
+      "id": 10,
+      "feature": "Colon + dash mid-paragraph",
+      "req": "DG-02",
+      "category": "dialogue_split",
+      "segments": [
+        {"kind": "narration", "text": "Barnaba zapytał:"},
+        {"kind": "dialogue", "text": "Ile mamy egzemplarzy?"}
+      ]
+    },
+    {
+      "id": 11,
+      "feature": "-a male name exception",
+      "req": "DG-04",
+      "category": "speaker_gender",
+      "target_dialogue": "Ile mamy egzemplarzy?",
+      "gender": "male",
+      "speaker_id": "Barnaba",
+      "min_confidence": 0.85
+    },
+    {
+      "id": 12,
+      "feature": "Digits inside dialogue",
+      "req": "AI-02",
+      "category": "numeral",
+      "original": "238",
+      "proposed": "dwieście trzydzieści osiem"
+    },
+    {
+      "id": 13,
+      "feature": "Toponym",
+      "req": "AI-02",
+      "category": "toponym",
+      "original": "Washington DC",
+      "proposed": "Łoszynkton di si"
+    },
+    {
+      "id": 14,
+      "feature": "Acronym",
+      "req": "AI-02",
+      "category": "acronym",
+      "original": "IT",
+      "proposed": "aj ti"
+    },
+    {
+      "id": 15,
+      "feature": "Hyphenation across a line break",
+      "req": "AI-02",
+      "category": "conversion_artifact",
+      "original": "prze-\nsunięty",
+      "proposed": "przesunięty"
+    },
+    {
+      "id": 16,
+      "feature": "Soft hyphen",
+      "req": "AI-02",
+      "category": "conversion_artifact",
+      "original": "egzem\u00adplarzy",
+      "proposed": "egzemplarzy"
+    },
+    {
+      "id": 17,
+      "feature": "Roman numeral",
+      "req": "AI-02",
+      "category": "numeral",
+      "original": "XIV",
+      "proposed": "czternaste"
+    },
+    {
+      "id": 18,
+      "feature": "Quote without a speech verb",
+      "req": "DG-02",
+      "category": "dialogue_split",
+      "original": "„Briefing prze-\nsunięty na XIV piętro”.",
+      "max_confidence": 0.40,
+      "auto_apply": false,
+      "stays_narration": true
+    },
+    {
+      "id": 19,
+      "feature": "ISBN line",
+      "req": "EB-08",
+      "category": "conversion_artifact",
+      "original": "ISBN 978-83-000000-0-0"
+    },
+    {
+      "id": 20,
+      "feature": "Bare page number",
+      "req": "EB-08",
+      "category": "conversion_artifact",
+      "original": "12"
+    }
+  ]
+}

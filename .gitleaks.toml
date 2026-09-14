@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: Apache-2.0
+# Gitleaks configuration for Praelector repository
+
+[allowlist]
+description = "Allow mock API keys and test tokens in test suites and fixtures"
+paths = [
+  '''engine/tests/.*''',
+  '''apps/ui/tests/.*''',
+  '''apps/desktop/tests/.*''',
+]

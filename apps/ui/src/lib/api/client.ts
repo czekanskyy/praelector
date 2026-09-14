@@ -17,6 +17,12 @@ import type {
   IngestProbeResponse,
   IngestRequest,
   IngestResponse,
+  JobCreateRequest,
+  JobResponse,
+  LlmProfile,
+  LlmProfileCreate,
+  LlmProfilePatch,
+  LlmTestResponse,
   ProjectCreate,
   ProjectOpenResponse,
   ProjectResponse,
@@ -32,6 +38,7 @@ import type {
   SpanCreate,
   SpanResponse,
   SpanUpdate,
+  TaskRouting,
   VersionResponse,
 } from "@praelector/schemas";
 
@@ -234,5 +241,49 @@ export const api = {
     apiFetch<ReplaceResponse>(`/projects/${pid}/replace`, {
       method: "POST",
       body: JSON.stringify(data),
+    }),
+
+  // LLM Profiles & Routing (LM-01..LM-04)
+  listLlmProfiles: () =>
+    apiFetch<LlmProfile[]>("/settings/llm-profiles"),
+  createLlmProfile: (data: LlmProfileCreate) =>
+    apiFetch<LlmProfile>("/settings/llm-profiles", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  updateLlmProfile: (id: string, data: LlmProfilePatch) =>
+    apiFetch<LlmProfile>(`/settings/llm-profiles/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
+  deleteLlmProfile: (id: string) =>
+    apiFetch<void>(`/settings/llm-profiles/${id}`, {
+      method: "DELETE",
+    }),
+  testLlmProfile: (id: string) =>
+    apiFetch<LlmTestResponse>(`/settings/llm-profiles/${id}/test`, {
+      method: "POST",
+    }),
+  getTaskRouting: () =>
+    apiFetch<TaskRouting>("/settings/task-routing"),
+  updateTaskRouting: (data: TaskRouting) =>
+    apiFetch<TaskRouting>("/settings/task-routing", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
+
+  // Jobs (AI-01, JB-01..JB-06)
+  createJob: (pid: string, data: JobCreateRequest) =>
+    apiFetch<JobResponse>(`/projects/${pid}/jobs`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
+  listJobs: (pid: string) =>
+    apiFetch<JobResponse[]>(`/projects/${pid}/jobs`),
+  getJob: (jid: string) =>
+    apiFetch<JobResponse>(`/jobs/${jid}`),
+  cancelJob: (jid: string) =>
+    apiFetch<JobResponse>(`/jobs/${jid}/cancel`, {
+      method: "POST",
     }),
 };
