@@ -1,7 +1,7 @@
 {
-  ".": "0.2.0",
-  "apps/ui": "0.2.0",
-  "apps/desktop": "0.2.0",
-  "engine": "0.2.0",
+  ".": "0.3.0",
+  "apps/ui": "0.3.0",
+  "apps/desktop": "0.3.0",
+  "engine": "0.3.0",
   "engine-tts": "0.2.0"
 }
