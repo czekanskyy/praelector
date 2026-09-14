@@ -72,7 +72,9 @@ def test_llm_profiles_api_lifecycle(tmp_path: Path) -> None:
         "praelector.llm.providers.openai_compat.OpenAiCompatibleClient.test_connection",
         new_callable=AsyncMock,
     ) as mock_test:
-        mock_test.return_value = LlmTestResult(ok=True, latency_ms=123.4, models=["llama-3.3-70b-versatile"])
+        mock_test.return_value = LlmTestResult(
+            ok=True, latency_ms=123.4, models=["llama-3.3-70b-versatile"]
+        )
         test_res = client.post(f"/v1/settings/llm-profiles/{prof_id}/test", headers=headers)
         assert test_res.status_code == 200
         test_data = test_res.json()

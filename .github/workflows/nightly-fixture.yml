@@ -28,11 +28,11 @@ jobs:
           uv sync --project engine-tts --extra cpu --group dev --frozen
 
       - name: Setup ffmpeg
-        uses: FedericoCarboni/setup-ffmpeg@v3
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
       - name: Run pipeline integration test with fake backend
         id: pipeline
-        run: uv run --project engine pytest tests/integration/test_full_pipeline_fake.py -v
+        run: uv run --project engine pytest engine/tests/integration/test_full_pipeline_fake.py -v
 
       - name: Open issue on failure
         if: failure() && github.event_name == 'schedule'

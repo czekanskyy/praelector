@@ -3,31 +3,36 @@
 
 from __future__ import annotations
 
-import asyncio
 from pathlib import Path
 from typing import Any
 from unittest.mock import AsyncMock
 
-from fastapi.testclient import TestClient
 import pytest
+from fastapi.testclient import TestClient
 from sqlalchemy import insert
 
 from praelector.app import create_app
 from praelector.config import Settings
-from praelector.domain.enums import DetectorKind, JobState, SuggestionCategory, SuggestionStatus
-from praelector.domain.models import JobCreateRequest, LlmProfileCreate, TaskRouting
+from praelector.domain.enums import DetectorKind, JobState, SuggestionStatus
+from praelector.domain.models import LlmProfileCreate, TaskRouting
 from praelector.jobs.manager import JobManager
 from praelector.jobs.prep_job import PrepJob
 from praelector.llm.protocol import LlmClient, LlmCompletionResponse
 from praelector.store.schema import block_table, chapter_table
 
 
-def _setup_test_project_with_chapter(app: Any, client: TestClient, headers: dict[str, str]) -> tuple[str, str]:
+def _setup_test_project_with_chapter(
+    app: Any, client: TestClient, headers: dict[str, str]
+) -> tuple[str, str]:
     """Helper to create a project with 1 chapter and 3 blocks for prep job testing."""
     # Create project
     create_res = client.post(
         "/v1/projects",
-        json={"name": "Test Polish Book", "voice_mode": "narrator_male_female", "spoken_language": "pl"},
+        json={
+            "name": "Test Polish Book",
+            "voice_mode": "narrator_male_female",
+            "spoken_language": "pl",
+        },
         headers=headers,
     )
     pid = create_res.json()["id"]
@@ -155,7 +160,7 @@ async def test_prep_job_execution_two_phases_and_failed_suggestion(tmp_path: Pat
         # Call 2: pronounce attempt 2 retry (still invalid json)
         LlmCompletionResponse(content="Still no json"),
     ]
-    app.state.llm_router.get_client_for_profile = lambda p: mock_client
+    app.state.llm_router.get_client_for_profile = lambda _p: mock_client
 
     job_mgr: JobManager = app.state.job_manager
     job = job_mgr.create_job(project_id=pid, kind="prep", options={})
@@ -181,6 +186,7 @@ async def test_prep_job_execution_two_phases_and_failed_suggestion(tmp_path: Pat
     # Query suggestions from DB
     engine = app.state.project_manager.get_project_engine(pid)
     from praelector.store.repositories.suggestions import SuggestionRepository
+
     sug_repo = SuggestionRepository(engine)
     sugs = sug_repo.list(pid)
 

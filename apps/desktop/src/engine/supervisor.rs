@@ -6,7 +6,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
-use rand::RngCore;
+use rand::RngExt;
 
 use crate::engine::logbuf::RollingLogBuffer;
 use crate::engine::ready::{parse_ready_line, ReadyPayload};
@@ -68,7 +68,7 @@ impl EngineSupervisor {
     pub fn spawn() -> Result<Self, String> {
         // 1. Generate 32-byte random authentication token
         let mut token_bytes = [0u8; 32];
-        rand::thread_rng().fill_bytes(&mut token_bytes);
+        rand::rng().fill(&mut token_bytes);
         let token: String = token_bytes.iter().map(|b| format!("{:02x}", b)).collect();
 
         // 2. Resolve engine command

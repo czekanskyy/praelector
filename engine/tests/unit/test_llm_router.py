@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
 from unittest.mock import AsyncMock
 
 import httpx
@@ -28,7 +27,9 @@ def test_build_bounded_context() -> None:
     prev_txt = "A" * 1500
     next_txt = "B" * 1500
 
-    ctx = build_bounded_context(target, prev_block=prev_txt, next_block=next_txt, max_chars_per_side=1200)
+    ctx = build_bounded_context(
+        target, prev_block=prev_txt, next_block=next_txt, max_chars_per_side=1200
+    )
     assert "[TARGET BLOCK]\nTo be or not to be." in ctx
     assert "[PREVIOUS CONTEXT]" in ctx
     assert "[NEXT CONTEXT]" in ctx
@@ -95,7 +96,11 @@ async def test_router_schema_validation_success_first_attempt(tmp_path: Path) ->
     """Task succeeds on first valid attempt and records token usage (LM-07, AI-03)."""
     settings_store = SettingsStore(config_dir=tmp_path / "config", data_dir=tmp_path / "data")
     usage_tracker = LlmUsageTracker(tmp_path / "usage.json")
-    router = LlmRouter(settings_store=settings_store, secret_store=settings_store.secrets, usage_tracker=usage_tracker)
+    router = LlmRouter(
+        settings_store=settings_store,
+        secret_store=settings_store.secrets,
+        usage_tracker=usage_tracker,
+    )
 
     local_prof = settings_store.create_profile(
         LlmProfileCreate(
@@ -113,10 +118,12 @@ async def test_router_schema_validation_success_first_attempt(tmp_path: Path) ->
         raw_json={"items": [{"id": "item1", "original": "Walker", "spoken": "Łoker"}]},
         usage=LlmUsage(prompt_tokens=40, completion_tokens=15, total_tokens=55),
     )
-    router.get_client_for_profile = lambda p: mock_client  # type: ignore[method-assign]
+    router.get_client_for_profile = lambda _p: mock_client  # type: ignore[method-assign]
 
     messages = [LlmMessage(role=LlmRole.USER, content="Pronounce Walker")]
-    result, error_code = await router.execute_task("pronounce", messages, project_id="prj_1", cloud_llm_enabled=False)
+    result, error_code = await router.execute_task(
+        "pronounce", messages, project_id="prj_1", cloud_llm_enabled=False
+    )
 
     assert error_code is None
     assert result is not None
@@ -152,7 +159,7 @@ async def test_router_schema_validation_retry_and_failure(tmp_path: Path) -> Non
             raw_json={"items": [{"id": "item1", "original": "test", "spoken": "test"}]},
         ),
     ]
-    router.get_client_for_profile = lambda p: mock_client_recover  # type: ignore[method-assign]
+    router.get_client_for_profile = lambda _p: mock_client_recover  # type: ignore[method-assign]
 
     messages = [LlmMessage(role=LlmRole.USER, content="Pronounce test")]
     res_rec, err_rec = await router.execute_task("pronounce", messages, project_id="prj_1")
@@ -166,7 +173,7 @@ async def test_router_schema_validation_retry_and_failure(tmp_path: Path) -> Non
         LlmCompletionResponse(content="Still plain text"),
         LlmCompletionResponse(content="Another non-json output"),
     ]
-    router.get_client_for_profile = lambda p: mock_client_fail  # type: ignore[method-assign]
+    router.get_client_for_profile = lambda _p: mock_client_fail  # type: ignore[method-assign]
 
     res_fail, err_fail = await router.execute_task("pronounce", messages, project_id="prj_1")
     assert res_fail is None
@@ -189,7 +196,7 @@ async def test_router_failover_on_http_error(tmp_path: Path) -> None:
             api_key="sk-cloud",
         )
     )
-    local_prof = settings_store.create_profile(
+    _local_prof = settings_store.create_profile(
         LlmProfileCreate(
             name="Local Fallback",
             kind="ollama",
@@ -203,7 +210,9 @@ async def test_router_failover_on_http_error(tmp_path: Path) -> None:
     # Simulate HTTP 429 Rate Limit from cloud provider
     req = httpx.Request("POST", "https://api.openai.com/v1/chat/completions")
     resp = httpx.Response(429, request=req)
-    cloud_client.chat_completion.side_effect = httpx.HTTPStatusError("Rate limited", request=req, response=resp)
+    cloud_client.chat_completion.side_effect = httpx.HTTPStatusError(
+        "Rate limited", request=req, response=resp
+    )
 
     local_client = AsyncMock(spec=LlmClient)
     local_client.chat_completion.return_value = LlmCompletionResponse(
@@ -212,12 +221,14 @@ async def test_router_failover_on_http_error(tmp_path: Path) -> None:
     )
 
     def _client_factory(p: LlmProfile) -> LlmClient:
-        return cloud_client if p.id == cloud_prof.id else local_client
+        return cloud_client if p.is_cloud else local_client
 
     router.get_client_for_profile = _client_factory  # type: ignore[method-assign]
 
     messages = [LlmMessage(role=LlmRole.USER, content="Pronounce city")]
-    result, error_code = await router.execute_task("pronounce", messages, project_id="prj_1", cloud_llm_enabled=True)
+    result, error_code = await router.execute_task(
+        "pronounce", messages, project_id="prj_1", cloud_llm_enabled=True
+    )
 
     assert error_code is None
     assert result is not None
