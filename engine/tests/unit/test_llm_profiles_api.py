@@ -46,7 +46,7 @@ def test_llm_profiles_api_lifecycle(tmp_path: Path) -> None:
         "model": "llama-3.3-70b-versatile",
         "base_url": "https://api.groq.com/openai/v1",
         "is_cloud": True,
-        "api_key": "gsk_secret12345",
+        "api_key": "mock-secret-key-123",
         "supports_json_schema": True,
     }
     create_res = client.post("/v1/settings/llm-profiles", json=create_payload, headers=headers)
@@ -56,7 +56,7 @@ def test_llm_profiles_api_lifecycle(tmp_path: Path) -> None:
     assert created["name"] == "Groq Llama"
     assert created["api_key"]["set"] is True
     # Verify raw secret was NOT returned
-    assert "gsk_secret12345" not in str(created)
+    assert "mock-secret-key-123" not in str(created)
 
     # 3. Patch profile
     patch_res = client.patch(
