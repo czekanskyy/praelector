@@ -282,6 +282,13 @@ class ProjectManager:
             return LexiconRepository(config_dir, project_engine=engine)
         return LexiconRepository(config_dir)
 
+    def get_project_engine(self, project_id: str) -> Engine:
+        """Return the active SQLAlchemy engine if open, or create a connection to project.db."""
+        if self.active_project_id == project_id and self.active_engine is not None:
+            return self.active_engine
+        paths = self.find_project_dir(project_id)
+        return create_project_engine(paths.db)
+
     def get_project(self, project_id: str) -> ProjectResponse:
         """Retrieve project status, manifest, and counts."""
         paths = self.find_project_dir(project_id)

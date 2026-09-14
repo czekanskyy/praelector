@@ -137,6 +137,7 @@ export interface SecretField {
 
 export interface LlmProfile {
   id: string;
+  name?: string | null;
   kind?: string;
   preset?: string;
   base_url?: string;
@@ -150,6 +151,7 @@ export interface LlmProfile {
 
 export interface LlmProfileWrite {
   id: string;
+  name?: string | null;
   kind?: string;
   preset?: string;
   base_url?: string;
@@ -161,10 +163,86 @@ export interface LlmProfileWrite {
   api_key?: string | null;
 }
 
+export interface LlmProfileCreate {
+  id?: string | null;
+  name?: string | null;
+  kind?: string;
+  preset?: string;
+  base_url?: string;
+  model?: string;
+  is_cloud?: boolean;
+  supports_json_schema?: boolean;
+  timeout_s?: number;
+  max_tokens?: number;
+  api_key?: string | null;
+}
+
+export interface LlmProfilePatch {
+  name?: string | null;
+  kind?: string | null;
+  preset?: string | null;
+  base_url?: string | null;
+  model?: string | null;
+  is_cloud?: boolean | null;
+  supports_json_schema?: boolean | null;
+  timeout_s?: number | null;
+  max_tokens?: number | null;
+  api_key?: string | null;
+}
+
+export interface LlmTestResponse {
+  ok: boolean;
+  latency_ms?: number;
+  models?: string[];
+  error?: string | null;
+}
+
 export interface TaskRouting {
   classify_cheap?: string;
   dialogue_hard?: string;
   pronounce?: string;
+}
+
+export interface JobCounts {
+  chapters_total?: number;
+  chapters_done?: number;
+  blocks_total?: number;
+  blocks_done?: number;
+  chunks_total?: number;
+  chunks_done?: number;
+  chunks_reused?: number;
+  chunks_failed?: number;
+  suggestions_emitted?: number;
+}
+
+export interface JobMetrics {
+  elapsed_s?: number;
+  eta_s?: number | null;
+  chars_per_audio_s?: number | null;
+  rtf_smoothed?: number | null;
+}
+
+export interface JobCreateRequest {
+  kind?: string;
+  options?: Record<string, unknown>;
+}
+
+export interface JobResponse {
+  id: string;
+  project_id: string;
+  kind: string;
+  state: string;
+  stage?: string | null;
+  paused_reason?: string | null;
+  revision?: number;
+  options?: Record<string, unknown>;
+  counts?: JobCounts;
+  metrics?: JobMetrics;
+  warnings?: Record<string, unknown>[];
+  error?: string | null;
+  created_at: string;
+  started_at?: string | null;
+  finished_at?: string | null;
 }
 
 export interface GpuPolicy {

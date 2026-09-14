@@ -14,7 +14,9 @@ from praelector.api.v1.capabilities import router as capabilities_router
 from praelector.api.v1.chapters import router as chapters_router
 from praelector.api.v1.health import router as health_router
 from praelector.api.v1.ingest import router as ingest_router
+from praelector.api.v1.jobs import router as jobs_router
 from praelector.api.v1.lexicon import router as lexicon_router
+from praelector.api.v1.llm_profiles import router as llm_profiles_router
 from praelector.api.v1.projects import router as projects_router
 from praelector.api.v1.settings import router as settings_router
 from praelector.api.v1.suggestions import router as suggestions_router
@@ -27,6 +29,8 @@ from praelector.errors import (
     unhandled_exception_handler,
     validation_exception_handler,
 )
+from praelector.jobs.manager import JobManager
+from praelector.llm.router import LlmRouter
 from praelector.logging import configure_logging
 from praelector.security import SecurityMiddleware
 from praelector.store.project_manager import ProjectManager
@@ -67,9 +71,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         data_dir=app_settings.data_dir,
     )
     project_manager = ProjectManager(settings_store)
+    job_manager = JobManager(project_manager)
+    llm_router = LlmRouter(
+        settings_store=settings_store,
+        secret_store=settings_store.secrets,
+    )
 
     app.state.settings_store = settings_store
     app.state.project_manager = project_manager
+    app.state.job_manager = job_manager
+    app.state.llm_router = llm_router
 
     # Middleware: Security & Authentication
     app.add_middleware(SecurityMiddleware, settings=app_settings)
@@ -86,7 +97,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     v1_router.include_router(version_router)
     v1_router.include_router(capabilities_router)
     v1_router.include_router(settings_router)
+    v1_router.include_router(llm_profiles_router)
     v1_router.include_router(projects_router)
+    v1_router.include_router(jobs_router)
     v1_router.include_router(ingest_router)
     v1_router.include_router(chapters_router)
     v1_router.include_router(lexicon_router)

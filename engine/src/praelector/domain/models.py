@@ -140,6 +140,7 @@ class LlmProfile(BaseModel):
     """Configured LLM provider profile for text assistance."""
 
     id: str
+    name: str | None = None
     kind: str = "openai_compatible"
     preset: str = "ollama"
     base_url: str = "http://127.0.0.1:11434/v1"
@@ -155,6 +156,7 @@ class LlmProfileWrite(BaseModel):
     """Payload for creating or updating an LLM profile with optional secret value."""
 
     id: str
+    name: str | None = None
     kind: str = "openai_compatible"
     preset: str = "ollama"
     base_url: str = "http://127.0.0.1:11434/v1"
@@ -636,3 +638,103 @@ class LexiconEntryUpdate(BaseModel):
     auto_apply: bool | None = None
     case_sensitive: bool | None = None
     priority: int | None = None
+
+
+# ---------------------------------------------------------------------------
+# LLM Profile Management Models (LM-01, LM-02)
+# ---------------------------------------------------------------------------
+
+
+class LlmTestResponse(BaseModel):
+    """Result of testing an LLM provider connection."""
+
+    ok: bool
+    latency_ms: float = 0.0
+    models: list[str] = Field(default_factory=list)
+    error: str | None = None
+
+
+class LlmProfileCreate(BaseModel):
+    """Payload to create an LLM profile."""
+
+    id: str | None = None
+    name: str | None = None
+    kind: str = "openai_compatible"
+    preset: str = "ollama"
+    base_url: str = "http://127.0.0.1:11434/v1"
+    model: str = "qwen2.5:14b-instruct"
+    is_cloud: bool = False
+    supports_json_schema: bool = True
+    timeout_s: int = 120
+    max_tokens: int = 1024
+    api_key: str | None = None
+
+
+class LlmProfilePatch(BaseModel):
+    """Payload to partially update an LLM profile."""
+
+    name: str | None = None
+    kind: str | None = None
+    preset: str | None = None
+    base_url: str | None = None
+    model: str | None = None
+    is_cloud: bool | None = None
+    supports_json_schema: bool | None = None
+    timeout_s: int | None = None
+    max_tokens: int | None = None
+    api_key: str | None = None
+
+
+# ---------------------------------------------------------------------------
+# Job Models (JB-01..JB-07, AI-01)
+# ---------------------------------------------------------------------------
+
+
+class JobCounts(BaseModel):
+    """Progress counters for background jobs."""
+
+    chapters_total: int = 0
+    chapters_done: int = 0
+    blocks_total: int = 0
+    blocks_done: int = 0
+    chunks_total: int = 0
+    chunks_done: int = 0
+    chunks_reused: int = 0
+    chunks_failed: int = 0
+    suggestions_emitted: int = 0
+
+
+class JobMetrics(BaseModel):
+    """Performance and timing metrics for background jobs."""
+
+    elapsed_s: float = 0.0
+    eta_s: float | None = None
+    chars_per_audio_s: float | None = None
+    rtf_smoothed: float | None = None
+
+
+class JobCreateRequest(BaseModel):
+    """Payload to launch a background job."""
+
+    kind: str = "prep"
+    options: dict[str, Any] = Field(default_factory=dict)
+
+
+class JobResponse(BaseModel):
+    """Detailed job representation returned by API."""
+
+    id: str
+    project_id: str
+    kind: str
+    state: str
+    stage: str | None = None
+    paused_reason: str | None = None
+    revision: int = 0
+    options: dict[str, Any] = Field(default_factory=dict)
+    counts: JobCounts = Field(default_factory=JobCounts)
+    metrics: JobMetrics = Field(default_factory=JobMetrics)
+    warnings: list[dict[str, Any]] = Field(default_factory=list)
+    error: str | None = None
+    created_at: str
+    started_at: str | None = None
+    finished_at: str | None = None

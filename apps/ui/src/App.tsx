@@ -7,6 +7,7 @@ import { apiFetch, setEngineEndpoint } from "./lib/api/client";
 import { NAV_ITEMS, NavTab } from "./routes";
 import { LibraryScreen } from "./features/library/LibraryScreen";
 import { EditorScreen } from "./features/editor/EditorScreen";
+import { SettingsScreen } from "./features/settings/SettingsScreen";
 import type { HealthResponse, VersionResponse } from "@praelector/schemas";
 import { AlertTriangle, Globe, RefreshCw } from "lucide-react";
 
@@ -158,17 +159,7 @@ export function App() {
 
           {activeTab === "editor" && <EditorScreen />}
 
-          {activeTab === "settings" && (
-            <div className="space-y-4 rounded-lg border border-border bg-card p-6">
-              <h3 className="text-lg font-semibold">{t("settings:title")}</h3>
-              <div className="rounded-md bg-muted p-4 text-sm text-muted-foreground">
-                {t("settings:llmSubscriptionNotice")}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                {t("settings:freeTierOnRamps")}
-              </div>
-            </div>
-          )}
+          {activeTab === "settings" && <SettingsScreen />}
 
           {activeTab !== "library" && activeTab !== "editor" && activeTab !== "settings" && (
             <div className="rounded-lg border border-border bg-card p-8 text-center text-muted-foreground">
