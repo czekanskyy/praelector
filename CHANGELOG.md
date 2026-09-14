@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.0](https://github.com/czekanskyy/praelector/compare/v0.2.0...v0.3.0) (2026-09-14)
+
+
+### Features
+
+* **engine,ui:** text pre-pass, dialogue segmentation, LLM router, and prep job pipeline ([#17](https://github.com/czekanskyy/praelector/issues/17)) ([ff9c3d1](https://github.com/czekanskyy/praelector/commit/ff9c3d17d32e68f64d3decde70b2f166d54dc1b2))
+
 ## [0.2.0](https://github.com/czekanskyy/praelector/compare/v0.1.0...v0.2.0) (2026-09-13)
 
 
