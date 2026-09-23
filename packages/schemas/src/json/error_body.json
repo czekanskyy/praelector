@@ -1,0 +1,111 @@
+{
+  "$defs": {
+    "ErrorCode": {
+      "enum": [
+        "auth.missing_token",
+        "auth.invalid_token",
+        "auth.origin_rejected",
+        "internal.error",
+        "internal.not_found",
+        "internal.method_not_allowed",
+        "internal.validation_failed",
+        "project.not_found",
+        "project.already_open",
+        "project.locked",
+        "project.schema_too_new",
+        "project.not_open",
+        "ebook.unsupported_format",
+        "ebook.drm_detected",
+        "ebook.empty_text",
+        "ebook.no_text_layer",
+        "ebook.calibre_missing",
+        "ebook.conversion_failed",
+        "ebook.parse_failed",
+        "text.chapter_not_found",
+        "text.block_not_found",
+        "text.span_out_of_range",
+        "text.span_overlap",
+        "text.revision_conflict",
+        "text.suggestion_not_found",
+        "llm.no_profile",
+        "llm.profile_not_found",
+        "llm.cloud_disabled",
+        "llm.unreachable",
+        "llm.auth_failed",
+        "llm.rate_limited",
+        "llm.invalid_json",
+        "llm.timeout",
+        "voice.not_found",
+        "voice.sample_unreadable",
+        "voice.sample_too_short",
+        "voice.sample_too_long",
+        "voice.ref_text_required",
+        "voice.slot_conflict",
+        "tts.backend_not_found",
+        "tts.language_unsupported",
+        "tts.license_not_acknowledged",
+        "tts.voice_slot_missing",
+        "tts.model_missing",
+        "tts.load_failed",
+        "tts.input_too_long",
+        "tts.oom",
+        "tts.worker_crashed",
+        "tts.internal",
+        "runtime.not_provisioned",
+        "runtime.provision_failed",
+        "runtime.mismatch",
+        "runtime.busy",
+        "gpu.unavailable",
+        "gpu.device_not_found",
+        "gpu.insufficient_vram",
+        "job.not_found",
+        "job.already_active",
+        "job.invalid_transition",
+        "job.no_plan",
+        "job.not_resumable",
+        "audio.ffmpeg_missing",
+        "audio.ffmpeg_too_old",
+        "audio.probe_failed",
+        "audio.encode_failed",
+        "export.incomplete",
+        "export.failed",
+        "export.nothing_to_export"
+      ],
+      "title": "ErrorCode",
+      "type": "string"
+    }
+  },
+  "description": "The single error shape the UI is allowed to see.",
+  "properties": {
+    "code": {
+      "$ref": "#/$defs/ErrorCode"
+    },
+    "detail": {
+      "additionalProperties": true,
+      "title": "Detail",
+      "type": "object"
+    },
+    "retryable": {
+      "default": false,
+      "title": "Retryable",
+      "type": "boolean"
+    },
+    "trace_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Trace Id"
+    }
+  },
+  "required": [
+    "code"
+  ],
+  "title": "ErrorBody",
+  "type": "object"
+}

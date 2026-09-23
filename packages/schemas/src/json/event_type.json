@@ -1,0 +1,19 @@
+{
+  "description": "WebSocket event types (OPENAPI_SKETCH.md §11).",
+  "enum": [
+    "job.state",
+    "job.progress",
+    "job.chunk",
+    "job.warning",
+    "job.log",
+    "gpu.sample",
+    "suggestion.created",
+    "prep.progress",
+    "download.progress",
+    "runtime.progress",
+    "project.revision",
+    "error"
+  ],
+  "title": "EventType",
+  "type": "string"
+}

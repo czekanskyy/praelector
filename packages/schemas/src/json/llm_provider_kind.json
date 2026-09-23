@@ -1,0 +1,10 @@
+{
+  "enum": [
+    "openai_compatible",
+    "openai",
+    "anthropic",
+    "gemini"
+  ],
+  "title": "LlmProviderKind",
+  "type": "string"
+}

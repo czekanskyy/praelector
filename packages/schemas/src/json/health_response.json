@@ -1,0 +1,41 @@
+{
+  "properties": {
+    "active_job_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Active Job Id"
+    },
+    "project_open": {
+      "title": "Project Open",
+      "type": "boolean"
+    },
+    "status": {
+      "enum": [
+        "ok",
+        "degraded",
+        "shutting_down"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "uptime_s": {
+      "minimum": 0,
+      "title": "Uptime S",
+      "type": "number"
+    }
+  },
+  "required": [
+    "status",
+    "uptime_s",
+    "project_open"
+  ],
+  "title": "HealthResponse",
+  "type": "object"
+}

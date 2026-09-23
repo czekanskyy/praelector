@@ -1,0 +1,9 @@
+{
+  "enum": [
+    "fp16",
+    "bf16",
+    "fp32"
+  ],
+  "title": "Precision",
+  "type": "string"
+}

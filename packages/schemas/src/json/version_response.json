@@ -1,0 +1,62 @@
+{
+  "$defs": {
+    "PlatformInfo": {
+      "properties": {
+        "arch": {
+          "title": "Arch",
+          "type": "string"
+        },
+        "frozen": {
+          "title": "Frozen",
+          "type": "boolean"
+        },
+        "os": {
+          "title": "Os",
+          "type": "string"
+        },
+        "python": {
+          "title": "Python",
+          "type": "string"
+        }
+      },
+      "required": [
+        "os",
+        "arch",
+        "python",
+        "frozen"
+      ],
+      "title": "PlatformInfo",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "app": {
+      "title": "App",
+      "type": "string"
+    },
+    "engine": {
+      "title": "Engine",
+      "type": "string"
+    },
+    "platform": {
+      "$ref": "#/$defs/PlatformInfo"
+    },
+    "python": {
+      "title": "Python",
+      "type": "string"
+    },
+    "schema": {
+      "title": "Schema",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "app",
+    "engine",
+    "schema",
+    "python",
+    "platform"
+  ],
+  "title": "VersionResponse",
+  "type": "object"
+}

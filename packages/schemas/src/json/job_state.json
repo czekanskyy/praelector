@@ -1,0 +1,13 @@
+{
+  "enum": [
+    "queued",
+    "running",
+    "paused",
+    "muxing",
+    "done",
+    "failed",
+    "cancelled"
+  ],
+  "title": "JobState",
+  "type": "string"
+}

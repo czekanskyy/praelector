@@ -22,6 +22,7 @@ ALLOW_IDS = frozenset(
     {
         "apache-2.0",
         "mit",
+        "mit-0",
         "bsd-2-clause",
         "bsd-3-clause",
         "isc",
@@ -238,6 +239,39 @@ def classify(raw: str) -> Assessment:
         return Assessment("review", f"unrecognised license id: {', '.join(unknown)}")
 
     return Assessment("allow", "permissive license")
+
+
+def load_unresolved(path: Path) -> dict[str, str]:
+    """SPDX ids for wheels a single-OS runner does not install.
+
+    Used only when the export lists the package and neither the virtualenv nor
+    `uv.lock` carries a license. A license that *is* resolved always wins, and
+    the id supplied here still goes through :func:`classify`.
+    """
+    if not path.is_file():
+        return {}
+    try:
+        with path.open("rb") as handle:
+            data = tomllib.load(handle)
+    except OSError as exc:
+        raise UsageError(f"cannot read allowlist {path}: {exc}") from exc
+    except tomllib.TOMLDecodeError as exc:
+        raise UsageError(f"cannot parse allowlist {path}: {exc}") from exc
+
+    known: dict[str, str] = {}
+    for index, raw in enumerate(data.get("unresolved", []), start=1):
+        if not isinstance(raw, dict):
+            raise UsageError(f"{path}: [[unresolved]] entry {index} is not a table")
+        name = raw.get("name")
+        license_id = raw.get("license")
+        if not isinstance(name, str) or not name:
+            raise UsageError(f"{path}: [[unresolved]] entry {index} has no 'name'")
+        if not isinstance(license_id, str) or not license_id.strip():
+            raise UsageError(f"{path}: unresolved entry {name!r} has no 'license'")
+        if not raw.get("reason") or not raw.get("added"):
+            raise UsageError(f"{path}: unresolved entry {name!r} needs 'reason' and 'added'")
+        known[normalize_name(name)] = license_id.strip()
+    return known
 
 
 def load_allowlist(path: Path) -> list[AllowlistEntry]:
@@ -593,6 +627,7 @@ def collect_python(root: Path, project_dir: Path, label: str, require_venv: bool
     components: list[Component] = []
     runtime_keys: set[str] = set()
     unresolved: list[str] = []
+    known_licenses = load_unresolved(root / "scripts" / "license_allowlist.toml")
     for name, version in runtime:
         key = normalize_name(name)
         runtime_keys.add(key)
@@ -602,8 +637,12 @@ def collect_python(root: Path, project_dir: Path, label: str, require_venv: bool
         elif locked.get(key):
             license_id, source = locked[key], "uv.lock"
         else:
-            license_id, source = "", "unresolved"
-            unresolved.append(f"{name}=={version}" if version else name)
+            known = known_licenses.get(key)
+            if known:
+                license_id, source = known, "scripts/license_allowlist.toml [[unresolved]]"
+            else:
+                license_id, source = "", "unresolved"
+                unresolved.append(f"{name}=={version}" if version else name)
         components.append(
             Component(
                 project=label,

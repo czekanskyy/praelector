@@ -1,0 +1,8 @@
+{
+  "enum": [
+    "prep",
+    "record"
+  ],
+  "title": "JobKind",
+  "type": "string"
+}

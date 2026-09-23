@@ -1,0 +1,32 @@
+{
+  "properties": {
+    "op": {
+      "enum": [
+        "subscribe",
+        "ping"
+      ],
+      "title": "Op",
+      "type": "string"
+    },
+    "topics": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Topics"
+    }
+  },
+  "required": [
+    "op"
+  ],
+  "title": "ClientOp",
+  "type": "object"
+}
