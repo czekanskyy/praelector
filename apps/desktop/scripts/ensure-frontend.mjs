@@ -13,10 +13,11 @@ const uiPackage = resolve(repo, "apps/ui/package.json");
 const index = resolve(repo, "apps/ui/dist/index.html");
 
 if (existsSync(uiPackage)) {
-  const pnpm = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
-  const result = spawnSync(pnpm, ["-F", "ui", "build"], {
+  // spawnSync cannot run a `.cmd` shim without a shell: Node reports EINVAL.
+  const result = spawnSync("pnpm", ["-F", "ui", "build"], {
     cwd: repo,
     stdio: "inherit",
+    shell: process.platform === "win32",
   });
   if (result.error) {
     console.error(result.error.message);

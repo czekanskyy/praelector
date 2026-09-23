@@ -31,6 +31,22 @@ jobs:
             echo "engine is not in this revision yet"
           fi
 
+      # Node license ids live in the installed package.json, not in pnpm-lock.
+      # Without this install every UI dependency is "unknown" and the policy fails.
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: install the UI when it is in the tree
+        shell: bash
+        run: |
+          if [ -f apps/ui/package.json ]; then
+            pnpm install --frozen-lockfile
+          else
+            echo "apps/ui is not in this revision yet"
+          fi
+
       # NF-03: the deny list (GPL/AGPL/SSPL/BUSL/CC-*-NC) is what keeps EbookLib
       # out — D-01. Scoped to what the installer actually ships: the torch-free
       # engine core and the UI. `uv export --no-dev` is the component set.
