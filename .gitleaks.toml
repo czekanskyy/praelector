@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: Apache-2.0
+# Extends the stock rules. The only allow is the browser-mode placeholder in
+# docs/dev-setup.md. It is not a credential: the engine refuses it outside an
+# explicit dev launch, and apps/ui/.env.local (where the real dev file lives)
+# is gitignored.
+title = "Praelector"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Documented browser-mode placeholder, LM-03"
+regexTarget = "line"
+regexes = ['''praelector-dev-token-not-a-secret''']
