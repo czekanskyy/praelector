@@ -1,0 +1,80 @@
+{
+  "$defs": {
+    "VoiceMode": {
+      "enum": [
+        "single",
+        "narrator_dialogue",
+        "narrator_male_female"
+      ],
+      "title": "VoiceMode",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "backend_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Backend Id"
+    },
+    "cloud_llm_enabled": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cloud Llm Enabled"
+    },
+    "name": {
+      "anyOf": [
+        {
+          "maxLength": 200,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Name"
+    },
+    "spoken_language": {
+      "anyOf": [
+        {
+          "maxLength": 8,
+          "minLength": 2,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Spoken Language"
+    },
+    "voice_mode": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/VoiceMode"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "title": "PatchProjectRequest",
+  "type": "object"
+}

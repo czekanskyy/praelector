@@ -1,0 +1,44 @@
+{
+  "description": "Where this installation keeps things, so the Settings screen can show it.",
+  "properties": {
+    "bin_dir": {
+      "title": "Bin Dir",
+      "type": "string"
+    },
+    "config_dir": {
+      "title": "Config Dir",
+      "type": "string"
+    },
+    "data_dir": {
+      "title": "Data Dir",
+      "type": "string"
+    },
+    "log_dir": {
+      "title": "Log Dir",
+      "type": "string"
+    },
+    "models_dir": {
+      "title": "Models Dir",
+      "type": "string"
+    },
+    "projects_dir": {
+      "title": "Projects Dir",
+      "type": "string"
+    },
+    "runtimes_dir": {
+      "title": "Runtimes Dir",
+      "type": "string"
+    }
+  },
+  "required": [
+    "data_dir",
+    "config_dir",
+    "log_dir",
+    "projects_dir",
+    "models_dir",
+    "runtimes_dir",
+    "bin_dir"
+  ],
+  "title": "PathsModel",
+  "type": "object"
+}
