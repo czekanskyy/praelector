@@ -1,0 +1,15 @@
+{
+  "enum": [
+    "ollama",
+    "lmstudio",
+    "openai",
+    "anthropic",
+    "gemini",
+    "xai",
+    "groq",
+    "openrouter",
+    "generic"
+  ],
+  "title": "LlmPreset",
+  "type": "string"
+}

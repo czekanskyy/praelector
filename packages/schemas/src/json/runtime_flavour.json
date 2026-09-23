@@ -1,0 +1,9 @@
+{
+  "enum": [
+    "cpu",
+    "cuda",
+    "rocm"
+  ],
+  "title": "RuntimeFlavour",
+  "type": "string"
+}

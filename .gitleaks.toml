@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
-# Extends the stock rules. The only allow is the browser-mode placeholder in
-# docs/dev-setup.md. It is not a credential: the engine refuses it outside an
-# explicit dev launch, and apps/ui/.env.local (where the real dev file lives)
-# is gitignored.
+# Extends the stock rules. Two allows, both fixtures rather than credentials:
+# the browser-mode placeholder in docs/dev-setup.md, and the secret-shaped
+# strings in the logging redaction test. A path allowlist does not apply to
+# this action's git-history scan, so the test strings are matched as lines.
 title = "Praelector"
 
 [extend]
@@ -12,3 +12,13 @@ useDefault = true
 description = "Documented browser-mode placeholder, LM-03"
 regexTarget = "line"
 regexes = ['''praelector-dev-token-not-a-secret''']
+
+[[allowlists]]
+description = "Redaction fixtures in engine/tests/unit/test_logging.py. Not credentials."
+regexTarget = "line"
+regexes = [
+  '''token=abcdefgh12345678''',
+  '''sk-proj-ABCDEFGHIJKLMNOP''',
+  '''ghp_0123456789abcdefghijABCDEF''',
+  '''AIzaSyA-0123456789abcdefghijklmnopqrstu''',
+]

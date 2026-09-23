@@ -1,0 +1,68 @@
+{
+  "$defs": {
+    "EventType": {
+      "description": "WebSocket event types (OPENAPI_SKETCH.md §11).",
+      "enum": [
+        "job.state",
+        "job.progress",
+        "job.chunk",
+        "job.warning",
+        "job.log",
+        "gpu.sample",
+        "suggestion.created",
+        "prep.progress",
+        "download.progress",
+        "runtime.progress",
+        "project.revision",
+        "error"
+      ],
+      "title": "EventType",
+      "type": "string"
+    }
+  },
+  "description": "The WebSocket frame (OPENAPI_SKETCH.md §11).\n\n``seq`` is monotonic per process, so a client that reconnects can replay from\nits last number with ``GET /v1/jobs/{id}/events?since=<seq>`` and miss nothing.",
+  "properties": {
+    "job_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Job Id"
+    },
+    "payload": {
+      "additionalProperties": true,
+      "title": "Payload",
+      "type": "object"
+    },
+    "seq": {
+      "minimum": 0,
+      "title": "Seq",
+      "type": "integer"
+    },
+    "ts": {
+      "format": "date-time",
+      "title": "Ts",
+      "type": "string"
+    },
+    "type": {
+      "$ref": "#/$defs/EventType"
+    },
+    "v": {
+      "default": 1,
+      "title": "V",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "seq",
+    "ts",
+    "type"
+  ],
+  "title": "WsEnvelope",
+  "type": "object"
+}

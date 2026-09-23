@@ -1,0 +1,15 @@
+{
+  "enum": [
+    "foreign_word",
+    "acronym",
+    "toponym",
+    "numeral",
+    "ordinal_heading",
+    "dialogue_split",
+    "speaker_gender",
+    "conversion_artifact",
+    "dict_hit"
+  ],
+  "title": "SuggestionCategory",
+  "type": "string"
+}

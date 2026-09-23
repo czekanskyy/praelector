@@ -1,0 +1,15 @@
+{
+  "enum": [
+    "prj",
+    "chp",
+    "blk",
+    "spn",
+    "sug",
+    "vpr",
+    "job",
+    "lex",
+    "bat"
+  ],
+  "title": "IdPrefix",
+  "type": "string"
+}

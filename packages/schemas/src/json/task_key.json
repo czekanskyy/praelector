@@ -1,0 +1,9 @@
+{
+  "enum": [
+    "classify_cheap",
+    "dialogue_hard",
+    "pronounce"
+  ],
+  "title": "TaskKey",
+  "type": "string"
+}

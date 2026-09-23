@@ -1,0 +1,9 @@
+{
+  "enum": [
+    "nvidia",
+    "amd",
+    "cpu"
+  ],
+  "title": "GpuVendor",
+  "type": "string"
+}

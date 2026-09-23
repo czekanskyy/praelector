@@ -1,0 +1,9 @@
+{
+  "enum": [
+    "heuristic",
+    "llm",
+    "dict"
+  ],
+  "title": "Detector",
+  "type": "string"
+}

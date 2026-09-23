@@ -1,0 +1,9 @@
+{
+  "enum": [
+    "plan",
+    "synth",
+    "mux"
+  ],
+  "title": "JobStage",
+  "type": "string"
+}

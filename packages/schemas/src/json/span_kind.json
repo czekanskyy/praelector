@@ -1,0 +1,11 @@
+{
+  "enum": [
+    "narration",
+    "dialogue",
+    "pronunciation",
+    "pause",
+    "skip"
+  ],
+  "title": "SpanKind",
+  "type": "string"
+}

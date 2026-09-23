@@ -3,8 +3,8 @@
 # `scripts/license_check.py` sorts every resolved dependency into one of three
 # classes (CI_AND_RELEASE.md §5, PLAN.md §11):
 #
-#   allow   Apache-2.0, MIT, BSD-2-Clause, BSD-3-Clause, ISC, PSF-2.0, MPL-2.0,
-#           Unlicense, CC0-1.0                        -> passes unconditionally
+#   allow   Apache-2.0, MIT, MIT-0, BSD-2-Clause, BSD-3-Clause, ISC, PSF-2.0,
+#           MPL-2.0, Unlicense, CC0-1.0               -> passes unconditionally
 #   review  LGPL-2.1(-only/-or-later), LGPL-3.0(-only/-or-later), EPL-2.0 and any
 #           dependency whose license metadata is missing or unrecognised
 #                                                       -> fails CI unless an entry
@@ -21,8 +21,9 @@
 # still the license that resolves — if a bump changes LGPL-2.1 to LGPL-3.0 the
 # entry stops matching and the check fails again on purpose.
 #
-# This file is intentionally empty: nothing in the current dependency graph needs
-# an exception. Keep it that way.
+# [[allow]] is intentionally empty: nothing in the current graph needs a review
+# waiver. Keep it that way. [[unresolved]] is not a waiver. It records the SPDX id
+# of a wheel this runner did not install, and that id still goes through classify.
 
 # Required shape (uncomment and adapt; every field is mandatory):
 #
@@ -43,3 +44,16 @@
 # The `reason` must name the requirement it serves and state why no permissive
 # alternative exists. "CI was red" is not a justification and will be rejected in
 # review.
+
+[[unresolved]]
+name = "pywin32-ctypes"
+license = "BSD-3-Clause"
+added = "2026-09-23"
+reason = """
+Transitive dependency of keyring, Windows only (LM-03). Upstream 0.2.3 is
+BSD-3-Clause: Enthought LICENSE.txt and the PyPI metadata say so. uv.lock
+stores no license field, and the wheel is environment-marked, so a Linux
+runner's uv sync never installs it and there is no METADATA to read. This id
+is used only when resolution found nothing. A license that does resolve is
+classified normally, including a future deny.
+"""

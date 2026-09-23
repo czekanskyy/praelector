@@ -1,0 +1,28 @@
+{
+  "properties": {
+    "arch": {
+      "title": "Arch",
+      "type": "string"
+    },
+    "frozen": {
+      "title": "Frozen",
+      "type": "boolean"
+    },
+    "os": {
+      "title": "Os",
+      "type": "string"
+    },
+    "python": {
+      "title": "Python",
+      "type": "string"
+    }
+  },
+  "required": [
+    "os",
+    "arch",
+    "python",
+    "frozen"
+  ],
+  "title": "PlatformInfo",
+  "type": "object"
+}

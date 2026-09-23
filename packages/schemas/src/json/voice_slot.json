@@ -1,0 +1,10 @@
+{
+  "enum": [
+    "narrator",
+    "dialogue",
+    "male",
+    "female"
+  ],
+  "title": "VoiceSlot",
+  "type": "string"
+}
