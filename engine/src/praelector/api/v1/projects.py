@@ -62,7 +62,8 @@ async def create_project(
 ) -> ProjectDetail:
     """Create the directory, manifest and an empty database. Does not ingest."""
     # The folder is chosen by the authenticated local user (PRD §5.2).
-    chosen = Path(payload.dir).expanduser() if payload.dir else None  # lgtm[py/path-injection]
+    # codeql[py/path-injection]
+    chosen = Path(payload.dir).expanduser() if payload.dir else None
     return state.projects.create(
         name=payload.name,
         voice_mode=payload.voice_mode,
