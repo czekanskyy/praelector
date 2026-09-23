@@ -1,4 +1,13 @@
 {
   "title": "Wczytywanie",
-  "empty": "Nie wybrano żadnego pliku."
+  "empty": "Nie wybrano pliku. Podaj ścieżkę do sprawdzonego już pliku EPUB.",
+  "loading": "Wczytywanie otwartego projektu.",
+  "no_project": "Otwórz projekt w bibliotece, a potem wczytaj do niego plik EPUB.",
+  "path_label": "Ścieżka EPUB",
+  "path_placeholder": "Na przykład: C:\\Książki\\lalka.epub",
+  "submit": "Wczytaj do projektu",
+  "pending": "Wczytywanie…",
+  "retry": "Spróbuj ponownie",
+  "error_code": "Kod błędu",
+  "library": "Przejdź do biblioteki"
 }

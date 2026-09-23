@@ -1,0 +1,77 @@
+{
+  "$defs": {
+    "BlockKind": {
+      "enum": [
+        "paragraph",
+        "heading",
+        "blockquote",
+        "list_item",
+        "caption"
+      ],
+      "title": "BlockKind",
+      "type": "string"
+    },
+    "ChapterBlock": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/BlockKind"
+        },
+        "ordinal": {
+          "minimum": 0,
+          "title": "Ordinal",
+          "type": "integer"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "ordinal",
+        "kind",
+        "text"
+      ],
+      "title": "ChapterBlock",
+      "type": "object"
+    }
+  },
+  "description": "``orphaned_span_ids`` is empty until spans are stored.",
+  "properties": {
+    "blocks": {
+      "items": {
+        "$ref": "#/$defs/ChapterBlock"
+      },
+      "title": "Blocks",
+      "type": "array"
+    },
+    "orphaned_span_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Orphaned Span Ids",
+      "type": "array"
+    },
+    "revision": {
+      "minimum": 0,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    }
+  },
+  "required": [
+    "revision",
+    "orphaned_span_ids",
+    "text",
+    "blocks"
+  ],
+  "title": "PutChapterTextResponse",
+  "type": "object"
+}

@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 
 import { Button } from "../../components/ui/button";
 import type { EngineApi, ProjectSummary } from "../../lib/api/client";
@@ -25,6 +26,7 @@ export function LibraryScreen() {
 
 function LibraryLoaded({ api }: { api: EngineApi }) {
   const { t, i18n } = useTranslation("library");
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
   const seenApi = useRef(api);
@@ -53,6 +55,7 @@ function LibraryLoaded({ api }: { api: EngineApi }) {
     mutationFn: (id: string) => api.openProject(id),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: PROJECTS_KEY });
+      navigate("/chapters");
     },
   });
 

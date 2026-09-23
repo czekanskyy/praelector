@@ -1,0 +1,18 @@
+{
+  "properties": {
+    "order": {
+      "items": {
+        "pattern": "^chp_[0-9A-Z]{26}$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Order",
+      "type": "array"
+    }
+  },
+  "required": [
+    "order"
+  ],
+  "title": "ReorderChaptersRequest",
+  "type": "object"
+}

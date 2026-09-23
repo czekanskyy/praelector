@@ -1,0 +1,21 @@
+{
+  "description": "``offset`` is a character offset into ``block_id`` (ED-01, split at caret).",
+  "properties": {
+    "block_id": {
+      "pattern": "^blk_[0-9A-Z]{26}$",
+      "title": "Block Id",
+      "type": "string"
+    },
+    "offset": {
+      "minimum": 0,
+      "title": "Offset",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "block_id",
+    "offset"
+  ],
+  "title": "SplitChapterRequest",
+  "type": "object"
+}

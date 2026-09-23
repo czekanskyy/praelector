@@ -1,12 +1,14 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Ingest probe (OPENAPI_SKETCH.md §4).
+"""Ingest probe and commit (OPENAPI_SKETCH.md §4).
 
-Cheap and read-only: format, DRM, the PDF text layer, Calibre availability and
-an EPUB metadata preview. Persisting chapters would need the chapter and block
-tables, which are not in the project schema yet, so this route does not write
-``source/`` and does not migrate anything. ``ebook/epub_write.py`` already
-knows how to stage ``source/original.<ext>`` and ``source/working.epub`` for
-the route that lands with those tables.
+``POST /ingest/probe`` is cheap and read-only: format, DRM, the PDF text layer,
+Calibre availability and an EPUB metadata preview. It does not write ``source/``.
+
+``POST /ingest`` commits an EPUB the user already probed. The project must be
+open. The upload is copied to ``source/original.<ext>`` and a working EPUB is
+written beside it; the path the user supplied is only read. Calibre conversion
+is not this route — anything that is not already an EPUB is
+``ebook.unsupported_format``.
 """
 
 from __future__ import annotations
@@ -24,6 +26,7 @@ from praelector.ebook.epub_read import Book, iter_toc, read_epub
 from praelector.ebook.frontmatter import SkipSpan, skip_candidates
 from praelector.ebook.pdf import assert_pdf_text_layer
 from praelector.state import AppState, get_state
+from praelector.store.chapters import ChapterStore
 
 router = APIRouter(tags=["ingest"])
 
@@ -117,6 +120,45 @@ def _needs_calibre(
         has_text_layer=has_text_layer,
         converter="calibre",
         calibre_available=bool(probe.present and probe.path),
+    )
+
+
+class IngestCommitRequest(BaseModel):
+    """An EPUB path the user already probed. The file is not modified."""
+
+    path: str = Field(min_length=1, max_length=4096)
+
+
+class IngestCommitResponse(BaseModel):
+    chapter_count: int = Field(ge=0)
+    block_count: int = Field(ge=0)
+    original_rel: str
+    working_epub_rel: str
+    revision: int = Field(ge=0)
+
+
+@router.post("/projects/{project_id}/ingest", response_model=IngestCommitResponse)
+def commit_ingest(
+    project_id: ProjectId,
+    payload: IngestCommitRequest,
+    state: AppState = Depends(get_state),
+) -> IngestCommitResponse:
+    """Store chapters from an EPUB into the open project.
+
+    DRM and empty text use the same codes as the probe. The project has to be
+    open; a closed one is ``project.not_open`` and nothing is copied.
+    """
+    opened = state.projects.require_open(project_id)
+    # The file is chosen by the authenticated local user (OPENAPI_SKETCH.md §4).
+    # codeql[py/path-injection]
+    path = Path(payload.path).expanduser()
+    committed = ChapterStore(opened).commit_epub(path)
+    return IngestCommitResponse(
+        chapter_count=committed.chapter_count,
+        block_count=committed.block_count,
+        original_rel=committed.original_rel,
+        working_epub_rel=committed.working_epub_rel,
+        revision=committed.revision,
     )
 
 

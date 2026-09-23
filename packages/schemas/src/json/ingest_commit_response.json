@@ -1,0 +1,36 @@
+{
+  "properties": {
+    "block_count": {
+      "minimum": 0,
+      "title": "Block Count",
+      "type": "integer"
+    },
+    "chapter_count": {
+      "minimum": 0,
+      "title": "Chapter Count",
+      "type": "integer"
+    },
+    "original_rel": {
+      "title": "Original Rel",
+      "type": "string"
+    },
+    "revision": {
+      "minimum": 0,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "working_epub_rel": {
+      "title": "Working Epub Rel",
+      "type": "string"
+    }
+  },
+  "required": [
+    "chapter_count",
+    "block_count",
+    "original_rel",
+    "working_epub_rel",
+    "revision"
+  ],
+  "title": "IngestCommitResponse",
+  "type": "object"
+}

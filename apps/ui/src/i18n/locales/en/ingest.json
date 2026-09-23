@@ -1,4 +1,13 @@
 {
   "title": "Import",
-  "empty": "No file selected."
+  "empty": "No file selected. Give the path of an EPUB you already checked.",
+  "loading": "Loading the open project.",
+  "no_project": "Open a project in the Library, then import an EPUB into it.",
+  "path_label": "EPUB path",
+  "path_placeholder": "For example: C:\\Books\\lalka.epub",
+  "submit": "Import into project",
+  "pending": "Importing…",
+  "retry": "Try again",
+  "error_code": "Error code",
+  "library": "Go to Library"
 }

@@ -314,6 +314,31 @@ class ProjectStore:
         closing.dispose()
         logger.info("project closed on shutdown", extra={"project_id": closing.id})
 
+    def require_open(self, project_id: str) -> OpenProject:
+        """The open project, when it is ``project_id``.
+
+        Chapter edits and ingest commit use this connection. They do not open a
+        second one behind the lock, and they do not write a project the user has
+        not opened.
+        """
+        if self._open is None or self._open.id != project_id:
+            raise AppError(
+                ErrorCode.PROJECT_NOT_OPEN,
+                detail={"project_id": project_id, "open_project_id": self.current_id},
+                message="open the project before editing it",
+            )
+        return self._open
+
+    def require_current(self) -> OpenProject:
+        """The open project, for routes addressed by a chapter id."""
+        if self._open is None:
+            raise AppError(
+                ErrorCode.PROJECT_NOT_OPEN,
+                detail={"reason": "none"},
+                message="open a project first",
+            )
+        return self._open
+
     # -- patch / delete -------------------------------------------------------
 
     def patch(self, project_id: str, patch: ProjectPatch) -> ProjectDetail:

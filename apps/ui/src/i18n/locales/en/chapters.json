@@ -1,4 +1,16 @@
 {
   "title": "Chapters",
-  "empty": "This project has no chapters yet."
+  "empty": "This project has no chapters yet.",
+  "no_project": "Open a project in the Library before editing chapters.",
+  "loading": "Loading chapters.",
+  "retry": "Try again",
+  "error_code": "Error code",
+  "rename": "Chapter title",
+  "included": "Include in narration",
+  "move_up": "Move up",
+  "move_down": "Move down",
+  "edit": "Edit",
+  "blocks": "{{count}} blocks",
+  "audio": "About {{seconds}} s of audio",
+  "library": "Go to Library"
 }

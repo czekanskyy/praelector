@@ -9,5 +9,13 @@
   "project_locked": "This project is locked by another process.",
   "project_manifest_invalid": "This project's manifest is invalid.",
   "project_schema_too_new": "This project was written by a newer version of Praelector.",
+  "project_not_open": "Open the project before changing it.",
+  "ebook_empty_text": "This book has no text to read.",
+  "ebook_unsupported_format": "This file is not an EPUB Praelector can import yet.",
+  "ebook_parse_failed": "This EPUB could not be read.",
+  "text_chapter_not_found": "That chapter is not in the open project.",
+  "text_block_not_found": "That block is not in the chapter.",
+  "text_revision_conflict": "The chapter changed since it was loaded. Reload it and try again.",
+  "text_span_out_of_range": "That position is outside the block.",
   "fallback": "Something went wrong ({{code}})."
 }
