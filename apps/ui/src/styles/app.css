@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+/* Class on the document element, not the OS media query, so a forced light
+   choice stays light while the OS is dark (IX-04). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --color-paper: #f3eee6;
+  --color-paper-2: #e7e0d4;
+  --color-ink: #1e1a16;
+  --color-ink-soft: #5e574e;
+  --color-line: #d9d0c3;
+  --color-accent: #7d3b32;
+  --color-accent-fg: #fbf7f1;
+  --color-night: #14110e;
+  --color-night-2: #221c18;
+  --color-dawn: #f4eee6;
+  --color-dawn-soft: #c4b8a8;
+  --color-night-line: #3a332c;
+  --color-ember: #e2a396;
+  --color-ember-fg: #1b1210;
+}
+
+html {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  font-family: var(--font-sans);
+}
+
+html.dark body {
+  background: var(--color-night);
+}

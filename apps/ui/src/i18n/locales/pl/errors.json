@@ -1,0 +1,6 @@
+{
+  "ebook_drm_detected": "Ten plik jest chroniony systemem DRM i nie można go otworzyć.",
+  "tts_language_unsupported": "Ten silnik głosu nie obsługuje języka projektu.",
+  "internal_validation_failed": "Silnik odrzucił żądanie jako nieprawidłowe.",
+  "fallback": "Coś poszło nie tak ({{code}})."
+}
