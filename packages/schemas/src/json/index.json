@@ -123,6 +123,18 @@
       "type": "IdPrefix"
     },
     {
+      "name": "ingest_probe_request",
+      "file": "ingest_probe_request.json",
+      "model": "praelector.api.v1.ingest.IngestProbeRequest",
+      "type": "IngestProbeRequest"
+    },
+    {
+      "name": "ingest_probe_response",
+      "file": "ingest_probe_response.json",
+      "model": "praelector.api.v1.ingest.IngestProbeResponse",
+      "type": "IngestProbeResponse"
+    },
+    {
       "name": "job_kind",
       "file": "job_kind.json",
       "model": "praelector.domain.enums.JobKind",

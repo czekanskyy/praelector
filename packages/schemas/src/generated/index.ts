@@ -150,6 +150,40 @@ export interface HealthResponse {
 
 export type IdPrefix = "prj" | "chp" | "blk" | "spn" | "sug" | "vpr" | "job" | "lex" | "bat";
 
+export interface IngestDrmStatus {
+  detected?: boolean;
+  reason?: string | null;
+}
+
+export interface IngestMetadataPreview {
+  title?: string | null;
+  authors?: string[];
+  language?: string | null;
+  chapter_count?: number | null;
+}
+
+export interface IngestProbeRequest {
+  path: string;
+}
+
+export interface IngestProbeResponse {
+  format: SourceFormat;
+  needs_conversion: boolean;
+  drm: IngestDrmStatus;
+  has_text_layer?: boolean | null;
+  metadata_preview?: IngestMetadataPreview | null;
+  converter?: string | null;
+  calibre_available?: boolean | null;
+  skip_spans?: IngestSkipSpanModel[];
+}
+
+export interface IngestSkipSpanModel {
+  block_index: number;
+  start: number;
+  end: number;
+  reason: string;
+}
+
 export type JobKind = "prep" | "record";
 
 export type JobStage = "plan" | "synth" | "mux";

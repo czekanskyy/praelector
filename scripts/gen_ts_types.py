@@ -84,6 +84,8 @@ EXPORTS: tuple[Export, ...] = (
     Export("praelector.api.v1.projects", "CreateProjectRequest", "create_project_request"),
     Export("praelector.api.v1.projects", "PatchProjectRequest", "patch_project_request"),
     Export("praelector.api.v1.projects", "ProjectListResponse", "project_list_response"),
+    Export("praelector.api.v1.ingest", "IngestProbeRequest", "ingest_probe_request"),
+    Export("praelector.api.v1.ingest", "IngestProbeResponse", "ingest_probe_response"),
     Export("praelector.config", "Settings", "settings"),
     Export("praelector.config", "AudioSettings", "audio_settings"),
     Export("praelector.config", "GpuPolicy", "gpu_policy"),

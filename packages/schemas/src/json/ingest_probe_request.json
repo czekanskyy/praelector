@@ -1,0 +1,15 @@
+{
+  "properties": {
+    "path": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "title": "Path",
+      "type": "string"
+    }
+  },
+  "required": [
+    "path"
+  ],
+  "title": "IngestProbeRequest",
+  "type": "object"
+}
