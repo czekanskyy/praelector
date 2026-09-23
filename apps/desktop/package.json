@@ -1,0 +1,17 @@
+{
+  "name": "desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Praelector Tauri 2 desktop shell. Owns process lifecycle, the window, native dialogs and resource resolution; contains no product logic (REPO_LAYOUT.md §3).",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "icon": "tauri icon"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.11.4"
+  }
+}
