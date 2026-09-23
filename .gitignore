@@ -1,0 +1,49 @@
+# Python (engine, engine-tts, scripts)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Node (apps/ui, packages/schemas)
+node_modules/
+apps/ui/dist/
+apps/ui/coverage/
+*.tsbuildinfo
+
+# Rust (apps/desktop)
+target/
+
+# Populated at build time, never committed (REPO_LAYOUT.md §3)
+apps/desktop/resources/engine/
+apps/desktop/resources/bin/
+
+# Local app state and secrets (LM-03)
+.env
+.env.*
+!.env.example
+*.local
+
+# Editor and OS noise
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+.DS_Store
+Thumbs.db
+
+# Agent scratch space
+.qwen/
+
+# Local development state written by scripts/dev.py
+.dev/

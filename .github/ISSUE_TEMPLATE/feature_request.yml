@@ -1,0 +1,52 @@
+name: Feature request
+description: Suggest an improvement to Praelector.
+title: "[feat] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Praelector is a Polish-first audiobook reader with a deliberately narrow v1 scope
+        (`docs/PRD.md`). Requests that fit an existing requirement ID (ED-*, DG-*, JB-*, MX-*, EX-*)
+        are much easier to act on than open-ended ones.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the workflow you are stuck in, not the feature you want.
+      placeholder: "When I review 400 dialogue suggestions, I cannot tell which ones the LLM produced..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: What would you like instead?
+      description: Be concrete about where it appears (which screen) and what it does.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered
+      description: Including "I worked around it by..." — workarounds tell us how bad the problem is.
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Screenshots, a project directory layout, or a link to a related discussion.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      options:
+        - label: I would be willing to send a PR for this (see `CONTRIBUTING.md`)
+          required: false

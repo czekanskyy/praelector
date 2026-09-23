@@ -1,0 +1,61 @@
+name: engine
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+
+      - run: uv python install 3.12
+
+      # --frozen everywhere: a lockfile that needs updating is a failing build, not a silent resolve
+      - run: uv sync --project engine --group dev --frozen
+
+      # --extra cpu exercises the fake backend and worker protocol without ever pulling a CUDA/ROCm wheel
+      - run: uv sync --project engine-tts --extra cpu --group dev --frozen
+
+      - run: uv run --project engine ruff check .
+      - run: uv run --project engine ruff format --check .
+
+      # --directory: both projects keep their own pytest/mypy config in their own
+      # pyproject.toml, which is only picked up when it is the working directory.
+      - run: uv run --directory engine mypy --strict src
+      - run: uv run --directory engine-tts mypy --strict src
+
+      - name: no torch in the core lock
+        run: uv run --no-project --python 3.12 python scripts/assert_no_torch.py engine/uv.lock
+
+      - uses: FedericoCarboni/setup-ffmpeg@v3      # real ffmpeg for mux tests
+
+      # GPU-marked tests run only on the two reference machines; CI has no GPU
+      - run: uv run --directory engine pytest -m "not gpu" --cov=praelector --cov-report=xml
+
+      # The worker is exercised with the cpu extra: the fake backend and the wire
+      # protocol run without a GPU, and no CUDA/ROCm wheel is ever downloaded.
+      - run: uv run --directory engine-tts --extra cpu pytest -m "not gpu and not torch"
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: engine-test-output-${{ matrix.os }}
+          path: engine/.pytest_cache

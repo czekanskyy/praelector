@@ -1,0 +1,44 @@
+# Label inventory (CI_AND_RELEASE.md §10). Path-based area labels are applied by
+# actions/labeler@v5 using the map below; the rest are applied by humans or by dependabot
+# and must be created in the repo settings so they exist before first use:
+#
+#   area:engine              <- path (engine/**, engine-tts/**)
+#   area:ui                  <- path (apps/ui/**)
+#   area:desktop             <- path (apps/desktop/**)
+#   area:docs                <- path (docs/**, *.md)
+#   area:ci                  <- path (.github/**, scripts/**)
+#   area:tts                 <- issue template "New TTS backend request" only
+#   milestone:M0 .. M6       <- human
+#   blocker:v1               <- human
+#   needs-gpu-verification   <- dependabot (engine-tts torch bumps, D-03)
+#   license-review           <- human, after scripts/license_check.py flags a package
+#   good-first-issue         <- human
+#   bug / enhancement        <- issue templates
+
+"area:engine":
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'engine/**'
+          - 'engine-tts/**'
+
+"area:ui":
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'apps/ui/**'
+
+"area:desktop":
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'apps/desktop/**'
+
+"area:docs":
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docs/**'
+          - '*.md'
+
+"area:ci":
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/**'
+          - 'scripts/**'

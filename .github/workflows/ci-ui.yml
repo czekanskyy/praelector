@@ -1,0 +1,36 @@
+name: ui
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -F ui lint
+      - run: pnpm -F ui typecheck            # tsc --noEmit
+      - run: pnpm -F ui test -- --run        # vitest
+      - run: node scripts/i18n_check.mjs     # IX-01 / IX-02
+
+      - uses: astral-sh/setup-uv@v6
+      - name: schemas are not stale
+        run: |
+          uv sync --project engine --frozen
+          uv run --project engine python scripts/gen_ts_types.py
+          git diff --exit-code packages/schemas

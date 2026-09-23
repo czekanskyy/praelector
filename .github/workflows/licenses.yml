@@ -1,0 +1,48 @@
+name: licenses
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '17 4 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --project engine --frozen
+
+      # NF-03: the deny list (GPL/AGPL/SSPL/BUSL/CC-*-NC) is what keeps EbookLib
+      # out — D-01. Scoped to what the installer actually ships: the torch-free
+      # engine core and the UI. `uv export --no-dev` is the component set.
+      - name: shipped components satisfy the policy
+        run: uv run --no-project --python 3.12 python scripts/license_check.py --python engine --node apps/ui
+
+      - run: uv run --no-project --python 3.12 python scripts/spdx_headers.py --check
+
+      - name: NOTICE is current
+        run: uv run --no-project --python 3.12 python scripts/license_check.py --python engine --node apps/ui --write-notice && git diff --exit-code NOTICE
+
+      # The provisioned TTS runtime (torch + a backend, 2.5-4 GB) is NOT in the
+      # installer: it is created on the user's machine, and its component and
+      # model-weight licenses are shown in-app before any download (TTS-02, D-04).
+      # `uv.lock` carries no license metadata and the nvidia-*/rocm-* wheels are
+      # linux-marker'd, so their licenses cannot be resolved on a runner. This step
+      # therefore still runs the deny list over what IS resolvable, but does not
+      # block. Closing it properly — a reviewed license table for the runtime plus
+      # docs/licenses.md — is M3 work (PLAN.md §9 M6).
+      - name: provisioned TTS runtime (informational)
+        continue-on-error: true
+        run: |
+          uv sync --project engine-tts --extra cpu --frozen
+          uv run --no-project --python 3.12 python scripts/license_check.py --python engine-tts

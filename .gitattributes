@@ -1,0 +1,40 @@
+# Normalise every text file to LF in the index and in the working tree. Byte-stable
+# checkouts are what make `git diff --exit-code NOTICE` and the generated-schema
+# staleness check in CI meaningful on both Windows and Linux.
+* text=auto eol=lf
+
+# Fixture and asset binaries: never diffed, never renormalised.
+*.epub binary
+*.pdf binary
+*.mobi binary
+*.azw binary
+*.azw3 binary
+*.wav binary
+*.flac binary
+*.mp3 binary
+*.m4a binary
+*.m4b binary
+*.ogg binary
+*.opus binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.icns binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.safetensors binary
+*.pt binary
+*.bin binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.xz binary
+*.AppImage binary
+*.exe binary
+*.dll binary
+*.so binary
+*.dylib binary

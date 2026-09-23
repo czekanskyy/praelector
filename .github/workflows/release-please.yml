@@ -1,0 +1,24 @@
+name: release-please
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # no cancel-in-progress: an interrupted run can leave the release PR, CHANGELOG.md and
+  # .release-please-manifest.json disagreeing about the next version
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write          # creates the tag when the release PR is merged
+      pull-requests: write     # opens and force-pushes the release PR
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          target-branch: main

@@ -1,0 +1,26 @@
+blank_issues_enabled: false
+
+contact_links:
+  - name: Security problem
+    url: https://github.com/czekanskyy/praelector/security/advisories/new
+    about: >-
+      Do not open a public issue. Private vulnerability reporting is enabled; see SECURITY.md
+      for the loopback-only threat model and the token scheme.
+
+  - name: User guide
+    url: https://github.com/czekanskyy/praelector/blob/main/docs/user-guide.md
+    about: >-
+      Ingest -> review suggestions -> voices -> record -> export. Read this first if a workflow
+      is unclear rather than broken.
+
+  - name: Troubleshooting
+    url: https://github.com/czekanskyy/praelector/blob/main/docs/troubleshooting.md
+    about: >-
+      Engine will not start, TTS runtime provisioning failed, GPU not detected, ffmpeg missing,
+      Calibre conversion errors.
+
+  - name: Adding a TTS backend / plugin protocol
+    url: https://github.com/czekanskyy/praelector/blob/main/docs/plugins.md
+    about: >-
+      How the worker protocol and backend descriptors work. Use this for implementation
+      questions; use "New TTS backend request" to ask for a model to be added.
