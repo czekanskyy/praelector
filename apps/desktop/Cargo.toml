@@ -1,0 +1,83 @@
+[package]
+name = "praelector-desktop"
+version = "0.1.0"
+description = "Praelector desktop shell — window, sidecar lifecycle, native dialogs, single instance"
+edition = "2021"
+# Floor set by `windows` 0.62 (1.82) and `rand`/`reqwest` (1.85). CI builds with
+# stable, so this is a documentation floor rather than a constraint.
+rust-version = "1.85"
+license = "Apache-2.0"
+repository = "https://github.com/praelector/praelector"
+publish = false
+
+[lib]
+name = "praelector_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+cc = "1"
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+base64 = "0.23"
+log = "0.4"
+rand = "0.10"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-log = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-single-instance = "2"
+thiserror = "2"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "process", "io-util", "net", "time", "sync"] }
+
+[dev-dependencies]
+# `start_paused` on the ready-handshake and supervisor tests. Unified into
+# `cargo test` / `cargo clippy --all-targets` only, not the shipped binary.
+tokio = { version = "1", features = ["test-util"] }
+
+# The engine is loopback plain HTTP (PLAN.md §1.5), so no TLS stack is pulled in:
+# default-features off plus `json` only. Adding a TLS feature here would be a
+# supply-chain regression for zero benefit.
+[dependencies.reqwest]
+version = "0.13"
+default-features = false
+features = ["json"]
+
+[target."cfg(windows)".dependencies.windows]
+version = "0.62"
+features = [
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_System_DataExchange",
+    "Win32_System_JobObjects",
+    "Win32_System_Memory",
+    "Win32_System_Threading",
+]
+
+[target."cfg(unix)".dependencies]
+libc = "0.2"
+
+[features]
+# Runs the end-to-end test in tests/engine_supervisor_it.rs, which spawns the real
+# Python engine through the supervisor and therefore needs `uv` plus a Python 3.12
+# toolchain. Off by default so CI never depends on them.
+engine-it = []
+
+[lints.clippy]
+dbg_macro = "deny"
+todo = "deny"
+unimplemented = "deny"
+print_stdout = "deny"
+print_stderr = "deny"
+# A supervisor panic must not take the window down, and the only place a crash is
+# acceptable is the top-level `run()` in main.rs. Test modules re-allow both.
+unwrap_used = "deny"
+expect_used = "deny"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

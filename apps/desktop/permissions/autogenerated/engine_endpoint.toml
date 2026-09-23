@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-engine-endpoint"
+description = "Enables the engine_endpoint command without any pre-configured scope."
+commands.allow = ["engine_endpoint"]
+
+[[permission]]
+identifier = "deny-engine-endpoint"
+description = "Denies the engine_endpoint command without any pre-configured scope."
+commands.deny = ["engine_endpoint"]
