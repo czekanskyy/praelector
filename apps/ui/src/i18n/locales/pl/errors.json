@@ -9,5 +9,13 @@
   "project_locked": "Ten projekt jest zablokowany przez inny proces.",
   "project_manifest_invalid": "Manifest tego projektu jest nieprawidłowy.",
   "project_schema_too_new": "Ten projekt został zapisany przez nowszą wersję Praelectora.",
+  "project_not_open": "Otwórz projekt, zanim go zmienisz.",
+  "ebook_empty_text": "Ta książka nie ma tekstu do odczytania.",
+  "ebook_unsupported_format": "To nie jest plik EPUB, który Praelector potrafi już wczytać.",
+  "ebook_parse_failed": "Nie udało się odczytać tego pliku EPUB.",
+  "text_chapter_not_found": "Tego rozdziału nie ma w otwartym projekcie.",
+  "text_block_not_found": "Tego bloku nie ma w rozdziale.",
+  "text_revision_conflict": "Rozdział zmienił się od wczytania. Wczytaj go ponownie i spróbuj jeszcze raz.",
+  "text_span_out_of_range": "Ta pozycja jest poza blokiem.",
   "fallback": "Coś poszło nie tak ({{code}})."
 }

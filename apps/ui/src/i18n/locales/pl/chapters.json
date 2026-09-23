@@ -1,4 +1,16 @@
 {
   "title": "Rozdziały",
-  "empty": "Ten projekt nie ma jeszcze rozdziałów."
+  "empty": "Ten projekt nie ma jeszcze rozdziałów.",
+  "no_project": "Otwórz projekt w bibliotece, zanim zaczniesz układać rozdziały.",
+  "loading": "Wczytywanie rozdziałów.",
+  "retry": "Spróbuj ponownie",
+  "error_code": "Kod błędu",
+  "rename": "Tytuł rozdziału",
+  "included": "Uwzględnij w lekturze",
+  "move_up": "Przesuń w górę",
+  "move_down": "Przesuń w dół",
+  "edit": "Edytuj",
+  "blocks": "{{count}} bloków",
+  "audio": "Około {{seconds}} s nagrania",
+  "library": "Przejdź do biblioteki"
 }

@@ -38,8 +38,76 @@ const projectListSchema = z.object({
   open_project_id: z.string().min(1).nullable(),
 });
 
+const chapterItemSchema = z.object({
+  id: z.string().min(1),
+  ordinal: z.number().int().nonnegative(),
+  title: z.string().min(1),
+  included: z.boolean(),
+  block_count: z.number().int().nonnegative(),
+  char_count: z.number().int().nonnegative(),
+  est_audio_s: z.number().int().nonnegative(),
+});
+
+const chapterTreeSchema = z.object({
+  revision: z.number().int().nonnegative(),
+  chapters: z.array(chapterItemSchema),
+});
+
+const chapterBlockSchema = z.object({
+  id: z.string().min(1),
+  ordinal: z.number().int().nonnegative(),
+  kind: z.enum(["paragraph", "heading", "blockquote", "list_item", "caption"]),
+  text: z.string(),
+});
+
+const chapterTextSchema = z.object({
+  view: z.enum(["display", "spoken"]),
+  revision: z.number().int().nonnegative(),
+  text: z.string(),
+  blocks: z.array(chapterBlockSchema),
+});
+
+const chapterTextCommitSchema = chapterTextSchema.extend({
+  orphaned_span_ids: z.array(z.string()),
+}).omit({ view: true });
+
+const replaceTextSchema = z.object({
+  count: z.number().int().nonnegative(),
+  dry_run: z.boolean(),
+  revision: z.number().int().nonnegative().nullable(),
+  preview: z.array(
+    z.object({
+      chapter_id: z.string().min(1),
+      block_id: z.string().min(1),
+      count: z.number().int().positive(),
+    }),
+  ),
+});
+
+const ingestCommitSchema = z.object({
+  chapter_count: z.number().int().nonnegative(),
+  block_count: z.number().int().nonnegative(),
+  original_rel: z.string().min(1),
+  working_epub_rel: z.string().min(1),
+  revision: z.number().int().nonnegative(),
+});
+
 export type ProjectSummary = z.infer<typeof projectSummarySchema>;
 export type ProjectListResponse = z.infer<typeof projectListSchema>;
+export type ChapterItem = z.infer<typeof chapterItemSchema>;
+export type ChapterTree = z.infer<typeof chapterTreeSchema>;
+export type ChapterText = z.infer<typeof chapterTextSchema>;
+export type ChapterTextCommit = z.infer<typeof chapterTextCommitSchema>;
+export type TextView = "display" | "spoken";
+export type ReplaceTextBody = {
+  query: string;
+  replacement: string;
+  dry_run: boolean;
+  chapter_id?: string;
+  all_chapters?: boolean;
+};
+export type ReplaceTextResult = z.infer<typeof replaceTextSchema>;
+export type IngestCommit = z.infer<typeof ingestCommitSchema>;
 
 /**
  * The only `fetch` in the UI. Calls `http://127.0.0.1:{port}` with
@@ -90,10 +158,88 @@ export class EngineApi {
     });
   }
 
+  commitIngest(projectId: string, path: string): Promise<IngestCommit> {
+    if (projectId.length === 0 || path.trim().length === 0) {
+      return Promise.reject(new EngineRequestError("internal.validation_failed"));
+    }
+    return this.requestJson(
+      `/v1/projects/${encodeURIComponent(projectId)}/ingest`,
+      ingestCommitSchema,
+      { method: "POST", json: { path } },
+    );
+  }
+
+  listChapters(projectId: string): Promise<ChapterTree> {
+    if (projectId.length === 0) {
+      return Promise.reject(new EngineRequestError("internal.validation_failed"));
+    }
+    return this.requestJson(
+      `/v1/projects/${encodeURIComponent(projectId)}/chapters`,
+      chapterTreeSchema,
+    );
+  }
+
+  patchChapter(
+    chapterId: string,
+    patch: { title?: string; included?: boolean },
+  ): Promise<ChapterItem> {
+    if (chapterId.length === 0) {
+      return Promise.reject(new EngineRequestError("internal.validation_failed"));
+    }
+    return this.requestJson(
+      `/v1/chapters/${encodeURIComponent(chapterId)}`,
+      chapterItemSchema,
+      { method: "PATCH", json: patch },
+    );
+  }
+
+  reorderChapters(projectId: string, order: readonly string[]): Promise<ChapterTree> {
+    if (projectId.length === 0 || order.length === 0) {
+      return Promise.reject(new EngineRequestError("internal.validation_failed"));
+    }
+    return this.requestJson(
+      `/v1/projects/${encodeURIComponent(projectId)}/chapters/reorder`,
+      chapterTreeSchema,
+      { method: "POST", json: { order } },
+    );
+  }
+
+  getChapterText(chapterId: string, view: TextView): Promise<ChapterText> {
+    if (chapterId.length === 0) {
+      return Promise.reject(new EngineRequestError("internal.validation_failed"));
+    }
+    return this.requestJson(
+      `/v1/chapters/${encodeURIComponent(chapterId)}/text?view=${view}`,
+      chapterTextSchema,
+    );
+  }
+
+  putChapterText(chapterId: string, text: string, baseRevision: number): Promise<ChapterTextCommit> {
+    if (chapterId.length === 0 || !Number.isInteger(baseRevision) || baseRevision < 0) {
+      return Promise.reject(new EngineRequestError("internal.validation_failed"));
+    }
+    return this.requestJson(
+      `/v1/chapters/${encodeURIComponent(chapterId)}/text`,
+      chapterTextCommitSchema,
+      { method: "PUT", json: { text, base_revision: baseRevision } },
+    );
+  }
+
+  replaceText(projectId: string, body: ReplaceTextBody): Promise<ReplaceTextResult> {
+    if (projectId.length === 0 || body.query.length === 0) {
+      return Promise.reject(new EngineRequestError("internal.validation_failed"));
+    }
+    return this.requestJson(
+      `/v1/projects/${encodeURIComponent(projectId)}/replace`,
+      replaceTextSchema,
+      { method: "POST", json: body },
+    );
+  }
+
   private async requestJson<T>(
     path: string,
     schema: { safeParse(data: unknown): ParseResult<T> },
-    init?: { method?: "GET" | "POST"; json?: unknown },
+    init?: { method?: "GET" | "POST" | "PUT" | "PATCH"; json?: unknown },
   ): Promise<T> {
     const headers = authorizedHeaders(this.endpoint.token);
     let body: string | undefined;
