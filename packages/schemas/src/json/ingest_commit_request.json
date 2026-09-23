@@ -1,0 +1,16 @@
+{
+  "description": "An EPUB path the user already probed. The file is not modified.",
+  "properties": {
+    "path": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "title": "Path",
+      "type": "string"
+    }
+  },
+  "required": [
+    "path"
+  ],
+  "title": "IngestCommitRequest",
+  "type": "object"
+}

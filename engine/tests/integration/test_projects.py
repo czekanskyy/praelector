@@ -150,7 +150,7 @@ def test_only_one_project_can_be_open(store: ProjectStore) -> None:
 def test_open_reports_the_migration_revision(store: ProjectStore) -> None:
     opened = store.open(_create(store))
     try:
-        assert opened.db_revision == "0001_baseline"
+        assert opened.db_revision == "0002_chapters"
         assert opened.manifest.name
     finally:
         store.close_current()
@@ -350,7 +350,7 @@ def test_create_list_open_close_delete_over_http(client: TestClient, auth: dict[
     opened = client.post(f"/v1/projects/{project_id}/open", headers=auth)
     assert opened.status_code == 200
     assert opened.json()["is_open"] is True
-    assert opened.json()["db_revision"] == "0001_baseline"
+    assert opened.json()["db_revision"] == "0002_chapters"
     assert client.get("/v1/health", headers=auth).json()["project_open"] is True
 
     assert client.post(f"/v1/projects/{project_id}/close", headers=auth).status_code == 204

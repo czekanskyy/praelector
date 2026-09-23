@@ -15,7 +15,15 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from sqlalchemy import Boolean, CheckConstraint, Integer, String
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from praelector.domain.enums import VoiceMode
@@ -79,3 +87,60 @@ class RevisionRow(Base):
     label: Mapped[str] = mapped_column(String, nullable=False)
     batch_id: Mapped[str | None] = mapped_column(String)
     reverted: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+
+class ChapterRow(Base):
+    """One chapter in narration order (DATA_MODEL.md §3).
+
+    ``ordinal < 0`` is a chapter that merge removed from the tree. The row stays
+    so block versions can keep their foreign key (0002_chapters).
+    """
+
+    __tablename__ = "chapter"
+    __table_args__ = (
+        UniqueConstraint("project_id", "ordinal", name="uq_chapter_ordinal"),
+        Index("ix_chapter_project", "project_id", "ordinal"),
+    )
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str] = mapped_column(ForeignKey("project.id"), nullable=False)
+    ordinal: Mapped[int] = mapped_column(Integer, nullable=False)
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    included: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    source_href: Mapped[str | None] = mapped_column(String)
+    spine_index: Mapped[int | None] = mapped_column(Integer)
+    char_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+
+
+class BlockRow(Base):
+    """One version of a block (DATA_MODEL.md §4, D-08).
+
+    ``id`` is stable across edits. ``version_id`` is the row. A current row has
+    ``valid_to_revision`` NULL; closing it sets that column to the revision that
+    replaced it.
+    """
+
+    __tablename__ = "block"
+    __table_args__ = (
+        CheckConstraint(
+            "kind IN ('paragraph','heading','blockquote','list_item','caption')",
+            name="ck_block_kind",
+        ),
+        CheckConstraint(
+            "heading_level IS NULL OR (heading_level >= 1 AND heading_level <= 6)",
+            name="ck_block_heading_level",
+        ),
+        Index("ix_block_current", "chapter_id", "valid_to_revision", "ordinal"),
+        Index("ix_block_id", "id", "valid_from_revision"),
+    )
+
+    id: Mapped[str] = mapped_column(String, nullable=False)
+    version_id: Mapped[str] = mapped_column(String, primary_key=True)
+    chapter_id: Mapped[str] = mapped_column(ForeignKey("chapter.id"), nullable=False)
+    ordinal: Mapped[int] = mapped_column(Integer, nullable=False)
+    kind: Mapped[str] = mapped_column(String, nullable=False)
+    heading_level: Mapped[int | None] = mapped_column(Integer)
+    text: Mapped[str] = mapped_column(String, nullable=False)
+    source_ref_json: Mapped[str | None] = mapped_column(String)
+    valid_from_revision: Mapped[int] = mapped_column(Integer, nullable=False)
+    valid_to_revision: Mapped[int | None] = mapped_column(Integer)

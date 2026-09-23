@@ -1,0 +1,45 @@
+{
+  "description": "Case-sensitive literal replace. ``all_chapters`` is what crosses chapters.",
+  "properties": {
+    "all_chapters": {
+      "default": false,
+      "title": "All Chapters",
+      "type": "boolean"
+    },
+    "chapter_id": {
+      "anyOf": [
+        {
+          "pattern": "^chp_[0-9A-Z]{26}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Chapter Id"
+    },
+    "dry_run": {
+      "default": true,
+      "title": "Dry Run",
+      "type": "boolean"
+    },
+    "query": {
+      "maxLength": 2000,
+      "minLength": 1,
+      "title": "Query",
+      "type": "string"
+    },
+    "replacement": {
+      "default": "",
+      "maxLength": 2000,
+      "title": "Replacement",
+      "type": "string"
+    }
+  },
+  "required": [
+    "query"
+  ],
+  "title": "ReplaceTextRequest",
+  "type": "object"
+}

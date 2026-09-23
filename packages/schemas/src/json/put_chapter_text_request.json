@@ -1,0 +1,20 @@
+{
+  "properties": {
+    "base_revision": {
+      "minimum": 0,
+      "title": "Base Revision",
+      "type": "integer"
+    },
+    "text": {
+      "maxLength": 2000000,
+      "title": "Text",
+      "type": "string"
+    }
+  },
+  "required": [
+    "text",
+    "base_revision"
+  ],
+  "title": "PutChapterTextRequest",
+  "type": "object"
+}

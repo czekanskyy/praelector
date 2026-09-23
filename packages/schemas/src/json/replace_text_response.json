@@ -1,0 +1,66 @@
+{
+  "$defs": {
+    "ReplaceTextHit": {
+      "properties": {
+        "block_id": {
+          "title": "Block Id",
+          "type": "string"
+        },
+        "chapter_id": {
+          "title": "Chapter Id",
+          "type": "string"
+        },
+        "count": {
+          "minimum": 1,
+          "title": "Count",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "chapter_id",
+        "block_id",
+        "count"
+      ],
+      "title": "ReplaceTextHit",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "count": {
+      "minimum": 0,
+      "title": "Count",
+      "type": "integer"
+    },
+    "dry_run": {
+      "title": "Dry Run",
+      "type": "boolean"
+    },
+    "preview": {
+      "items": {
+        "$ref": "#/$defs/ReplaceTextHit"
+      },
+      "title": "Preview",
+      "type": "array"
+    },
+    "revision": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Revision"
+    }
+  },
+  "required": [
+    "count",
+    "dry_run",
+    "preview"
+  ],
+  "title": "ReplaceTextResponse",
+  "type": "object"
+}

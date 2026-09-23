@@ -1,0 +1,19 @@
+{
+  "properties": {
+    "ids": {
+      "items": {
+        "pattern": "^chp_[0-9A-Z]{26}$",
+        "type": "string"
+      },
+      "maxItems": 2,
+      "minItems": 2,
+      "title": "Ids",
+      "type": "array"
+    }
+  },
+  "required": [
+    "ids"
+  ],
+  "title": "MergeChaptersRequest",
+  "type": "object"
+}

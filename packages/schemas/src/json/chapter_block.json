@@ -1,0 +1,41 @@
+{
+  "$defs": {
+    "BlockKind": {
+      "enum": [
+        "paragraph",
+        "heading",
+        "blockquote",
+        "list_item",
+        "caption"
+      ],
+      "title": "BlockKind",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "kind": {
+      "$ref": "#/$defs/BlockKind"
+    },
+    "ordinal": {
+      "minimum": 0,
+      "title": "Ordinal",
+      "type": "integer"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "ordinal",
+    "kind",
+    "text"
+  ],
+  "title": "ChapterBlock",
+  "type": "object"
+}

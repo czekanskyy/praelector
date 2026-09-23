@@ -1,0 +1,48 @@
+{
+  "description": "One live chapter, in narration order.",
+  "properties": {
+    "block_count": {
+      "minimum": 0,
+      "title": "Block Count",
+      "type": "integer"
+    },
+    "char_count": {
+      "minimum": 0,
+      "title": "Char Count",
+      "type": "integer"
+    },
+    "est_audio_s": {
+      "minimum": 0,
+      "title": "Est Audio S",
+      "type": "integer"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "included": {
+      "title": "Included",
+      "type": "boolean"
+    },
+    "ordinal": {
+      "minimum": 0,
+      "title": "Ordinal",
+      "type": "integer"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "ordinal",
+    "title",
+    "included",
+    "block_count",
+    "char_count",
+    "est_audio_s"
+  ],
+  "title": "ChapterTreeItem",
+  "type": "object"
+}

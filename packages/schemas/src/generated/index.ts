@@ -37,6 +37,38 @@ export interface CapabilitiesResponse {
   settings_error?: string | null;
 }
 
+export interface ChapterBlock {
+  id: string;
+  ordinal: number;
+  kind: BlockKind;
+  text: string;
+}
+
+export interface ChapterTextResponse {
+  view: "display" | "spoken";
+  revision: number;
+  text: string;
+  blocks: ChapterBlock[];
+}
+
+/**
+ * One live chapter, in narration order.
+ */
+export interface ChapterTreeItem {
+  id: string;
+  ordinal: number;
+  title: string;
+  included: boolean;
+  block_count: number;
+  char_count: number;
+  est_audio_s: number;
+}
+
+export interface ChapterTreeResponse {
+  revision: number;
+  chapters: ChapterTreeItem[];
+}
+
 export interface ClientOp {
   op: "subscribe" | "ping";
   topics?: string[] | null;
@@ -150,6 +182,21 @@ export interface HealthResponse {
 
 export type IdPrefix = "prj" | "chp" | "blk" | "spn" | "sug" | "vpr" | "job" | "lex" | "bat";
 
+/**
+ * An EPUB path the user already probed. The file is not modified.
+ */
+export interface IngestCommitRequest {
+  path: string;
+}
+
+export interface IngestCommitResponse {
+  chapter_count: number;
+  block_count: number;
+  original_rel: string;
+  working_epub_rel: string;
+  revision: number;
+}
+
 export interface IngestDrmStatus {
   detected?: boolean;
   reason?: string | null;
@@ -194,7 +241,21 @@ export type LlmPreset = "ollama" | "lmstudio" | "openai" | "anthropic" | "gemini
 
 export type LlmProviderKind = "openai_compatible" | "openai" | "anthropic" | "gemini";
 
+export interface MergeChaptersRequest {
+  ids: string[];
+}
+
+export interface MergeChaptersResponse {
+  revision: number;
+  chapter: ChapterTreeItem;
+}
+
 export type MuxMode = "full" | "partial";
+
+export interface PatchChapterRequest {
+  title?: string | null;
+  included?: boolean | null;
+}
 
 export interface PatchProjectRequest {
   name?: string | null;
@@ -281,6 +342,49 @@ export interface ProjectSummary {
   unreadable?: boolean;
 }
 
+export interface PutChapterTextRequest {
+  text: string;
+  base_revision: number;
+}
+
+/**
+ * ``orphaned_span_ids`` is empty until spans are stored.
+ */
+export interface PutChapterTextResponse {
+  revision: number;
+  orphaned_span_ids: string[];
+  text: string;
+  blocks: ChapterBlock[];
+}
+
+export interface ReorderChaptersRequest {
+  order: string[];
+}
+
+export interface ReplaceTextHit {
+  chapter_id: string;
+  block_id: string;
+  count: number;
+}
+
+/**
+ * Case-sensitive literal replace. ``all_chapters`` is what crosses chapters.
+ */
+export interface ReplaceTextRequest {
+  query: string;
+  replacement?: string;
+  dry_run?: boolean;
+  chapter_id?: string | null;
+  all_chapters?: boolean;
+}
+
+export interface ReplaceTextResponse {
+  count: number;
+  dry_run: boolean;
+  revision?: number | null;
+  preview: ReplaceTextHit[];
+}
+
 export type RuntimeFlavour = "cpu" | "cuda" | "rocm";
 
 export type SecretBackend = "keyring" | "file" | "unavailable";
@@ -307,6 +411,19 @@ export type SourceFormat = "epub" | "pdf" | "mobi" | "azw3" | "azw";
 export type SpanKind = "narration" | "dialogue" | "pronunciation" | "pause" | "skip";
 
 export type SpanOrigin = "ingest" | "heuristic" | "llm" | "manual";
+
+/**
+ * ``offset`` is a character offset into ``block_id`` (ED-01, split at caret).
+ */
+export interface SplitChapterRequest {
+  block_id: string;
+  offset: number;
+}
+
+export interface SplitChapterResponse {
+  revision: number;
+  chapters: ChapterTreeItem[];
+}
 
 export type SuggestionCategory = "foreign_word" | "acronym" | "toponym" | "numeral" | "ordinal_heading" | "dialogue_split" | "speaker_gender" | "conversion_artifact" | "dict_hit";
 

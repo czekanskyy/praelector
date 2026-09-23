@@ -1,0 +1,24 @@
+{
+  "properties": {
+    "block_id": {
+      "title": "Block Id",
+      "type": "string"
+    },
+    "chapter_id": {
+      "title": "Chapter Id",
+      "type": "string"
+    },
+    "count": {
+      "minimum": 1,
+      "title": "Count",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "chapter_id",
+    "block_id",
+    "count"
+  ],
+  "title": "ReplaceTextHit",
+  "type": "object"
+}

@@ -27,6 +27,30 @@
       "type": "CapabilitiesResponse"
     },
     {
+      "name": "chapter_block",
+      "file": "chapter_block.json",
+      "model": "praelector.api.v1.chapters.ChapterBlock",
+      "type": "ChapterBlock"
+    },
+    {
+      "name": "chapter_text_response",
+      "file": "chapter_text_response.json",
+      "model": "praelector.api.v1.chapters.ChapterTextResponse",
+      "type": "ChapterTextResponse"
+    },
+    {
+      "name": "chapter_tree_item",
+      "file": "chapter_tree_item.json",
+      "model": "praelector.api.v1.chapters.ChapterTreeItem",
+      "type": "ChapterTreeItem"
+    },
+    {
+      "name": "chapter_tree_response",
+      "file": "chapter_tree_response.json",
+      "model": "praelector.api.v1.chapters.ChapterTreeResponse",
+      "type": "ChapterTreeResponse"
+    },
+    {
       "name": "client_op",
       "file": "client_op.json",
       "model": "praelector.api.v1.ws.ClientOp",
@@ -123,6 +147,18 @@
       "type": "IdPrefix"
     },
     {
+      "name": "ingest_commit_request",
+      "file": "ingest_commit_request.json",
+      "model": "praelector.api.v1.ingest.IngestCommitRequest",
+      "type": "IngestCommitRequest"
+    },
+    {
+      "name": "ingest_commit_response",
+      "file": "ingest_commit_response.json",
+      "model": "praelector.api.v1.ingest.IngestCommitResponse",
+      "type": "IngestCommitResponse"
+    },
+    {
       "name": "ingest_probe_request",
       "file": "ingest_probe_request.json",
       "model": "praelector.api.v1.ingest.IngestProbeRequest",
@@ -165,10 +201,28 @@
       "type": "LlmProviderKind"
     },
     {
+      "name": "merge_chapters_request",
+      "file": "merge_chapters_request.json",
+      "model": "praelector.api.v1.chapters.MergeChaptersRequest",
+      "type": "MergeChaptersRequest"
+    },
+    {
+      "name": "merge_chapters_response",
+      "file": "merge_chapters_response.json",
+      "model": "praelector.api.v1.chapters.MergeChaptersResponse",
+      "type": "MergeChaptersResponse"
+    },
+    {
       "name": "mux_mode",
       "file": "mux_mode.json",
       "model": "praelector.domain.enums.MuxMode",
       "type": "MuxMode"
+    },
+    {
+      "name": "patch_chapter_request",
+      "file": "patch_chapter_request.json",
+      "model": "praelector.api.v1.chapters.PatchChapterRequest",
+      "type": "PatchChapterRequest"
     },
     {
       "name": "patch_project_request",
@@ -225,6 +279,42 @@
       "type": "ProjectSummary"
     },
     {
+      "name": "put_chapter_text_request",
+      "file": "put_chapter_text_request.json",
+      "model": "praelector.api.v1.chapters.PutChapterTextRequest",
+      "type": "PutChapterTextRequest"
+    },
+    {
+      "name": "put_chapter_text_response",
+      "file": "put_chapter_text_response.json",
+      "model": "praelector.api.v1.chapters.PutChapterTextResponse",
+      "type": "PutChapterTextResponse"
+    },
+    {
+      "name": "reorder_chapters_request",
+      "file": "reorder_chapters_request.json",
+      "model": "praelector.api.v1.chapters.ReorderChaptersRequest",
+      "type": "ReorderChaptersRequest"
+    },
+    {
+      "name": "replace_text_hit",
+      "file": "replace_text_hit.json",
+      "model": "praelector.api.v1.chapters.ReplaceTextHit",
+      "type": "ReplaceTextHit"
+    },
+    {
+      "name": "replace_text_request",
+      "file": "replace_text_request.json",
+      "model": "praelector.api.v1.chapters.ReplaceTextRequest",
+      "type": "ReplaceTextRequest"
+    },
+    {
+      "name": "replace_text_response",
+      "file": "replace_text_response.json",
+      "model": "praelector.api.v1.chapters.ReplaceTextResponse",
+      "type": "ReplaceTextResponse"
+    },
+    {
       "name": "runtime_flavour",
       "file": "runtime_flavour.json",
       "model": "praelector.domain.enums.RuntimeFlavour",
@@ -259,6 +349,18 @@
       "file": "span_origin.json",
       "model": "praelector.domain.enums.SpanOrigin",
       "type": "SpanOrigin"
+    },
+    {
+      "name": "split_chapter_request",
+      "file": "split_chapter_request.json",
+      "model": "praelector.api.v1.chapters.SplitChapterRequest",
+      "type": "SplitChapterRequest"
+    },
+    {
+      "name": "split_chapter_response",
+      "file": "split_chapter_response.json",
+      "model": "praelector.api.v1.chapters.SplitChapterResponse",
+      "type": "SplitChapterResponse"
     },
     {
       "name": "suggestion_category",

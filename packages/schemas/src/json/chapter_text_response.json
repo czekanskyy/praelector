@@ -1,0 +1,77 @@
+{
+  "$defs": {
+    "BlockKind": {
+      "enum": [
+        "paragraph",
+        "heading",
+        "blockquote",
+        "list_item",
+        "caption"
+      ],
+      "title": "BlockKind",
+      "type": "string"
+    },
+    "ChapterBlock": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/BlockKind"
+        },
+        "ordinal": {
+          "minimum": 0,
+          "title": "Ordinal",
+          "type": "integer"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "ordinal",
+        "kind",
+        "text"
+      ],
+      "title": "ChapterBlock",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "blocks": {
+      "items": {
+        "$ref": "#/$defs/ChapterBlock"
+      },
+      "title": "Blocks",
+      "type": "array"
+    },
+    "revision": {
+      "minimum": 0,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    },
+    "view": {
+      "enum": [
+        "display",
+        "spoken"
+      ],
+      "title": "View",
+      "type": "string"
+    }
+  },
+  "required": [
+    "view",
+    "revision",
+    "text",
+    "blocks"
+  ],
+  "title": "ChapterTextResponse",
+  "type": "object"
+}
