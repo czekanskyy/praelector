@@ -20,7 +20,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
-      - run: uv sync --project engine --frozen
+      # engine/ arrives in PR 2. license_check.py already treats a missing project
+      # directory as a warning (it says so in --help); uv sync does not.
+      - name: sync engine when it is in the tree
+        shell: bash
+        run: |
+          if [ -f engine/pyproject.toml ]; then
+            uv sync --project engine --frozen
+          else
+            echo "engine is not in this revision yet"
+          fi
 
       # NF-03: the deny list (GPL/AGPL/SSPL/BUSL/CC-*-NC) is what keeps EbookLib
       # out — D-01. Scoped to what the installer actually ships: the torch-free
@@ -44,5 +53,9 @@ jobs:
       - name: provisioned TTS runtime (informational)
         continue-on-error: true
         run: |
+          if [ ! -f engine-tts/pyproject.toml ]; then
+            echo "engine-tts is not in this revision yet"
+            exit 0
+          fi
           uv sync --project engine-tts --extra cpu --frozen
           uv run --no-project --python 3.12 python scripts/license_check.py --python engine-tts

@@ -17,19 +17,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # PLAN §14 lands the UI in PR 4. A missing package must still conclude success.
+      - name: ui package present
+        id: pkg
+        shell: bash
+        run: |
+          if [ -f apps/ui/package.json ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "apps/ui is not in this revision yet; the suite runs once it lands"
+          fi
+
       - uses: pnpm/action-setup@v4
+        if: steps.pkg.outputs.present == 'true'
       - uses: actions/setup-node@v4
+        if: steps.pkg.outputs.present == 'true'
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm -F ui lint
-      - run: pnpm -F ui typecheck            # tsc --noEmit
-      - run: pnpm -F ui test -- --run        # vitest
-      - run: node scripts/i18n_check.mjs     # IX-01 / IX-02
+      - if: steps.pkg.outputs.present == 'true'
+        run: pnpm install --frozen-lockfile
+      - if: steps.pkg.outputs.present == 'true'
+        run: pnpm -F ui lint
+      - if: steps.pkg.outputs.present == 'true'
+        run: pnpm -F ui typecheck            # tsc --noEmit
+      - if: steps.pkg.outputs.present == 'true'
+        run: pnpm -F ui test -- --run        # vitest
+      - if: steps.pkg.outputs.present == 'true'
+        run: node scripts/i18n_check.mjs     # IX-01 / IX-02
 
       - uses: astral-sh/setup-uv@v6
+        if: steps.pkg.outputs.present == 'true'
       - name: schemas are not stale
+        if: steps.pkg.outputs.present == 'true'
         run: |
           uv sync --project engine --frozen
           uv run --project engine python scripts/gen_ts_types.py

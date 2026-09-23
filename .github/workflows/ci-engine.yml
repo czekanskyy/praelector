@@ -22,40 +22,65 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # PLAN §14 lands engine in PR 2. Until that tree exists the job still has to
+      # report success, or a required check with no conclusion blocks every earlier PR.
+      - name: engine package present
+        id: pkg
+        shell: bash
+        run: |
+          if [ -f engine/pyproject.toml ] && [ -f engine-tts/pyproject.toml ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "engine is not in this revision yet; the suite runs once it lands"
+          fi
+
       - uses: astral-sh/setup-uv@v6
+        if: steps.pkg.outputs.present == 'true'
         with:
           enable-cache: true
 
-      - run: uv python install 3.12
+      - if: steps.pkg.outputs.present == 'true'
+        run: uv python install 3.12
 
       # --frozen everywhere: a lockfile that needs updating is a failing build, not a silent resolve
-      - run: uv sync --project engine --group dev --frozen
+      - if: steps.pkg.outputs.present == 'true'
+        run: uv sync --project engine --group dev --frozen
 
       # --extra cpu exercises the fake backend and worker protocol without ever pulling a CUDA/ROCm wheel
-      - run: uv sync --project engine-tts --extra cpu --group dev --frozen
+      - if: steps.pkg.outputs.present == 'true'
+        run: uv sync --project engine-tts --extra cpu --group dev --frozen
 
-      - run: uv run --project engine ruff check .
-      - run: uv run --project engine ruff format --check .
+      - if: steps.pkg.outputs.present == 'true'
+        run: uv run --project engine ruff check .
+      - if: steps.pkg.outputs.present == 'true'
+        run: uv run --project engine ruff format --check .
 
       # --directory: both projects keep their own pytest/mypy config in their own
       # pyproject.toml, which is only picked up when it is the working directory.
-      - run: uv run --directory engine mypy --strict src
-      - run: uv run --directory engine-tts mypy --strict src
+      - if: steps.pkg.outputs.present == 'true'
+        run: uv run --directory engine mypy --strict src
+      - if: steps.pkg.outputs.present == 'true'
+        run: uv run --directory engine-tts mypy --strict src
 
       - name: no torch in the core lock
+        if: steps.pkg.outputs.present == 'true'
         run: uv run --no-project --python 3.12 python scripts/assert_no_torch.py engine/uv.lock
 
       - uses: FedericoCarboni/setup-ffmpeg@v3      # real ffmpeg for mux tests
+        if: steps.pkg.outputs.present == 'true'
 
       # GPU-marked tests run only on the two reference machines; CI has no GPU
-      - run: uv run --directory engine pytest -m "not gpu" --cov=praelector --cov-report=xml
+      - if: steps.pkg.outputs.present == 'true'
+        run: uv run --directory engine pytest -m "not gpu" --cov=praelector --cov-report=xml
 
       # The worker is exercised with the cpu extra: the fake backend and the wire
       # protocol run without a GPU, and no CUDA/ROCm wheel is ever downloaded.
-      - run: uv run --directory engine-tts --extra cpu pytest -m "not gpu and not torch"
+      - if: steps.pkg.outputs.present == 'true'
+        run: uv run --directory engine-tts --extra cpu pytest -m "not gpu and not torch"
 
       - uses: actions/upload-artifact@v4
-        if: failure()
+        if: failure() && steps.pkg.outputs.present == 'true'
         with:
           name: engine-test-output-${{ matrix.os }}
           path: engine/.pytest_cache
