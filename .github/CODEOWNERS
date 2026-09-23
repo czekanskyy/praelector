@@ -1,0 +1,8 @@
+# Single maintainer for now: every path routes here, so nothing can be merged unreviewed.
+# Add per-area owners as maintainers join, e.g.
+#   /engine/      @someone
+#   /engine-tts/  @someone
+#   /apps/        @someone
+# Narrower patterns win over `*`, so this line can stay as the catch-all.
+
+* @czekanskyy

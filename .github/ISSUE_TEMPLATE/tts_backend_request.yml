@@ -1,0 +1,103 @@
+name: New TTS backend request
+description: Ask for another text-to-speech model to be added to the backend registry.
+title: "[tts] "
+labels: ["enhancement", "area:tts"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Backends are plugins (`docs/plugins.md`), so adding one is mostly an adapter plus a
+        descriptor. Two gates decide whether a request can ever be accepted:
+
+        1. **License.** App code is Apache-2.0. Dependencies or weights under GPL, AGPL, SSPL,
+           BUSL or any CC-*-NC / non-commercial licence will be rejected — the same reason
+           EbookLib is not used (`docs/plan/PLAN.md` §11.4). Code and weights are licensed
+           separately; both must be permissive.
+        2. **Polish.** v1 is Polish-first, so a backend is only useful if `pl` is in its
+           supported languages and it can clone a reference voice.
+
+  - type: input
+    id: name
+    attributes:
+      label: Backend name
+      placeholder: "e.g. Chatterbox Multilingual V3"
+    validations:
+      required: true
+
+  - type: input
+    id: upstream
+    attributes:
+      label: Upstream repository
+      description: The canonical source, not a mirror or a re-upload.
+      placeholder: "https://github.com/..."
+    validations:
+      required: true
+
+  - type: input
+    id: code-license
+    attributes:
+      label: License of the code
+      description: The SPDX id. GPL / AGPL / SSPL / BUSL will be rejected.
+      placeholder: "e.g. MIT, Apache-2.0"
+    validations:
+      required: true
+
+  - type: input
+    id: weights-license
+    attributes:
+      label: License of the weights
+      description: |
+        Checked separately from the code — many permissive repos ship non-commercial weights.
+        CC-BY-NC, "non-commercial", "research only" or an unspecified licence will be rejected.
+      placeholder: "e.g. Apache-2.0, MIT, CC-BY-4.0"
+    validations:
+      required: true
+
+  - type: input
+    id: languages
+    attributes:
+      label: Supported languages
+      description: Must include `pl` to be useful in v1. A language count alone is not enough.
+      placeholder: "e.g. 23 languages incl. pl, en, de, cs"
+    validations:
+      required: true
+
+  - type: input
+    id: vram
+    attributes:
+      label: VRAM footprint
+      description: Peak usage at the model's native precision, plus the sample rate it emits.
+      placeholder: "e.g. ~4 GB fp16, 24 kHz"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: reference-clip
+    attributes:
+      label: Does it need a reference clip?
+      description: Praelector's voice profiles are built from a short processed sample (PRD §6.5).
+      options:
+        - "Yes — voice cloning from a reference clip"
+        - "No — fixed speaker set only"
+        - "Optional — works either way"
+    validations:
+      required: true
+
+  - type: input
+    id: sample
+    attributes:
+      label: Link to a sample
+      description: Ideally Polish speech produced by this exact model.
+      placeholder: "https://..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else we should know
+      description: |
+        Known artefacts (embedded watermarks, accented Polish, hallucinated text), tokenizer
+        limits, streaming support, whether it needs a Higgs-style external component.
+    validations:
+      required: false

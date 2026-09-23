@@ -1,0 +1,17 @@
+{
+  "name": "@praelector/schemas",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The single source of the UI/engine contract: JSON Schemas generated from the engine's Pydantic models, plus generated TypeScript types.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "types": "./src/generated/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/generated/index.ts"
+    }
+  },
+  "scripts": {
+    "codegen": "uv run --project ../../engine python ../../scripts/gen_ts_types.py"
+  }
+}

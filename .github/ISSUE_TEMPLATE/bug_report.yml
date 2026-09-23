@@ -1,0 +1,130 @@
+name: Bug report
+description: Something in Praelector is broken. Please include the engine version and your GPU details.
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Praelector runs a Python engine next to a Tauri shell, so most bugs
+        cannot be diagnosed without the engine version and the GPU/runtime the job used.
+
+        Reporting a **security** problem? Do not open a public issue — use
+        [private vulnerability reporting](https://github.com/czekanskyy/praelector/security/advisories/new)
+        as described in `SECURITY.md`.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Steps to reproduce, what you expected, what actually happened.
+      value: |
+        **Steps to reproduce**
+        1.
+
+        **Expected**
+
+        **Actual**
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      description: Supported platforms are Windows 11 x64 and Arch/CachyOS with glibc >= 2.35.
+      options:
+        - Windows 11 x64
+        - Windows 10 x64
+        - Arch Linux
+        - CachyOS
+        - Other Linux (glibc >= 2.35)
+        - macOS (not supported — CI only, D-23)
+    validations:
+      required: true
+
+  - type: input
+    id: os-version
+    attributes:
+      label: OS version
+      placeholder: "e.g. Windows 11 24H2, CachyOS 2026.09 with kernel 6.16"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: gpu-vendor
+    attributes:
+      label: GPU vendor
+      description: Needed because the CUDA and ROCm paths have different runtime flavours (D-03).
+      options:
+        - NVIDIA (CUDA)
+        - AMD (ROCm)
+        - Intel
+        - None / CPU only
+    validations:
+      required: true
+
+  - type: input
+    id: gpu-model
+    attributes:
+      label: GPU model
+      placeholder: "e.g. RTX 4070 Super, Radeon RX 7800 XT"
+    validations:
+      required: true
+
+  - type: input
+    id: gpu-vram
+    attributes:
+      label: VRAM
+      description: The admission controller budgets against this, so an estimate is fine.
+      placeholder: "e.g. 12 GB"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: tts-backend
+    attributes:
+      label: TTS backend
+      description: Settings -> Backends shows which one is selected.
+      options:
+        - OmniVoice (default)
+        - Chatterbox Multilingual V3
+        - Qwen3-TTS
+        - fake (development only)
+        - Not reached — failed before synthesis
+    validations:
+      required: true
+
+  - type: dropdown
+    id: runtime-flavour
+    attributes:
+      label: TTS runtime flavour
+      description: Settings -> Runtime shows the provisioned flavour.
+      options:
+        - cpu
+        - cuda
+        - rocm
+        - Not provisioned yet
+    validations:
+      required: true
+
+  - type: input
+    id: engine-version
+    attributes:
+      label: Engine version
+      description: From the app's About box, or `GET /v1/version` on the loopback endpoint.
+      placeholder: "e.g. 0.4.1"
+    validations:
+      required: true
+
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      description: |
+        The tail of the engine log in `<dataDir>/logs/`. If the app died, the shell also shows the
+        last 200 lines it captured. The log filter redacts secrets (LM-03), but please remove
+        anything else personal. A job id and the error code from the failure banner help most.
+      render: text
+    validations:
+      required: false

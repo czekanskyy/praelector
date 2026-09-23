@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: Apache-2.0
+# Repo-wide ruff defaults for files outside the two uv projects — in practice
+# scripts/**. engine/ and engine-tts/ each carry their own [tool.ruff] section,
+# which wins for their subtrees; without this file ruff would fall back to its
+# built-in defaults here, which change between releases and would make
+# `ruff check .` (what ci-engine.yml runs) non-deterministic.
+
+line-length = 100
+target-version = "py312"
+
+# Ruff formats Python inside fenced markdown code blocks. The plan documents are
+# authored prose whose snippets are laid out for reading — the `render_key`
+# definition in DATA_MODEL.md §9.1 is deliberately aligned — so they are not
+# ruff's to reflow. Without this, `ruff format --check .` in ci-engine.yml fails
+# on the specs themselves.
+extend-exclude = ["docs"]
+
+[lint]
+select = [
+  "E",   # pycodestyle errors
+  "W",   # pycodestyle warnings
+  "F",   # pyflakes
+  "I",   # isort
+  "N",   # pep8-naming
+  "UP",  # pyupgrade
+  "B",   # flake8-bugbear
+  "C4",  # flake8-comprehensions
+  "SIM", # flake8-simplify
+  "PTH", # flake8-use-pathlib
+  "RUF", # ruff-specific
+]
+ignore = ["E501"] # line length is the formatter's job
+
+[format]
+quote-style = "double"
+line-ending = "lf"

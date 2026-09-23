@@ -1,0 +1,45 @@
+# Praelector — license review allowlist
+#
+# `scripts/license_check.py` sorts every resolved dependency into one of three
+# classes (CI_AND_RELEASE.md §5, PLAN.md §11):
+#
+#   allow   Apache-2.0, MIT, BSD-2-Clause, BSD-3-Clause, ISC, PSF-2.0, MPL-2.0,
+#           Unlicense, CC0-1.0                        -> passes unconditionally
+#   review  LGPL-2.1(-only/-or-later), LGPL-3.0(-only/-or-later), EPL-2.0 and any
+#           dependency whose license metadata is missing or unrecognised
+#                                                       -> fails CI unless an entry
+#                                                          below justifies it
+#   deny    GPL-2.0, GPL-3.0 (all variants), AGPL-3.0 (all variants), SSPL, BUSL,
+#           CC-BY-NC-*, anything with commercial terms   -> fails CI, always
+#
+# Deny-listed licenses can NEVER be allowlisted; this file is not consulted for
+# them. AGPL in particular is what stopped EbookLib from entering the project
+# (PLAN.md D-01), and no entry here may reopen that decision. Adding one is a
+# change a human reviews, not something an agent does to make CI green.
+#
+# An entry only lifts a *review* verdict, and only while the license it records is
+# still the license that resolves — if a bump changes LGPL-2.1 to LGPL-3.0 the
+# entry stops matching and the check fails again on purpose.
+#
+# This file is intentionally empty: nothing in the current dependency graph needs
+# an exception. Keep it that way.
+
+# Required shape (uncomment and adapt; every field is mandatory):
+#
+# [[allow]]
+# name    = "chardet"
+# license = "LGPL-2.1"
+# added   = "2026-09-16"
+# reason  = """
+# Encoding detection for legacy Polish plain-text input (CP1250 / ISO-8859-2)
+# during ingest (EB-04). charset-normalizer is the permissive alternative and was
+# evaluated first: it mis-detects short Polish samples as windows-1252, which
+# silently mangles diacritics and breaks every downstream heuristic. The library
+# is imported, never linked into a shipped binary, and the engine core is not
+# redistributed with it bundled (D-04), so the LGPL-2.1 relinking obligation does
+# not attach to the installer. Re-justify on every version bump.
+# """
+#
+# The `reason` must name the requirement it serves and state why no permissive
+# alternative exists. "CI was red" is not a justification and will be rejected in
+# review.

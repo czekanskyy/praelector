@@ -1,0 +1,82 @@
+name: desktop
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # ubuntu-22.04 is pinned deliberately: it fixes the glibc floor at 2.35 for the
+          # AppImage, which is what makes the artifact usable on CachyOS and older distros.
+          - { os: ubuntu-22.04, required: true }
+          - { os: windows-latest, required: true }
+          - { os: macos-14, required: false }      # D-23: best effort, produces no artifact
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ !matrix.required }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # PLAN §14 lands the shell in PR 3. Until apps/desktop exists the job still
+      # has to report success, or the required check never concludes.
+      - name: desktop package present
+        id: pkg
+        shell: bash
+        run: |
+          if [ -f apps/desktop/Cargo.toml ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "apps/desktop is not in this revision yet; the build runs once it lands"
+          fi
+
+      - uses: dtolnay/rust-toolchain@stable
+        if: steps.pkg.outputs.present == 'true'
+        with:
+          components: rustfmt, clippy
+      - uses: swatinem/rust-cache@v2
+        if: steps.pkg.outputs.present == 'true'
+      - name: linux webkit deps
+        if: steps.pkg.outputs.present == 'true' && runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - uses: pnpm/action-setup@v4
+        if: steps.pkg.outputs.present == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.pkg.outputs.present == 'true'
+        with:
+          node-version: 22
+          cache: pnpm
+      - if: steps.pkg.outputs.present == 'true'
+        run: pnpm install --frozen-lockfile
+      # tauri-build embeds the frontend assets (and on Windows the icon resource)
+      # during codegen, so the dist dir must exist before cargo runs.
+      # The UI package lands in the following PR. Until then a one-file dist is
+      # enough for the shell to compile; the real bundle replaces it.
+      - name: frontend assets
+        if: steps.pkg.outputs.present == 'true'
+        shell: bash
+        run: |
+          if [ -f apps/ui/package.json ]; then
+            pnpm -F ui build
+          else
+            mkdir -p apps/ui/dist
+            printf '%s\n' '<!doctype html><html><head><meta charset="utf-8"><title>Praelector</title></head><body></body></html>' > apps/ui/dist/index.html
+          fi
+      - if: steps.pkg.outputs.present == 'true'
+        run: cargo fmt --manifest-path apps/desktop/Cargo.toml --check
+      - if: steps.pkg.outputs.present == 'true'
+        run: cargo clippy --manifest-path apps/desktop/Cargo.toml --all-targets -- -D warnings
+      # The Tauri CLI lives in the desktop package, not the workspace root.
+      - if: steps.pkg.outputs.present == 'true'
+        run: pnpm -F desktop tauri build --no-bundle

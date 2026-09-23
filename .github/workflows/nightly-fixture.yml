@@ -1,0 +1,79 @@
+name: nightly-fixture
+
+on:
+  schedule:
+    - cron: '25 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  full-book:
+    runs-on: ubuntu-latest
+    continue-on-error: true        # never blocks a PR; failures are reported as an issue instead
+    permissions:
+      contents: read
+      issues: write                # the failure step opens/updates an issue
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv python install 3.12
+      - run: uv sync --project engine --group dev --frozen
+      - run: uv sync --project engine-tts --extra cpu --group dev --frozen
+
+      # mux and the ffprobe chapter/duration assertions need a real ffmpeg (D-06)
+      - uses: FedericoCarboni/setup-ffmpeg@v3
+
+      # The pipeline itself (ingest -> prep -> apply -> plan -> 300 chunks with the fake backend
+      # -> pause -> restart -> resume -> partial mux -> full mux -> reader EPUB export, plus the
+      # >= 95% chunk-reuse and ffprobe assertions) is a pytest marker, so the same command runs
+      # locally via `just nightly-fixture`. Until M4 lands the test, the placeholder skips.
+      - name: headless full-book run
+        run: uv run --directory engine pytest -m "full_book and not gpu"
+
+      - name: report failure as an issue
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = 'Nightly fixture run failed';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const { data: open } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              creator: 'github-actions[bot]',
+              per_page: 100,
+            });
+            const existing = open.find((issue) => issue.title === title);
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existing.number,
+                body: `Still failing at ${context.sha}: ${runUrl}`,
+              });
+              return;
+            }
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              labels: ['bug'],
+              body: [
+                'The nightly headless full-book run with the `fake` TTS backend failed.',
+                '',
+                `Run: ${runUrl}`,
+                `Commit: ${context.sha}`,
+                '',
+                'Reproduce locally with `just nightly-fixture`. This job is `continue-on-error`,',
+                'so it never blocks a PR — it is the only signal that resume/mux drifted.',
+              ].join('\n'),
+            });

@@ -1,0 +1,32 @@
+name: codeql
+
+on:
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '43 5 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    continue-on-error: true        # non-blocking: a CodeQL finding never gates a merge
+    permissions:
+      contents: read
+      security-events: write       # required by codeql-action to upload the SARIF result
+      actions: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [python, javascript-typescript]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          language: ${{ matrix.language }}
+      - uses: github/codeql-action/analyze@v3

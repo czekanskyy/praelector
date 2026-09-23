@@ -1,0 +1,17 @@
+{
+  "name": "praelector",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Praelector — prepare the page, cast the voice. Local-first ebook to chapterized M4B audiobook converter.",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@11.24.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "uv run --no-project python scripts/dev.py",
+    "dev:desktop": "uv run --no-project python scripts/dev.py --desktop",
+    "codegen": "uv run --project engine python scripts/gen_ts_types.py",
+    "i18n:check": "node scripts/i18n_check.mjs"
+  }
+}

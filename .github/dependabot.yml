@@ -1,0 +1,35 @@
+version: 2
+updates:
+  # engine-tts is monthly and capped at 2 open PRs because every torch bump needs manual
+  # verification on both reference GPUs (D-03); those PRs are never merged from CI alone.
+  - package-ecosystem: pip
+    directory: /engine
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels: [area:engine, dependencies]
+
+  - package-ecosystem: pip
+    directory: /engine-tts
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 2
+    labels: [area:engine, dependencies, needs-gpu-verification]
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    labels: [area:ui, dependencies]
+
+  - package-ecosystem: cargo
+    directory: /apps/desktop
+    schedule:
+      interval: weekly
+    labels: [area:desktop, dependencies]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    labels: [area:ci, dependencies]
