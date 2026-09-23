@@ -39,8 +39,18 @@ jobs:
 
       - run: uv run --no-project --python 3.12 python scripts/spdx_headers.py --check
 
+      # NOTICE on main already lists the engine's dependencies, which are committed
+      # with the engine tree in the next PR. Regenerating before that tree exists
+      # wipes the file down to "no components" and the diff can never be empty.
       - name: NOTICE is current
-        run: uv run --no-project --python 3.12 python scripts/license_check.py --python engine --node apps/ui --write-notice && git diff --exit-code NOTICE
+        shell: bash
+        run: |
+          if [ ! -f engine/pyproject.toml ]; then
+            echo "engine is not in this revision yet; NOTICE is checked once it lands"
+            exit 0
+          fi
+          uv run --no-project --python 3.12 python scripts/license_check.py --python engine --node apps/ui --write-notice
+          git diff --exit-code NOTICE
 
       # The provisioned TTS runtime (torch + a backend, 2.5-4 GB) is NOT in the
       # installer: it is created on the user's machine, and its component and
