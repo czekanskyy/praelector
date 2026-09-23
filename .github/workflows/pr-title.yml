@@ -23,7 +23,34 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          types: feat,fix,perf,refactor,docs,test,build,ci,chore,revert
-          scopes: engine,engine-tts,ui,desktop,ebook,text,llm,tts,gpu,jobs,mux,store,docs,ci,deps
+          # v5 reads these with getMultilineInput and does not split on commas,
+          # so a single comma-separated line is one illegal type and every title fails.
+          types: |
+            feat
+            fix
+            perf
+            refactor
+            docs
+            test
+            build
+            ci
+            chore
+            revert
+          scopes: |
+            engine
+            engine-tts
+            ui
+            desktop
+            ebook
+            text
+            llm
+            tts
+            gpu
+            jobs
+            mux
+            store
+            docs
+            ci
+            deps
           requireScope: false
           subjectPattern: ^(?![A-Z]).+[^.]$
