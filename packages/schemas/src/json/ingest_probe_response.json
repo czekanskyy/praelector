@@ -1,0 +1,191 @@
+{
+  "$defs": {
+    "IngestDrmStatus": {
+      "properties": {
+        "detected": {
+          "default": false,
+          "title": "Detected",
+          "type": "boolean"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        }
+      },
+      "title": "IngestDrmStatus",
+      "type": "object"
+    },
+    "IngestMetadataPreview": {
+      "properties": {
+        "authors": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Authors",
+          "type": "array"
+        },
+        "chapter_count": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Chapter Count"
+        },
+        "language": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Language"
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Title"
+        }
+      },
+      "title": "IngestMetadataPreview",
+      "type": "object"
+    },
+    "IngestSkipSpanModel": {
+      "properties": {
+        "block_index": {
+          "minimum": 0,
+          "title": "Block Index",
+          "type": "integer"
+        },
+        "end": {
+          "minimum": 0,
+          "title": "End",
+          "type": "integer"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "start": {
+          "minimum": 0,
+          "title": "Start",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "block_index",
+        "start",
+        "end",
+        "reason"
+      ],
+      "title": "IngestSkipSpanModel",
+      "type": "object"
+    },
+    "SourceFormat": {
+      "enum": [
+        "epub",
+        "pdf",
+        "mobi",
+        "azw3",
+        "azw"
+      ],
+      "title": "SourceFormat",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "calibre_available": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Calibre Available"
+    },
+    "converter": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Converter"
+    },
+    "drm": {
+      "$ref": "#/$defs/IngestDrmStatus"
+    },
+    "format": {
+      "$ref": "#/$defs/SourceFormat"
+    },
+    "has_text_layer": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Has Text Layer"
+    },
+    "metadata_preview": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/IngestMetadataPreview"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "needs_conversion": {
+      "title": "Needs Conversion",
+      "type": "boolean"
+    },
+    "skip_spans": {
+      "items": {
+        "$ref": "#/$defs/IngestSkipSpanModel"
+      },
+      "title": "Skip Spans",
+      "type": "array"
+    }
+  },
+  "required": [
+    "format",
+    "needs_conversion",
+    "drm"
+  ],
+  "title": "IngestProbeResponse",
+  "type": "object"
+}
