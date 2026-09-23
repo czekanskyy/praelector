@@ -1,0 +1,6 @@
+{
+  "ebook_drm_detected": "This file is protected by DRM and cannot be opened.",
+  "tts_language_unsupported": "This voice backend does not support the project's language.",
+  "internal_validation_failed": "The engine rejected the request as invalid.",
+  "fallback": "Something went wrong ({{code}})."
+}
