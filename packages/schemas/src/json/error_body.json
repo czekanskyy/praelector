@@ -12,6 +12,7 @@
         "project.not_found",
         "project.already_open",
         "project.locked",
+        "project.manifest_invalid",
         "project.schema_too_new",
         "project.not_open",
         "ebook.unsupported_format",

@@ -1,0 +1,61 @@
+{
+  "$defs": {
+    "VoiceMode": {
+      "enum": [
+        "single",
+        "narrator_dialogue",
+        "narrator_male_female"
+      ],
+      "title": "VoiceMode",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "backend_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Backend Id"
+    },
+    "dir": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Dir"
+    },
+    "name": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "spoken_language": {
+      "default": "pl",
+      "maxLength": 8,
+      "minLength": 2,
+      "title": "Spoken Language",
+      "type": "string"
+    },
+    "voice_mode": {
+      "$ref": "#/$defs/VoiceMode",
+      "default": "single"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "title": "CreateProjectRequest",
+  "type": "object"
+}

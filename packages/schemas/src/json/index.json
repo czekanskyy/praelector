@@ -3,16 +3,40 @@
   "generated_by": "scripts/gen_ts_types.py",
   "schemas": [
     {
+      "name": "audio_settings",
+      "file": "audio_settings.json",
+      "model": "praelector.config.AudioSettings",
+      "type": "AudioSettings"
+    },
+    {
+      "name": "binary_probe_model",
+      "file": "binary_probe_model.json",
+      "model": "praelector.api.v1.settings.BinaryProbeModel",
+      "type": "BinaryProbeModel"
+    },
+    {
       "name": "block_kind",
       "file": "block_kind.json",
       "model": "praelector.domain.enums.BlockKind",
       "type": "BlockKind"
     },
     {
+      "name": "capabilities_response",
+      "file": "capabilities_response.json",
+      "model": "praelector.api.v1.settings.CapabilitiesResponse",
+      "type": "CapabilitiesResponse"
+    },
+    {
       "name": "client_op",
       "file": "client_op.json",
       "model": "praelector.api.v1.ws.ClientOp",
       "type": "ClientOp"
+    },
+    {
+      "name": "create_project_request",
+      "file": "create_project_request.json",
+      "model": "praelector.api.v1.projects.CreateProjectRequest",
+      "type": "CreateProjectRequest"
     },
     {
       "name": "detector",
@@ -57,10 +81,34 @@
       "type": "Gender"
     },
     {
+      "name": "gpu_device_info",
+      "file": "gpu_device_info.json",
+      "model": "praelector.gpu.detect.GpuDeviceInfo",
+      "type": "GpuDeviceInfo"
+    },
+    {
+      "name": "gpu_devices_response",
+      "file": "gpu_devices_response.json",
+      "model": "praelector.api.v1.gpu.GpuDevicesResponse",
+      "type": "GpuDevicesResponse"
+    },
+    {
+      "name": "gpu_policy",
+      "file": "gpu_policy.json",
+      "model": "praelector.config.GpuPolicy",
+      "type": "GpuPolicy"
+    },
+    {
       "name": "gpu_vendor",
       "file": "gpu_vendor.json",
       "model": "praelector.domain.enums.GpuVendor",
       "type": "GpuVendor"
+    },
+    {
+      "name": "gpu_vendor_availability",
+      "file": "gpu_vendor_availability.json",
+      "model": "praelector.gpu.detect.GpuVendorAvailability",
+      "type": "GpuVendorAvailability"
     },
     {
       "name": "health_response",
@@ -111,6 +159,24 @@
       "type": "MuxMode"
     },
     {
+      "name": "patch_project_request",
+      "file": "patch_project_request.json",
+      "model": "praelector.api.v1.projects.PatchProjectRequest",
+      "type": "PatchProjectRequest"
+    },
+    {
+      "name": "path_settings",
+      "file": "path_settings.json",
+      "model": "praelector.config.PathSettings",
+      "type": "PathSettings"
+    },
+    {
+      "name": "paths_model",
+      "file": "paths_model.json",
+      "model": "praelector.api.v1.settings.PathsModel",
+      "type": "PathsModel"
+    },
+    {
       "name": "pause_mode",
       "file": "pause_mode.json",
       "model": "praelector.domain.enums.PauseMode",
@@ -129,10 +195,34 @@
       "type": "Precision"
     },
     {
+      "name": "project_detail",
+      "file": "project_detail.json",
+      "model": "praelector.domain.models.ProjectDetail",
+      "type": "ProjectDetail"
+    },
+    {
+      "name": "project_list_response",
+      "file": "project_list_response.json",
+      "model": "praelector.api.v1.projects.ProjectListResponse",
+      "type": "ProjectListResponse"
+    },
+    {
+      "name": "project_summary",
+      "file": "project_summary.json",
+      "model": "praelector.domain.models.ProjectSummary",
+      "type": "ProjectSummary"
+    },
+    {
       "name": "runtime_flavour",
       "file": "runtime_flavour.json",
       "model": "praelector.domain.enums.RuntimeFlavour",
       "type": "RuntimeFlavour"
+    },
+    {
+      "name": "settings",
+      "file": "settings.json",
+      "model": "praelector.config.Settings",
+      "type": "Settings"
     },
     {
       "name": "shutdown_response",

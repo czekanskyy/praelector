@@ -1,0 +1,142 @@
+{
+  "$defs": {
+    "GpuDeviceInfo": {
+      "description": "One device in ``GET /v1/gpu/devices`` (OPENAPI_SKETCH.md §8).\n\nFrozen: the same instance is handed to every caller of the 5 s cache, and the\nM4 scheduler reads it from worker threads.\n\n``memory_free_mib`` is reported exactly as the driver reported it. A driver\nthat claims more free than total VRAM is broken, and clamping here would hide\nthat from the bug report GPU-06 exists to support; the budget math\n(PLAN.md §7.2) is what has to cope with it.",
+      "properties": {
+        "available": {
+          "title": "Available",
+          "type": "boolean"
+        },
+        "driver": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Driver"
+        },
+        "index": {
+          "title": "Index",
+          "type": "integer"
+        },
+        "memory_free_mib": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Memory Free Mib"
+        },
+        "memory_total_mib": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Memory Total Mib"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "vendor": {
+          "$ref": "#/$defs/GpuVendor"
+        }
+      },
+      "required": [
+        "index",
+        "vendor",
+        "name",
+        "available"
+      ],
+      "title": "GpuDeviceInfo",
+      "type": "object"
+    },
+    "GpuVendor": {
+      "enum": [
+        "nvidia",
+        "amd",
+        "cpu"
+      ],
+      "title": "GpuVendor",
+      "type": "string"
+    },
+    "GpuVendorAvailability": {
+      "description": "Whether one vendor stack could be probed, and if not, why (GPU-07).\n\nThis is what lets the UI say \"ROCm stack not detected\" next to a CPU-only\nmachine instead of showing an empty list and shrugging.",
+      "properties": {
+        "available": {
+          "title": "Available",
+          "type": "boolean"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "vendor": {
+          "$ref": "#/$defs/GpuVendor"
+        }
+      },
+      "required": [
+        "vendor",
+        "available"
+      ],
+      "title": "GpuVendorAvailability",
+      "type": "object"
+    }
+  },
+  "description": "The body of both GPU routes.\n\n``devices`` is ordered NVIDIA, then AMD, then the CPU pseudo-device with\n``index == -1``; GPU-04's ``device_index`` names a position in that list, so\nthe order is part of the contract and never varies on the same machine.\n\n``vendors`` carries one row per vendor stack, with a stable snake_case reason\ncode when it could not be probed. That is what lets the UI explain \"ROCm\nstack not detected\" instead of showing a bare CPU-only machine and leaving the\nuser to guess (GPU-07, D-16).",
+  "properties": {
+    "devices": {
+      "items": {
+        "$ref": "#/$defs/GpuDeviceInfo"
+      },
+      "title": "Devices",
+      "type": "array"
+    },
+    "vendors": {
+      "items": {
+        "$ref": "#/$defs/GpuVendorAvailability"
+      },
+      "title": "Vendors",
+      "type": "array"
+    }
+  },
+  "required": [
+    "devices",
+    "vendors"
+  ],
+  "title": "GpuDevicesResponse",
+  "type": "object"
+}

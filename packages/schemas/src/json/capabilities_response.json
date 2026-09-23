@@ -1,0 +1,146 @@
+{
+  "$defs": {
+    "BinaryProbeModel": {
+      "description": "One external binary. ``reason`` is a stable code, never prose (D-16).",
+      "properties": {
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Path"
+        },
+        "present": {
+          "title": "Present",
+          "type": "boolean"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Version"
+        }
+      },
+      "required": [
+        "present"
+      ],
+      "title": "BinaryProbeModel",
+      "type": "object"
+    },
+    "PathsModel": {
+      "description": "Where this installation keeps things, so the Settings screen can show it.",
+      "properties": {
+        "bin_dir": {
+          "title": "Bin Dir",
+          "type": "string"
+        },
+        "config_dir": {
+          "title": "Config Dir",
+          "type": "string"
+        },
+        "data_dir": {
+          "title": "Data Dir",
+          "type": "string"
+        },
+        "log_dir": {
+          "title": "Log Dir",
+          "type": "string"
+        },
+        "models_dir": {
+          "title": "Models Dir",
+          "type": "string"
+        },
+        "projects_dir": {
+          "title": "Projects Dir",
+          "type": "string"
+        },
+        "runtimes_dir": {
+          "title": "Runtimes Dir",
+          "type": "string"
+        }
+      },
+      "required": [
+        "data_dir",
+        "config_dir",
+        "log_dir",
+        "projects_dir",
+        "models_dir",
+        "runtimes_dir",
+        "bin_dir"
+      ],
+      "title": "PathsModel",
+      "type": "object"
+    },
+    "SecretBackend": {
+      "enum": [
+        "keyring",
+        "file",
+        "unavailable"
+      ],
+      "title": "SecretBackend",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "calibre": {
+      "$ref": "#/$defs/BinaryProbeModel"
+    },
+    "ffmpeg": {
+      "$ref": "#/$defs/BinaryProbeModel"
+    },
+    "keyring_backend": {
+      "title": "Keyring Backend",
+      "type": "string"
+    },
+    "paths": {
+      "$ref": "#/$defs/PathsModel"
+    },
+    "secret_backend": {
+      "$ref": "#/$defs/SecretBackend"
+    },
+    "settings_error": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Settings Error"
+    }
+  },
+  "required": [
+    "ffmpeg",
+    "calibre",
+    "keyring_backend",
+    "secret_backend",
+    "paths"
+  ],
+  "title": "CapabilitiesResponse",
+  "type": "object"
+}

@@ -1,0 +1,98 @@
+{
+  "$defs": {
+    "VoiceMode": {
+      "enum": [
+        "single",
+        "narrator_dialogue",
+        "narrator_male_female"
+      ],
+      "title": "VoiceMode",
+      "type": "string"
+    }
+  },
+  "description": "One Library row, built from ``project.json`` without opening the database.",
+  "properties": {
+    "backend_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Backend Id"
+    },
+    "created_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Created At"
+    },
+    "current_revision": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Current Revision",
+      "type": "integer"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "is_open": {
+      "default": false,
+      "title": "Is Open",
+      "type": "boolean"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "path": {
+      "title": "Path",
+      "type": "string"
+    },
+    "spoken_language": {
+      "default": "pl",
+      "title": "Spoken Language",
+      "type": "string"
+    },
+    "unreadable": {
+      "default": false,
+      "title": "Unreadable",
+      "type": "boolean"
+    },
+    "updated_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Updated At"
+    },
+    "voice_mode": {
+      "$ref": "#/$defs/VoiceMode"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "voice_mode",
+    "path"
+  ],
+  "title": "ProjectSummary",
+  "type": "object"
+}

@@ -1,0 +1,41 @@
+{
+  "$defs": {
+    "GpuVendor": {
+      "enum": [
+        "nvidia",
+        "amd",
+        "cpu"
+      ],
+      "title": "GpuVendor",
+      "type": "string"
+    }
+  },
+  "description": "Whether one vendor stack could be probed, and if not, why (GPU-07).\n\nThis is what lets the UI say \"ROCm stack not detected\" next to a CPU-only\nmachine instead of showing an empty list and shrugging.",
+  "properties": {
+    "available": {
+      "title": "Available",
+      "type": "boolean"
+    },
+    "reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reason"
+    },
+    "vendor": {
+      "$ref": "#/$defs/GpuVendor"
+    }
+  },
+  "required": [
+    "vendor",
+    "available"
+  ],
+  "title": "GpuVendorAvailability",
+  "type": "object"
+}

@@ -1,0 +1,114 @@
+{
+  "$defs": {
+    "VoiceMode": {
+      "enum": [
+        "single",
+        "narrator_dialogue",
+        "narrator_male_female"
+      ],
+      "title": "VoiceMode",
+      "type": "string"
+    }
+  },
+  "description": "A single project, including state that only the database knows.",
+  "properties": {
+    "backend_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Backend Id"
+    },
+    "cloud_llm_enabled": {
+      "default": false,
+      "title": "Cloud Llm Enabled",
+      "type": "boolean"
+    },
+    "created_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Created At"
+    },
+    "current_revision": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Current Revision",
+      "type": "integer"
+    },
+    "db_revision": {
+      "default": "",
+      "title": "Db Revision",
+      "type": "string"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "is_open": {
+      "default": false,
+      "title": "Is Open",
+      "type": "boolean"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "path": {
+      "title": "Path",
+      "type": "string"
+    },
+    "schema_version": {
+      "minimum": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "spoken_language": {
+      "default": "pl",
+      "title": "Spoken Language",
+      "type": "string"
+    },
+    "unreadable": {
+      "default": false,
+      "title": "Unreadable",
+      "type": "boolean"
+    },
+    "updated_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Updated At"
+    },
+    "voice_mode": {
+      "$ref": "#/$defs/VoiceMode"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "voice_mode",
+    "path",
+    "schema_version"
+  ],
+  "title": "ProjectDetail",
+  "type": "object"
+}

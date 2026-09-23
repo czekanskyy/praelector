@@ -1,0 +1,87 @@
+{
+  "$defs": {
+    "GpuVendor": {
+      "enum": [
+        "nvidia",
+        "amd",
+        "cpu"
+      ],
+      "title": "GpuVendor",
+      "type": "string"
+    }
+  },
+  "description": "One device in ``GET /v1/gpu/devices`` (OPENAPI_SKETCH.md §8).\n\nFrozen: the same instance is handed to every caller of the 5 s cache, and the\nM4 scheduler reads it from worker threads.\n\n``memory_free_mib`` is reported exactly as the driver reported it. A driver\nthat claims more free than total VRAM is broken, and clamping here would hide\nthat from the bug report GPU-06 exists to support; the budget math\n(PLAN.md §7.2) is what has to cope with it.",
+  "properties": {
+    "available": {
+      "title": "Available",
+      "type": "boolean"
+    },
+    "driver": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Driver"
+    },
+    "index": {
+      "title": "Index",
+      "type": "integer"
+    },
+    "memory_free_mib": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Memory Free Mib"
+    },
+    "memory_total_mib": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Memory Total Mib"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reason"
+    },
+    "vendor": {
+      "$ref": "#/$defs/GpuVendor"
+    }
+  },
+  "required": [
+    "index",
+    "vendor",
+    "name",
+    "available"
+  ],
+  "title": "GpuDeviceInfo",
+  "type": "object"
+}

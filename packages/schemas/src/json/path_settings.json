@@ -1,0 +1,55 @@
+{
+  "description": "Explicit binary and directory overrides. ``None`` means \"resolve it\".",
+  "properties": {
+    "calibre_path": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Calibre Path"
+    },
+    "ffmpeg_path": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Ffmpeg Path"
+    },
+    "models_dir": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Models Dir"
+    },
+    "projects_dir": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Projects Dir"
+    }
+  },
+  "title": "PathSettings",
+  "type": "object"
+}

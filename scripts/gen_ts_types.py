@@ -78,6 +78,22 @@ EXPORTS: tuple[Export, ...] = (
     Export("praelector.api.v1.health", "PlatformInfo", "platform_info"),
     Export("praelector.api.v1.health", "ShutdownResponse", "shutdown_response"),
     Export("praelector.api.v1.ws", "ClientOp", "client_op"),
+    # Projects, settings and GPU: added by the PR that introduced each model.
+    Export("praelector.domain.models", "ProjectSummary", "project_summary"),
+    Export("praelector.domain.models", "ProjectDetail", "project_detail"),
+    Export("praelector.api.v1.projects", "CreateProjectRequest", "create_project_request"),
+    Export("praelector.api.v1.projects", "PatchProjectRequest", "patch_project_request"),
+    Export("praelector.api.v1.projects", "ProjectListResponse", "project_list_response"),
+    Export("praelector.config", "Settings", "settings"),
+    Export("praelector.config", "AudioSettings", "audio_settings"),
+    Export("praelector.config", "GpuPolicy", "gpu_policy"),
+    Export("praelector.config", "PathSettings", "path_settings"),
+    Export("praelector.api.v1.settings", "BinaryProbeModel", "binary_probe_model"),
+    Export("praelector.api.v1.settings", "PathsModel", "paths_model"),
+    Export("praelector.api.v1.settings", "CapabilitiesResponse", "capabilities_response"),
+    Export("praelector.gpu.detect", "GpuDeviceInfo", "gpu_device_info"),
+    Export("praelector.gpu.detect", "GpuVendorAvailability", "gpu_vendor_availability"),
+    Export("praelector.api.v1.gpu", "GpuDevicesResponse", "gpu_devices_response"),
 )
 
 

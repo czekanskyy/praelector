@@ -1,0 +1,45 @@
+{
+  "description": "User overrides for the GPU-04 budget math; the formula supplies defaults.",
+  "properties": {
+    "allow_cpu": {
+      "default": true,
+      "title": "Allow Cpu",
+      "type": "boolean"
+    },
+    "device_index": {
+      "default": 0,
+      "minimum": -1,
+      "title": "Device Index",
+      "type": "integer"
+    },
+    "peak_worker_mib_overrides": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "title": "Peak Worker Mib Overrides",
+      "type": "object"
+    },
+    "reserve_mib": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reserve Mib"
+    },
+    "worker_cap": {
+      "default": 4,
+      "maximum": 16,
+      "minimum": 1,
+      "title": "Worker Cap",
+      "type": "integer"
+    }
+  },
+  "title": "GpuPolicy",
+  "type": "object"
+}

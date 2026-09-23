@@ -1,0 +1,42 @@
+{
+  "description": "Global audio output (TTS-05, TTS-08).\n\nApplied at concat time, so changing these never invalidates rendered chunks\n(DATA_MODEL.md §9.2).",
+  "properties": {
+    "crossfade_ms": {
+      "default": 0,
+      "maximum": 2000,
+      "minimum": 0,
+      "title": "Crossfade Ms",
+      "type": "integer"
+    },
+    "inter_sentence_silence_ms": {
+      "default": 300,
+      "maximum": 5000,
+      "minimum": 0,
+      "title": "Inter Sentence Silence Ms",
+      "type": "integer"
+    },
+    "output_bitrate_kbps": {
+      "default": 64,
+      "maximum": 320,
+      "minimum": 16,
+      "title": "Output Bitrate Kbps",
+      "type": "integer"
+    },
+    "output_sample_rate": {
+      "default": 44100,
+      "maximum": 192000,
+      "minimum": 8000,
+      "title": "Output Sample Rate",
+      "type": "integer"
+    },
+    "target_lufs": {
+      "default": -23.0,
+      "maximum": -5.0,
+      "minimum": -70.0,
+      "title": "Target Lufs",
+      "type": "number"
+    }
+  },
+  "title": "AudioSettings",
+  "type": "object"
+}
