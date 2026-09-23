@@ -1,4 +1,20 @@
 {
   "title": "Library",
-  "empty": "No projects yet."
+  "loading": "Loading projects.",
+  "empty": "No projects yet.",
+  "empty_dir": "Projects are stored in {{path}}.",
+  "retry": "Try again",
+  "error_code": "Error code",
+  "create_name": "Project name",
+  "create_placeholder": "For example: Lalka",
+  "create_submit": "Create project",
+  "create_pending": "Creating…",
+  "spoken_language": "Spoken language:",
+  "updated": "Updated:",
+  "updated_unknown": "Unknown time",
+  "status_open": "Open",
+  "status_unreadable": "Unreadable",
+  "open_pending": "Opening the project.",
+  "language_pl": "Polish",
+  "language_en": "English"
 }

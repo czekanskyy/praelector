@@ -2,5 +2,12 @@
   "ebook_drm_detected": "Ten plik jest chroniony systemem DRM i nie można go otworzyć.",
   "tts_language_unsupported": "Ten silnik głosu nie obsługuje języka projektu.",
   "internal_validation_failed": "Silnik odrzucił żądanie jako nieprawidłowe.",
+  "internal_error": "Silnik nie mógł wykonać żądania.",
+  "engine_not_ready": "Silnik jest nieosiągalny.",
+  "project_not_found": "Nie znaleziono tego projektu.",
+  "project_already_open": "To koliduje z już otwartym projektem albo katalog docelowy nie jest pusty.",
+  "project_locked": "Ten projekt jest zablokowany przez inny proces.",
+  "project_manifest_invalid": "Manifest tego projektu jest nieprawidłowy.",
+  "project_schema_too_new": "Ten projekt został zapisany przez nowszą wersję Praelectora.",
   "fallback": "Coś poszło nie tak ({{code}})."
 }
