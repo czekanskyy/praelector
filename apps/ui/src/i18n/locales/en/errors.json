@@ -2,5 +2,12 @@
   "ebook_drm_detected": "This file is protected by DRM and cannot be opened.",
   "tts_language_unsupported": "This voice backend does not support the project's language.",
   "internal_validation_failed": "The engine rejected the request as invalid.",
+  "internal_error": "The engine could not complete the request.",
+  "engine_not_ready": "The engine is unreachable.",
+  "project_not_found": "That project could not be found.",
+  "project_already_open": "That conflicts with a project that is already open, or the target directory is not empty.",
+  "project_locked": "This project is locked by another process.",
+  "project_manifest_invalid": "This project's manifest is invalid.",
+  "project_schema_too_new": "This project was written by a newer version of Praelector.",
   "fallback": "Something went wrong ({{code}})."
 }

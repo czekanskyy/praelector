@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router";
 import { z } from "zod";
@@ -8,6 +8,7 @@ import { Connecting } from "./components/shell/Connecting";
 import { FatalPanel } from "./components/shell/FatalPanel";
 import { ThemeRoot } from "./components/shell/ThemeRoot";
 import { EngineApi } from "./lib/api/client";
+import { EngineApiProvider } from "./lib/api/context";
 import { failureCode, loadEngineEndpoint } from "./lib/api/endpoint";
 import { inTauriWebview } from "./lib/tauri/runtime";
 import { EngineEvents } from "./lib/ws/client";
@@ -51,17 +52,19 @@ function ConnectionGate() {
     retryDelay: (attempt) => Math.min(500 * 2 ** attempt, 4000),
   });
   const [eventCode, setEventCode] = useState<string | null>(null);
-  const port = endpoint.data?.port;
-  const token = endpoint.data?.token;
+  const coordinates = endpoint.data;
+  const api = useMemo(
+    () => (coordinates ? new EngineApi(coordinates) : null),
+    [coordinates],
+  );
   const refetchEndpoint = endpoint.refetch;
 
   useEffect(() => {
-    if (port === undefined || token === undefined) return;
-    const coords = { port, token };
-    const events = new EngineEvents(coords, new EngineApi(coords));
+    if (!coordinates || !api) return;
+    const events = new EngineEvents(coordinates, api);
     events.connect();
     return () => events.close();
-  }, [port, token]);
+  }, [coordinates, api]);
 
   useEffect(() => {
     if (!inShell) return;
@@ -110,7 +113,13 @@ function ConnectionGate() {
 
   return (
     <>
-      {blocked ? <Connecting /> : <AppRoutes />}
+      {blocked ? (
+        <Connecting />
+      ) : (
+        <EngineApiProvider api={api}>
+          <AppRoutes />
+        </EngineApiProvider>
+      )}
       <FatalPanel code={inShell ? code : null} />
     </>
   );

@@ -1,4 +1,20 @@
 {
   "title": "Biblioteka",
-  "empty": "Nie ma jeszcze żadnych projektów."
+  "loading": "Wczytywanie projektów.",
+  "empty": "Nie ma jeszcze żadnych projektów.",
+  "empty_dir": "Projekty są przechowywane w {{path}}.",
+  "retry": "Spróbuj ponownie",
+  "error_code": "Kod błędu",
+  "create_name": "Nazwa projektu",
+  "create_placeholder": "Na przykład: Lalka",
+  "create_submit": "Utwórz projekt",
+  "create_pending": "Tworzenie…",
+  "spoken_language": "Język mówiony:",
+  "updated": "Zaktualizowano:",
+  "updated_unknown": "Nieznany czas",
+  "status_open": "Otwarty",
+  "status_unreadable": "Nieczytelny",
+  "open_pending": "Otwieranie projektu.",
+  "language_pl": "polski",
+  "language_en": "angielski"
 }
