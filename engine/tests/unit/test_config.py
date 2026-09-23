@@ -57,6 +57,25 @@ def test_projects_default_to_the_home_directory() -> None:
     assert resolve_paths({}).projects_dir == Path.home() / "Praelector" / "projects"
 
 
+def test_the_platform_path_table_matches_the_plan() -> None:
+    """PLAN.md §1.7: on Windows config roams, data and logs are local."""
+    paths = resolve_paths({})
+    if os.name == "nt":
+        local = Path(os.environ["LOCALAPPDATA"])
+        roaming = Path(os.environ["APPDATA"])
+        assert paths.data_dir == local / "Praelector"
+        assert paths.config_dir == roaming / "Praelector"
+        assert paths.log_dir == paths.data_dir / "logs"
+    else:
+        assert paths.data_dir.name == "praelector"
+        assert paths.config_dir.name == "praelector"
+        assert paths.log_dir.name == "logs"
+    # platformdirs returns the data dir for user_config_dir unless roaming=True,
+    # which would collapse the two and put a machine-local cache beside a roaming
+    # config. That regression is what this asserts against.
+    assert paths.config_dir != paths.data_dir
+
+
 def test_runtime_and_model_dirs_are_content_addressed(tmp_path: Path) -> None:
     paths = resolve_paths({ENV_DATA_DIR: os.fspath(tmp_path / "data")})
     assert paths.runtime_dir("cuda", "abc123").name == "cuda-abc123"

@@ -138,8 +138,12 @@ def resolve_paths(
     data_dir = _path_or(env, ENV_DATA_DIR) or Path(
         platformdirs.user_data_dir(_APP_DIR_NAME, appauthor=False)
     )
+    # roaming=True is what makes this %APPDATA% instead of %LOCALAPPDATA% on
+    # Windows. Without it platformdirs returns the data dir again and config and
+    # data collapse into one directory, contradicting PLAN.md §1.7. Ignored on
+    # Linux, where the config dir is already $XDG_CONFIG_HOME.
     config_dir = _path_or(env, ENV_CONFIG_DIR) or Path(
-        platformdirs.user_config_dir(_APP_DIR_NAME, appauthor=False)
+        platformdirs.user_config_dir(_APP_DIR_NAME, appauthor=False, roaming=True)
     )
     return AppPaths(
         data_dir=data_dir,
