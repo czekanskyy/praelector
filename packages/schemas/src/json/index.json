@@ -1,0 +1,204 @@
+{
+  "description": "Praelector UI/engine contract, generated from the engine's Pydantic models.",
+  "generated_by": "scripts/gen_ts_types.py",
+  "schemas": [
+    {
+      "name": "block_kind",
+      "file": "block_kind.json",
+      "model": "praelector.domain.enums.BlockKind",
+      "type": "BlockKind"
+    },
+    {
+      "name": "client_op",
+      "file": "client_op.json",
+      "model": "praelector.api.v1.ws.ClientOp",
+      "type": "ClientOp"
+    },
+    {
+      "name": "detector",
+      "file": "detector.json",
+      "model": "praelector.domain.enums.Detector",
+      "type": "Detector"
+    },
+    {
+      "name": "epub_variant",
+      "file": "epub_variant.json",
+      "model": "praelector.domain.enums.EpubVariant",
+      "type": "EpubVariant"
+    },
+    {
+      "name": "error_body",
+      "file": "error_body.json",
+      "model": "praelector.errors.ErrorBody",
+      "type": "ErrorBody"
+    },
+    {
+      "name": "error_code",
+      "file": "error_code.json",
+      "model": "praelector.errors.ErrorCode",
+      "type": "ErrorCode"
+    },
+    {
+      "name": "error_response",
+      "file": "error_response.json",
+      "model": "praelector.errors.ErrorResponse",
+      "type": "ErrorResponse"
+    },
+    {
+      "name": "event_type",
+      "file": "event_type.json",
+      "model": "praelector.domain.enums.EventType",
+      "type": "EventType"
+    },
+    {
+      "name": "gender",
+      "file": "gender.json",
+      "model": "praelector.domain.enums.Gender",
+      "type": "Gender"
+    },
+    {
+      "name": "gpu_vendor",
+      "file": "gpu_vendor.json",
+      "model": "praelector.domain.enums.GpuVendor",
+      "type": "GpuVendor"
+    },
+    {
+      "name": "health_response",
+      "file": "health_response.json",
+      "model": "praelector.api.v1.health.HealthResponse",
+      "type": "HealthResponse"
+    },
+    {
+      "name": "id_prefix",
+      "file": "id_prefix.json",
+      "model": "praelector.domain.ids.IdPrefix",
+      "type": "IdPrefix"
+    },
+    {
+      "name": "job_kind",
+      "file": "job_kind.json",
+      "model": "praelector.domain.enums.JobKind",
+      "type": "JobKind"
+    },
+    {
+      "name": "job_stage",
+      "file": "job_stage.json",
+      "model": "praelector.domain.enums.JobStage",
+      "type": "JobStage"
+    },
+    {
+      "name": "job_state",
+      "file": "job_state.json",
+      "model": "praelector.domain.enums.JobState",
+      "type": "JobState"
+    },
+    {
+      "name": "llm_preset",
+      "file": "llm_preset.json",
+      "model": "praelector.domain.enums.LlmPreset",
+      "type": "LlmPreset"
+    },
+    {
+      "name": "llm_provider_kind",
+      "file": "llm_provider_kind.json",
+      "model": "praelector.domain.enums.LlmProviderKind",
+      "type": "LlmProviderKind"
+    },
+    {
+      "name": "mux_mode",
+      "file": "mux_mode.json",
+      "model": "praelector.domain.enums.MuxMode",
+      "type": "MuxMode"
+    },
+    {
+      "name": "pause_mode",
+      "file": "pause_mode.json",
+      "model": "praelector.domain.enums.PauseMode",
+      "type": "PauseMode"
+    },
+    {
+      "name": "platform_info",
+      "file": "platform_info.json",
+      "model": "praelector.api.v1.health.PlatformInfo",
+      "type": "PlatformInfo"
+    },
+    {
+      "name": "precision",
+      "file": "precision.json",
+      "model": "praelector.domain.enums.Precision",
+      "type": "Precision"
+    },
+    {
+      "name": "runtime_flavour",
+      "file": "runtime_flavour.json",
+      "model": "praelector.domain.enums.RuntimeFlavour",
+      "type": "RuntimeFlavour"
+    },
+    {
+      "name": "shutdown_response",
+      "file": "shutdown_response.json",
+      "model": "praelector.api.v1.health.ShutdownResponse",
+      "type": "ShutdownResponse"
+    },
+    {
+      "name": "source_format",
+      "file": "source_format.json",
+      "model": "praelector.domain.enums.SourceFormat",
+      "type": "SourceFormat"
+    },
+    {
+      "name": "span_kind",
+      "file": "span_kind.json",
+      "model": "praelector.domain.enums.SpanKind",
+      "type": "SpanKind"
+    },
+    {
+      "name": "span_origin",
+      "file": "span_origin.json",
+      "model": "praelector.domain.enums.SpanOrigin",
+      "type": "SpanOrigin"
+    },
+    {
+      "name": "suggestion_category",
+      "file": "suggestion_category.json",
+      "model": "praelector.domain.enums.SuggestionCategory",
+      "type": "SuggestionCategory"
+    },
+    {
+      "name": "suggestion_status",
+      "file": "suggestion_status.json",
+      "model": "praelector.domain.enums.SuggestionStatus",
+      "type": "SuggestionStatus"
+    },
+    {
+      "name": "task_key",
+      "file": "task_key.json",
+      "model": "praelector.domain.enums.TaskKey",
+      "type": "TaskKey"
+    },
+    {
+      "name": "version_response",
+      "file": "version_response.json",
+      "model": "praelector.api.v1.health.VersionResponse",
+      "type": "VersionResponse"
+    },
+    {
+      "name": "voice_mode",
+      "file": "voice_mode.json",
+      "model": "praelector.domain.enums.VoiceMode",
+      "type": "VoiceMode"
+    },
+    {
+      "name": "voice_slot",
+      "file": "voice_slot.json",
+      "model": "praelector.domain.enums.VoiceSlot",
+      "type": "VoiceSlot"
+    },
+    {
+      "name": "ws_envelope",
+      "file": "ws_envelope.json",
+      "model": "praelector.domain.models.WsEnvelope",
+      "type": "WsEnvelope"
+    }
+  ]
+}

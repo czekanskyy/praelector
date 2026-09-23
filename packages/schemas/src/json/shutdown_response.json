@@ -1,0 +1,18 @@
+{
+  "properties": {
+    "accepted": {
+      "title": "Accepted",
+      "type": "boolean"
+    },
+    "server_signalled": {
+      "title": "Server Signalled",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "accepted",
+    "server_signalled"
+  ],
+  "title": "ShutdownResponse",
+  "type": "object"
+}

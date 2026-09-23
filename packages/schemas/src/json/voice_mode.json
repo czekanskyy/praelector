@@ -1,0 +1,9 @@
+{
+  "enum": [
+    "single",
+    "narrator_dialogue",
+    "narrator_male_female"
+  ],
+  "title": "VoiceMode",
+  "type": "string"
+}

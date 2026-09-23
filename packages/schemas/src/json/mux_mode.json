@@ -1,0 +1,8 @@
+{
+  "enum": [
+    "full",
+    "partial"
+  ],
+  "title": "MuxMode",
+  "type": "string"
+}

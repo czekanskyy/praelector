@@ -1,0 +1,8 @@
+{
+  "enum": [
+    "finish_current",
+    "discard_current"
+  ],
+  "title": "PauseMode",
+  "type": "string"
+}

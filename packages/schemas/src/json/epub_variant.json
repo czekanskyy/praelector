@@ -1,0 +1,8 @@
+{
+  "enum": [
+    "reader",
+    "clean"
+  ],
+  "title": "EpubVariant",
+  "type": "string"
+}

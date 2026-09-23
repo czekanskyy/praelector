@@ -1,0 +1,11 @@
+{
+  "enum": [
+    "epub",
+    "pdf",
+    "mobi",
+    "azw3",
+    "azw"
+  ],
+  "title": "SourceFormat",
+  "type": "string"
+}

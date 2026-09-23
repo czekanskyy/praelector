@@ -1,0 +1,10 @@
+{
+  "enum": [
+    "ingest",
+    "heuristic",
+    "llm",
+    "manual"
+  ],
+  "title": "SpanOrigin",
+  "type": "string"
+}

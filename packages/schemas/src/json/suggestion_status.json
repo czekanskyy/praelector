@@ -1,0 +1,11 @@
+{
+  "enum": [
+    "pending",
+    "accepted",
+    "rejected",
+    "edited",
+    "failed"
+  ],
+  "title": "SuggestionStatus",
+  "type": "string"
+}
