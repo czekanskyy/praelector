@@ -138,7 +138,7 @@ mid-transaction:
 | Path | Role |
 | --- | --- |
 | `<project>/project.json` | manifest, so the Library can list projects without opening databases |
-| `<project>/jobs/<id>/job.json` · `plan.jsonl` · `events.jsonl` | **on-disk truth for resume.** On open, `store/reconcile.py` rebuilds the DB chunk index from sidecars; disk wins on conflict (JB-07) |
+| `<project>/jobs/<id>/job.json` · `plan.jsonl` · `events.jsonl` | **on-disk truth for resume.** On open, `store/reconcile.py` keeps a chunk whose WAV matches its sidecar and moves a mismatch to `audio/quarantine/`. The SQLite `chunk` table is not created yet (JB-07) |
 | `<project>/audio/chunks/<rk[0:2]>/<render_key>.{wav,json}` | content-addressed, immutable once renamed into place (PLAN.md D-07) |
 
 Chunk audio is content-addressed at **project** level rather than job level, so
@@ -162,12 +162,12 @@ Engine core (nothing here imports `torch`):
 | `praelector.domain` | ids, enums, Pydantic entities, hashing, revision logic |
 | `praelector.store` | SQLite engine, migrations, repositories, project dir layout, atomic writes, locks |
 | `praelector.ebook` | format detect, DRM refusal, EPUB read/write, Calibre, PDF probe, front matter |
-| `praelector.text` | normalisation, segmentation, dialogue, gender, numerals, lexicon, prompts |
-| `praelector.llm` | provider protocol, router, three clients, secrets, usage counters |
+| `praelector.text` | normalisation, segmentation, dialogue, gender, numerals, lexicon |
+| `praelector.llm` | not in the tree. PLAN.md §5 is the spec for providers, routing and secrets |
 | `praelector.voices` · `praelector.audio` | sample ingest chain, profiles, preview; ffmpeg wrapper |
 | `praelector.tts` | backend protocol, descriptor registry, worker client, model cache, license gate |
 | `praelector.gpu` | device detection, budget math, VRAM monitor |
-| `praelector.jobs` | state machine, prep job, record job, planner, chunker, scheduler, checkpoints, metrics |
+| `praelector.jobs` | state machine, planner, chunker, scheduler, checkpoints, metrics. `prep_job.py` is not in the tree |
 | `praelector.mux` | chapter concat, ffmetadata, M4B assembly, partial mux |
 | `praelector.runtime` | TTS runtime provisioning via the bundled `uv` |
 

@@ -25,6 +25,7 @@ from typing import Any
 from sqlalchemy import Engine, select
 from sqlalchemy.orm import Session
 
+from praelector.audio.render_fake import wav_seconds
 from praelector.config import RuntimeEnv
 from praelector.domain.enums import VoiceMode
 from praelector.domain.ids import IdPrefix, is_valid_id, new_id
@@ -40,6 +41,7 @@ from praelector.store.manifest import (
     write_manifest,
 )
 from praelector.store.project_dir import ProjectLayout, find_project_dirs, layout_for
+from praelector.store.reconcile import reconcile_chunks
 from praelector.store.tables import ProjectRow, RevisionRow, to_db_time
 
 logger = logging.getLogger(__name__)
@@ -267,11 +269,13 @@ class ProjectStore:
         lock = ProjectLock(layout.lock)
         lock.acquire()
         try:
-            # Forward-only. A job that was mid-write when the app died is marked
-            # paused with reason "crash_recovery" by the job engine (JB-07); the
-            # chunk-index reconcile that goes with it lands in M4.
+            # Forward-only. A job left running when the app died is marked paused
+            # with reason "crash_recovery" by the job engine (JB-07). Chunk files
+            # that do not match their sidecar are moved aside here, before anyone
+            # treats them as finished audio.
             revision = run_migrations(layout.db)
             engine = create_project_engine(layout.db)
+            reconciled = reconcile_chunks(layout.chunks, layout.quarantine, probe=wav_seconds)
         except Exception:
             lock.release()
             raise
@@ -285,7 +289,12 @@ class ProjectStore:
         )
         logger.info(
             "project opened",
-            extra={"project_id": project_id, "db_revision": revision},
+            extra={
+                "project_id": project_id,
+                "db_revision": revision,
+                "chunks_reusable": len(reconciled.reusable),
+                "chunks_quarantined": len(reconciled.quarantined),
+            },
         )
         return self._open
 
