@@ -18,6 +18,7 @@ from datetime import UTC, datetime
 from sqlalchemy import (
     Boolean,
     CheckConstraint,
+    Float,
     ForeignKey,
     Index,
     Integer,
@@ -142,5 +143,39 @@ class BlockRow(Base):
     heading_level: Mapped[int | None] = mapped_column(Integer)
     text: Mapped[str] = mapped_column(String, nullable=False)
     source_ref_json: Mapped[str | None] = mapped_column(String)
+    valid_from_revision: Mapped[int] = mapped_column(Integer, nullable=False)
+    valid_to_revision: Mapped[int | None] = mapped_column(Integer)
+
+
+class SpanRow(Base):
+    """One version of a span (DATA_MODEL.md §5). Current rows have a null ``valid_to``."""
+
+    __tablename__ = "span"
+    __table_args__ = (
+        CheckConstraint(
+            "kind IN ('narration','dialogue','pronunciation','pause','skip')",
+            name="ck_span_kind",
+        ),
+        CheckConstraint(
+            "gender IS NULL OR gender IN ('male','female','unknown')",
+            name="ck_span_gender",
+        ),
+        CheckConstraint("start >= 0 AND end >= start", name="ck_span_range"),
+        Index("ix_span_current", "block_id", "valid_to_revision", "start"),
+    )
+
+    id: Mapped[str] = mapped_column(String, nullable=False)
+    version_id: Mapped[str] = mapped_column(String, primary_key=True)
+    block_id: Mapped[str] = mapped_column(String, nullable=False)
+    start: Mapped[int] = mapped_column(Integer, nullable=False)
+    end: Mapped[int] = mapped_column(Integer, nullable=False)
+    kind: Mapped[str] = mapped_column(String, nullable=False)
+    gender: Mapped[str | None] = mapped_column(String)
+    gender_confidence: Mapped[float | None] = mapped_column(Float)
+    speaker_id: Mapped[str | None] = mapped_column(String)
+    spoken: Mapped[str | None] = mapped_column(String)
+    pause_ms: Mapped[int | None] = mapped_column(Integer)
+    origin: Mapped[str] = mapped_column(String, nullable=False)
+    orphaned: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     valid_from_revision: Mapped[int] = mapped_column(Integer, nullable=False)
     valid_to_revision: Mapped[int | None] = mapped_column(Integer)
