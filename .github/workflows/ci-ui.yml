@@ -30,7 +30,7 @@ jobs:
             echo "apps/ui is not in this revision yet; the suite runs once it lands"
           fi
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         if: steps.pkg.outputs.present == 'true'
       - uses: actions/setup-node@v4
         if: steps.pkg.outputs.present == 'true'

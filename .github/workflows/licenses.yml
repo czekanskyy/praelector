@@ -33,7 +33,7 @@ jobs:
 
       # Node license ids live in the installed package.json, not in pnpm-lock.
       # Without this install every UI dependency is "unknown" and the policy fails.
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v4
         with:
           node-version: 22

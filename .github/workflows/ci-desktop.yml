@@ -50,7 +50,7 @@ jobs:
       - name: linux webkit deps
         if: steps.pkg.outputs.present == 'true' && runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         if: steps.pkg.outputs.present == 'true'
       - uses: actions/setup-node@v4
         if: steps.pkg.outputs.present == 'true'
