@@ -16,7 +16,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # PLAN §14 lands the UI in PR 4. A missing package must still conclude success.
       - name: ui package present

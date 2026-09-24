@@ -26,7 +26,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ !matrix.required }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # PLAN §14 lands the shell in PR 3. Until apps/desktop exists the job still
       # has to report success, or the required check never concludes.
