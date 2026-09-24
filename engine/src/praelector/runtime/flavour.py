@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 """Which TTS runtime flavour this machine should use (GPU-07, GPU-08, D-20).
 
-The locked install itself is still ahead. This module only recommends
-``cuda``, ``rocm`` or ``cpu`` from a probe, records that choice in
-``runtime.json``, and says when the installed flavour no longer matches
-the hardware.
+This module recommends ``cuda``, ``rocm`` or ``cpu`` from a probe, records
+that choice in ``runtime.json``, and says when the installed flavour no
+longer matches the hardware. The install that writes the file is
+:mod:`praelector.runtime.provision`.
 """
 
 from __future__ import annotations
