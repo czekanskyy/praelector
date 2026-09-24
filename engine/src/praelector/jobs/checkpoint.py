@@ -191,6 +191,10 @@ class JobLog:
         lines = self.events_path.read_text(encoding="utf-8").splitlines()
         return [json.loads(line) for line in lines if line]
 
+    def events_since(self, seq: int) -> list[dict[str, Any]]:
+        """Events strictly after ``seq``, so a reconnect can fill the gap."""
+        return [event for event in self.events() if int(event["seq"]) > seq]
+
     def _append(
         self,
         record: JobRecord,
