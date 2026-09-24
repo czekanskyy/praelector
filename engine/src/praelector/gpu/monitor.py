@@ -1,11 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 """1 Hz VRAM sampler and the admissions pause (GPU-05).
 
-The scheduler does not exist yet, so this module only decides. A probe
-returns the latest free MiB; the monitor calls it at most once per second
-and pauses admissions when free memory drops below the reserve from
-:mod:`praelector.gpu.budget`. Three later samples with the reserve intact
-resume admissions. Running workers are not stopped here.
+The slot gate that consumes these decisions is
+:mod:`praelector.jobs.admission`. A probe returns the latest free MiB; the
+monitor calls it at most once per second and pauses admissions when free
+memory drops below the reserve from :mod:`praelector.gpu.budget`. Three
+later samples with the reserve intact resume admissions. Running workers
+are not stopped here.
 """
 
 from __future__ import annotations
