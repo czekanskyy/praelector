@@ -19,7 +19,7 @@ jobs:
       contents: read
       issues: write                # the failure step opens/updates an issue
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: astral-sh/setup-uv@v6
         with:

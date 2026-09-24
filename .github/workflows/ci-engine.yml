@@ -20,7 +20,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # PLAN §14 lands engine in PR 2. Until that tree exists the job still has to
       # report success, or a required check with no conclusion blocks every earlier PR.
