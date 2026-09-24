@@ -3,6 +3,6 @@
 
 ``plain`` turns a chapter into editor text and back (ED-02). ``prepass``
 emits suggestions for artefacts, skip spans, dialogue splits, numerals, and
-lexical tokens (AI-02, DG-01, DG-02). It does not change block text. Speaker
-gender and the lexicon are later milestones.
+lexical tokens, and speaker gender (AI-02, DG-01…DG-06). It does not change
+block text. The lexicon is a later milestone.
 """
