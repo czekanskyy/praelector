@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from praelector.mux.m4b import m4b_args
+from praelector.mux.m4b import chapter_wav_args, m4b_args
 from praelector.mux.metadata import AudiobookTags, ChapterMark, ffmetadata
 
 
@@ -51,6 +51,17 @@ def test_m4b_args_pin_the_encode_and_an_optional_cover(tmp_path: Path) -> None:
     assert args[args.index("-movflags") + 1] == "+faststart"
     assert args[args.index("-disposition:v") + 1] == "attached_pic"
     assert args[-1].endswith("book.m4b")
+
+
+def test_a_chapter_wav_is_a_concat_copy(tmp_path: Path) -> None:
+    args = chapter_wav_args(
+        ffmpeg=tmp_path / "ffmpeg",
+        concat_list=tmp_path / "list.txt",
+        output=tmp_path / "chapters" / "008.wav",
+    )
+    assert args[1:7] == ["-y", "-f", "concat", "-safe", "0", "-i"]
+    assert args[-3:-1] == ["-c", "copy"]
+    assert args[-1].endswith("008.wav")
 
 
 def test_m4b_args_omit_the_cover_when_there_is_none(tmp_path: Path) -> None:

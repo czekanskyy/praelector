@@ -16,6 +16,8 @@ from typing import Any, Literal
 
 from praelector.errors import AppError, ErrorCode
 from praelector.jobs.chunker import PlanItem
+from praelector.mux.metadata import ChapterMark
+from praelector.store.atomic import write_json_atomic
 
 MuxMode = Literal["full", "partial"]
 Present = Callable[[PlanItem], bool]
@@ -87,6 +89,29 @@ def concat_list(
         lines.append(_file_line(wav_for(item)))
         previous_speech = speech
     return "\n".join(lines) + ("\n" if lines else "")
+
+
+def write_partial_report(path: Path, plan: MuxPlan) -> None:
+    """``partial_report.json``. An empty ``omitted`` list means nothing was dropped."""
+    write_json_atomic(path, {"omitted": list(plan.omitted)})
+
+
+def chapter_marks(
+    chapters: Sequence[ChapterAudio],
+    durations_s: Sequence[float],
+) -> list[ChapterMark]:
+    """Cumulative chapter spans. Titles stay as they are; numbers are not rewritten."""
+    if len(chapters) != len(durations_s):
+        raise ValueError("one duration per chapter")
+    cursor = 0
+    marks: list[ChapterMark] = []
+    for chapter, duration in zip(chapters, durations_s, strict=True):
+        if duration < 0:
+            raise ValueError("duration must be non-negative")
+        length = round(duration * 1000)
+        marks.append(ChapterMark(chapter.title, cursor, cursor + length))
+        cursor += length
+    return marks
 
 
 def _complete(chapter: ChapterAudio, present: Present) -> bool:

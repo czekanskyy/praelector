@@ -9,6 +9,23 @@ from __future__ import annotations
 from pathlib import Path
 
 
+def chapter_wav_args(*, ffmpeg: Path, concat_list: Path, output: Path) -> list[str]:
+    """Copy one chapter's concat list to a WAV. This does not run ffmpeg."""
+    return [
+        str(ffmpeg),
+        "-y",
+        "-f",
+        "concat",
+        "-safe",
+        "0",
+        "-i",
+        str(concat_list),
+        "-c",
+        "copy",
+        str(output),
+    ]
+
+
 def m4b_args(
     *,
     ffmpeg: Path,
