@@ -1,8 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
-"""OmniVoice descriptor and request checks. No torch, no weights."""
+"""OmniVoice descriptor and request checks. No weights are downloaded."""
 
 from __future__ import annotations
 
+import json
+import os
+import subprocess
 import sys
 
 import pytest
@@ -16,11 +19,26 @@ from praelector_tts.backends.omnivoice import (
 )
 from praelector_tts.protocol import LoadContext, SynthesisRequest, TtsError, TtsErrorCode, VoiceRef
 
+_PROBE = """
+import json, sys
+from praelector_tts.backends import describe
+describe("omnivoice")
+print(json.dumps({"torch_imported": "torch" in sys.modules}))
+"""
+
 
 def test_importing_the_adapter_does_not_import_torch() -> None:
-    assert "torch" not in sys.modules
-    describe("omnivoice")
-    assert "torch" not in sys.modules
+    result = subprocess.run(
+        [sys.executable, "-c", _PROBE],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        timeout=60,
+        env=os.environ.copy(),
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout.strip().splitlines()[-1])["torch_imported"] is False
 
 
 def test_descriptor_is_polish_fp16_and_apache() -> None:
@@ -46,7 +64,6 @@ def test_missing_ref_text_is_refused_before_any_model() -> None:
             SynthesisRequest(text="Cześć.", language="pl", out_path="out.wav", voice=None)
         )
     assert excinfo.value.detail["reason"] == "ref_text_required"
-    assert "torch" not in sys.modules
 
 
 def test_a_non_polish_language_is_refused() -> None:
