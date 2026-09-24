@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 """GPU device detection, budget math and the VRAM monitor (PLAN.md §1.3).
 
-This PR delivers detection only (GPU-01, GPU-02's sampling primitive, GPU-07,
-GPU-08). ``budget.py``, ``monitor.py`` and ``vram_table.py`` — GPU-03, GPU-04 and
-GPU-05 — arrive in M3, because nothing can consume them yet.
+Detection (GPU-01, GPU-02's sampling primitive, GPU-07, GPU-08) and the
+worker-count formula (GPU-03, GPU-04) are in place. ``monitor.py`` — the 1 Hz
+sampler and the admissions pause — is still ahead, because nothing consumes
+it until the scheduler exists.
 
 Routers must call :mod:`praelector.gpu.detect` through the module
 (``detect.probe_report()``) rather than importing the function, so a test can
