@@ -63,7 +63,10 @@ def sidecar_bytes(book: Book, export: ReaderExport) -> bytes:
             for span in export.spans.get(key, ()):
                 rows.append(
                     {
-                        "source_ref": {"href": block.source_ref.href, "path": block.source_ref.path},
+                        "source_ref": {
+                            "href": block.source_ref.href,
+                            "path": block.source_ref.path,
+                        },
                         "start": span.start,
                         "end": span.end,
                         "kind": span.kind,
