@@ -2,7 +2,7 @@
 """TTS worker wire protocol (TTS-01, D-05).
 
 Newline-delimited JSON. This module encodes requests and parses replies.
-Spawning the worker, the timeout, and the kill are still ahead.
+:mod:`praelector.tts.worker_client` owns the process.
 """
 
 from __future__ import annotations
