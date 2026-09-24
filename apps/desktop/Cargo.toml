@@ -1,6 +1,6 @@
 [package]
 name = "praelector-desktop"
-version = "0.1.0"
+version = "0.2.0"
 description = "Praelector desktop shell — window, sidecar lifecycle, native dialogs, single instance"
 edition = "2021"
 # Floor set by `windows` 0.62 (1.82) and `rand`/`reqwest` (1.85). CI builds with

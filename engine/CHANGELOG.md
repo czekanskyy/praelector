@@ -5,8 +5,6 @@
 
 ### Features
 
-* **desktop:** supervise the engine sidecar from the Tauri shell ([42b3259](https://github.com/czekanskyy/praelector/commit/42b32595e1ac1348dc5aa9b5a840c75ce8fbd637))
-* **engine-tts:** describe OmniVoice and require Polish ref text ([#34](https://github.com/czekanskyy/praelector/issues/34)) ([eec1864](https://github.com/czekanskyy/praelector/commit/eec1864d13f988cd55b5686a95940808c1ac5783))
 * **engine:** add GPU device detection behind /v1/gpu/devices ([98362b5](https://github.com/czekanskyy/praelector/commit/98362b566ddba8c642a098becaa1eb029298a466))
 * **engine:** admit TTS workers up to the budget slot count ([#31](https://github.com/czekanskyy/praelector/issues/31)) ([e979895](https://github.com/czekanskyy/praelector/commit/e9798956d9f24c1c11f483763744c737f63bbe51))
 * **engine:** apply accepted suggestions onto one block ([#22](https://github.com/czekanskyy/praelector/issues/22)) ([11f3b2b](https://github.com/czekanskyy/praelector/commit/11f3b2bce693f47adb9641d57c851f255064024f))
@@ -29,14 +27,3 @@
 * **engine:** store chapters and edit them as plain text ([9f65417](https://github.com/czekanskyy/praelector/commit/9f65417868796875126fe071a7f41272078ab9a3))
 * **engine:** suggest readings and dialogue splits without rewriting the page ([#16](https://github.com/czekanskyy/praelector/issues/16)) ([94a0dfc](https://github.com/czekanskyy/praelector/commit/94a0dfc056ae5421cfd7f1de21b850109c58d386))
 * **engine:** tag dialogue with speaker gender from the speech verb ([#20](https://github.com/czekanskyy/praelector/issues/20)) ([3f5e591](https://github.com/czekanskyy/praelector/commit/3f5e591a7f399fb3bed49b561278acffaa59257c))
-* **ui:** add the app shell, i18n catalogues, and the engine clients ([5e8f1f8](https://github.com/czekanskyy/praelector/commit/5e8f1f8baa2684d0acdb3b6cade05eb8a168428e))
-* **ui:** list and create projects on the Library screen ([ef907a3](https://github.com/czekanskyy/praelector/commit/ef907a3a62ff030a842657a6d8ca305921c2c466))
-
-
-### Documentation
-
-* add PRD and implementation plan ([2349f42](https://github.com/czekanskyy/praelector/commit/2349f42088ca833297a0f76ff17f659481e97c3e))
-
-## Changelog
-
-The format is based on [Conventional Commits](https://www.conventionalcommits.org/), and this file is generated and managed by [release-please](https://github.com/googleapis/release-please) — do not edit it by hand.
