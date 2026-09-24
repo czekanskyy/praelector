@@ -57,7 +57,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
       - run: cat */SHA256SUMS.* > SHA256SUMS
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           draft: true                      # a human presses publish
           generate_release_notes: false    # release-please owns the notes
