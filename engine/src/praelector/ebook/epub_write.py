@@ -17,9 +17,10 @@ from collections.abc import Sequence
 from pathlib import Path, PurePosixPath
 from typing import Final
 
-from praelector.domain.enums import BlockKind
+from praelector.domain.enums import BlockKind, EpubVariant
 from praelector.ebook.blocks import Block
 from praelector.ebook.epub_read import Book, Chapter, TocEntry
+from praelector.ebook.reader_export import ReaderExport, annotate_text, sidecar_bytes
 from praelector.errors import AppError, ErrorCode
 
 _ZIP_TIME: Final = (1980, 1, 1, 0, 0, 0)
@@ -36,9 +37,13 @@ _IMAGE_EXT: Final = {
 }
 
 
-def render_epub(book: Book) -> bytes:
-    """Serialise ``book`` as EPUB 3. Pure: no path is opened."""
-    return _zip(_entries(book))
+def render_epub(book: Book, *, lector: ReaderExport | None = None) -> bytes:
+    """Serialise ``book`` as EPUB 3. Pure: no path is opened.
+
+    ``lector`` is the reader-export overlay (EX-01, EX-03). Omitted, the book
+    is the working copy: printed text, no ``data-prl-*`` attributes.
+    """
+    return _zip(_entries(book, lector))
 
 
 def write_epub(book: Book, dest: Path) -> None:
@@ -94,21 +99,27 @@ def _atomic_bytes(dest: Path, payload: bytes) -> None:
     temporary.replace(dest)
 
 
-def _entries(book: Book) -> list[tuple[str, bytes]]:
+def _entries(book: Book, lector: ReaderExport | None) -> list[tuple[str, bytes]]:
     language = _language(book.language)
     chapters = _named_chapters(book.chapters)
     cover_name, cover_bytes, cover_media = _cover_parts(book)
+    reader = lector is not None and lector.variant is EpubVariant.READER
     entries: list[tuple[str, bytes]] = [
         ("mimetype", _MIMETYPE),
         ("META-INF/container.xml", _container()),
-        ("OEBPS/content.opf", _opf(book, language, chapters, cover_name, cover_media)),
+        (
+            "OEBPS/content.opf",
+            _opf(book, language, chapters, cover_name, cover_media, sidecar=reader),
+        ),
         ("OEBPS/nav.xhtml", _nav(book, language, chapters)),
     ]
+    if reader and lector is not None:
+        entries.append(("OEBPS/prl-spans.json", sidecar_bytes(book, lector)))
     if cover_name is not None and cover_bytes is not None:
         entries.append(("OEBPS/cover.xhtml", _cover_xhtml(language, cover_name)))
         entries.append((f"OEBPS/{cover_name}", cover_bytes))
     for href, chapter in chapters:
-        entries.append((f"OEBPS/{href}", _chapter_xhtml(chapter, language)))
+        entries.append((f"OEBPS/{href}", _chapter_xhtml(chapter, language, lector)))
     return entries
 
 
@@ -169,6 +180,8 @@ def _opf(
     chapters: Sequence[tuple[str, Chapter]],
     cover_name: str | None,
     cover_media: str | None,
+    *,
+    sidecar: bool,
 ) -> bytes:
     identifier = book.identifier.strip() or "urn:uuid:00000000-0000-0000-0000-000000000000"
     title = book.title.strip() or "untitled"
@@ -203,6 +216,11 @@ def _opf(
         lines.append(
             f'    <item id="ch{index:02d}" href="{_xml_attr(href)}" '
             f'media-type="application/xhtml+xml"/>'
+        )
+    if sidecar:
+        lines.append(
+            '    <item id="prl-spans" href="prl-spans.json" '
+            'media-type="application/json" properties="prl-sidecar"/>'
         )
     lines.append("  </manifest>")
     lines.append("  <spine>")
@@ -266,13 +284,13 @@ def _retarget(entries: Sequence[TocEntry], by_source: dict[str, str]) -> tuple[T
     return tuple(kept)
 
 
-def _chapter_xhtml(chapter: Chapter, language: str) -> bytes:
+def _chapter_xhtml(chapter: Chapter, language: str, lector: ReaderExport | None) -> bytes:
     title = chapter.title.strip() or "untitled"
-    body = "\n".join(_body_lines(chapter.blocks))
+    body = "\n".join(_body_lines(chapter.blocks, lector))
     return _xhtml(title, body, language)
 
 
-def _body_lines(blocks: Sequence[Block]) -> list[str]:
+def _body_lines(blocks: Sequence[Block], lector: ReaderExport | None) -> list[str]:
     lines: list[str] = []
     index = 0
     while index < len(blocks):
@@ -280,17 +298,27 @@ def _body_lines(blocks: Sequence[Block]) -> list[str]:
         if block.kind is BlockKind.LIST_ITEM:
             items: list[str] = []
             while index < len(blocks) and blocks[index].kind is BlockKind.LIST_ITEM:
-                items.append(f"<li>{_xml_text(blocks[index].text)}</li>")
+                items.append(f"<li>{_inner(blocks[index], lector)}</li>")
                 index += 1
             lines.append("<ul>" + "".join(items) + "</ul>")
             continue
-        lines.append(_render_block(block))
+        lines.append(_render_block(block, lector))
         index += 1
     return lines
 
 
-def _render_block(block: Block) -> str:
-    text = _xml_text(block.text)
+def _inner(block: Block, lector: ReaderExport | None) -> str:
+    if lector is None or lector.variant is not EpubVariant.READER:
+        return _xml_text(block.text)
+    key = (block.source_ref.href, block.source_ref.path)
+    spans = lector.spans.get(key, ())
+    if not spans:
+        return _xml_text(block.text)
+    return annotate_text(block.text, spans)
+
+
+def _render_block(block: Block, lector: ReaderExport | None) -> str:
+    text = _inner(block, lector)
     if block.kind is BlockKind.HEADING:
         level = block.heading_level if block.heading_level in range(1, 7) else 1
         return f"<h{level}>{text}</h{level}>"
