@@ -8,8 +8,9 @@ detectors do not overlap a skip span or an earlier numeral. A block that is
 entirely a skip span is not scanned for dialogue. Nothing in the block
 sequence is mutated.
 
-The lexicon is not this pass. Gender uses the dialogue tiling and may look one
-block either side for a pronoun.
+Gender uses the dialogue tiling and may look one block either side for a
+pronoun. A lexicon hit then replaces an overlapping numeral, acronym, toponym,
+or foreign-word mark.
 """
 
 from __future__ import annotations
@@ -22,6 +23,7 @@ from praelector.ebook.frontmatter import TextCarrier, skip_candidates
 from praelector.text.acronyms import lexical_suggestions
 from praelector.text.dialogue import dialogue_suggestions
 from praelector.text.gender import gender_suggestions
+from praelector.text.lexicon import LexiconRule, lexicon_suggestions
 from praelector.text.normalize import normalization_suggestions
 from praelector.text.numerals_pl import numeral_suggestions
 from praelector.text.suggestion import Suggestion
@@ -30,10 +32,22 @@ SKIP_KIND = "skip"
 _SKIP_CONFIDENCE = 0.92
 
 
+_LEXICON_WINS = frozenset(
+    {
+        "foreign_word",
+        "acronym",
+        "toponym",
+        "numeral",
+        "ordinal_heading",
+    }
+)
+
+
 def prepass(
     blocks: Sequence[str | TextCarrier],
     *,
     chapter_titles: Sequence[str] = (),
+    lexicon: Sequence[LexiconRule] = (),
 ) -> list[Suggestion]:
     """Combined suggestions. ``blocks`` and each ``text`` are left as they were."""
     texts = [_text_of(block) for block in blocks]
@@ -71,6 +85,23 @@ def prepass(
                 continue
             suggestions.append(replace(item, block_index=index))
     suggestions.extend(gender_suggestions(texts))
+    hits: list[Suggestion] = []
+    for index, text in enumerate(texts):
+        if _covers_all(len(text), blocked.get(index, ())):
+            continue
+        hits.extend(_at(index, lexicon_suggestions(text, lexicon)))
+    if hits:
+        suggestions = [
+            item
+            for item in suggestions
+            if item.kind not in _LEXICON_WINS
+            or not any(
+                item.block_index == hit.block_index
+                and _overlaps(item.start, item.end, [(hit.start, hit.end)])
+                for hit in hits
+            )
+        ]
+        suggestions.extend(hits)
     suggestions.sort(
         key=lambda item: (item.block_index, item.start, item.end, item.kind, item.reason)
     )
