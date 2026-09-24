@@ -1,2 +1,2 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Job admission, chunking, reuse, state, checkpoint, and the plan file. The scheduler is still ahead."""
+"""Job admission, chunking, the planner, reuse, state, and checkpoints. The scheduler is still ahead."""
