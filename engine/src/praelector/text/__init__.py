@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Plain-text chapter operations (ED-02, ED-05).
+"""Text preparation: the lector's plain text and the deterministic pre-pass.
 
-Span classification and pronunciation live in later modules. This package only
-turns a chapter into the text the editor shows and back again.
+``plain`` turns a chapter into editor text and back (ED-02). ``prepass``
+emits suggestions for artefacts, skip spans, dialogue splits, numerals, and
+lexical tokens (AI-02, DG-01, DG-02). It does not change block text. Speaker
+gender and the lexicon are later milestones.
 """
