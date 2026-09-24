@@ -1,2 +1,2 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Voice profiles. Ingest is :mod:`praelector.voices.ingest`."""
+"""Voice profiles. Ingest is :mod:`praelector.voices.ingest`; slots are :mod:`praelector.voices.assignment`."""
