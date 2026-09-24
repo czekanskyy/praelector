@@ -106,3 +106,11 @@ def test_open_catches_seq_when_the_record_lags_the_log(tmp_path: Path) -> None:
     assert opened.last_seq == record.last_seq + 2
     assert opened.state is JobState.PAUSED
     assert [event["seq"] for event in log.events()] == [1, 2, 3]
+
+
+def test_events_since_skips_the_ones_the_client_already_has(tmp_path: Path) -> None:
+    log = JobLog(tmp_path, clock=_clock)
+    running = log.apply(log.create(_record()), JobEvent.START)
+    log.apply(running, JobEvent.PAUSE)
+    assert [event["seq"] for event in log.events_since(1)] == [2]
+    assert log.events_since(2) == []
