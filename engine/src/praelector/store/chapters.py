@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import json
 import logging
-from collections.abc import Iterator, Sequence
+from collections.abc import Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -32,8 +32,18 @@ from praelector.errors import AppError, ErrorCode
 from praelector.store.db import session_scope
 from praelector.store.manifest import utc_now, write_manifest
 from praelector.store.projects import OpenProject
-from praelector.store.tables import BlockRow, ChapterRow, ProjectRow, RevisionRow, to_db_time
+from praelector.store.tables import (
+    BlockRow,
+    ChapterRow,
+    ProjectRow,
+    RevisionRow,
+    SpanRow,
+    to_db_time,
+)
+from praelector.text.apply import AppliedSpan, apply_block
 from praelector.text.plain import associate_block_ids, join_plain_text, split_plain_text
+from praelector.text.spoken import spoken_form
+from praelector.text.suggestion import Suggestion
 
 logger = logging.getLogger(__name__)
 
@@ -73,6 +83,14 @@ class ChapterText:
     revision: int
     text: str
     blocks: tuple[StoredBlock, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class ReadingCommit:
+    """One revision that stored the spans (and any artefact rewrites) for a chapter."""
+
+    revision: int
+    conflicts: tuple[tuple[str, str], ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -361,19 +379,78 @@ class ChapterStore:
         return SplitResult(revision=revision, first=first, second=second)
 
     def text(self, chapter_id: str, view: str) -> ChapterText:
-        """``display`` and ``spoken`` are the same text until spans exist (ED-06)."""
+        """``spoken`` reads pronunciation spans and drops skip spans (ED-06)."""
         with self._session() as session:
             chapter = self._active_chapter(session, chapter_id)
             project = self._project_row(session)
-            blocks = tuple(
-                _stored_block(block) for block in self._current_blocks(session, chapter.id)
-            )
+            rows = self._current_blocks(session, chapter.id)
+            blocks = tuple(_stored_block(block) for block in rows)
+            if view == "spoken":
+                pieces = [
+                    spoken_form(block.text, self._current_spans(session, block.id))
+                    for block in rows
+                ]
+            else:
+                pieces = [block.text for block in rows]
             return ChapterText(
                 view=view,
                 revision=project.current_revision,
-                text=join_plain_text([block.text for block in blocks]),
+                text=join_plain_text(pieces),
                 blocks=blocks,
             )
+
+    def apply_reading(
+        self,
+        chapter_id: str,
+        base_revision: int,
+        by_block: Mapping[str, Sequence[Suggestion]],
+    ) -> ReadingCommit:
+        """Apply accepted suggestions and store the resulting spans on a new revision."""
+        with self._session() as session:
+            chapter = self._active_chapter(session, chapter_id)
+            project = self._project_row(session)
+            existing = self._current_blocks(session, chapter.id)
+            if project.current_revision != base_revision:
+                raise AppError(
+                    ErrorCode.TEXT_REVISION_CONFLICT,
+                    detail={
+                        "current_revision": project.current_revision,
+                        "base_revision": base_revision,
+                    },
+                    message="chapter text was edited at a newer revision",
+                )
+            prepared: list[tuple[BlockRow, str, tuple[AppliedSpan, ...]]] = []
+            conflicts: list[tuple[str, str]] = []
+            changed = False
+            for block in existing:
+                result = apply_block(block.text, by_block.get(block.id, ()))
+                conflicts.extend((block.id, item.original) for item in result.conflicts)
+                if result.text != block.text or result.spans:
+                    changed = True
+                prepared.append((block, result.text, result.spans))
+            if not changed:
+                return ReadingCommit(revision=project.current_revision, conflicts=tuple(conflicts))
+            revision = self._bump(session, "apply suggestions")
+            for block, text, spans in prepared:
+                if text != block.text:
+                    block.valid_to_revision = revision
+                    session.flush()
+                    self._add_block(
+                        session,
+                        block_id=block.id,
+                        chapter_id=chapter.id,
+                        ordinal=block.ordinal,
+                        kind=block.kind,
+                        heading_level=block.heading_level,
+                        text=text,
+                        source_ref_json=block.source_ref_json,
+                        revision=revision,
+                    )
+                self._close_spans(session, block.id, revision)
+                for span in spans:
+                    self._add_span(session, block_id=block.id, span=span, revision=revision)
+            self._refresh_char_count(session, chapter)
+            return ReadingCommit(revision=revision, conflicts=tuple(conflicts))
 
     def put_text(self, chapter_id: str, text: str, base_revision: int) -> TextCommit:
         pieces = split_plain_text(text)
@@ -598,6 +675,55 @@ class ChapterStore:
                 message="chapter is not in the open project",
             )
         return chapter
+
+    def _current_spans(self, session: Session, block_id: str) -> list[AppliedSpan]:
+        rows = session.scalars(
+            select(SpanRow)
+            .where(SpanRow.block_id == block_id, SpanRow.valid_to_revision.is_(None))
+            .order_by(SpanRow.start)
+        )
+        return [
+            AppliedSpan(
+                kind=row.kind,
+                start=row.start,
+                end=row.end,
+                spoken=row.spoken or "",
+                gender=row.gender or "",
+                gender_confidence=row.gender_confidence or 0.0,
+                speaker_id=row.speaker_id or "",
+            )
+            for row in rows
+        ]
+
+    def _close_spans(self, session: Session, block_id: str, revision: int) -> None:
+        rows = session.scalars(
+            select(SpanRow).where(SpanRow.block_id == block_id, SpanRow.valid_to_revision.is_(None))
+        )
+        for row in rows:
+            row.valid_to_revision = revision
+
+    def _add_span(
+        self, session: Session, *, block_id: str, span: AppliedSpan, revision: int
+    ) -> None:
+        span_id = new_id(IdPrefix.SPAN)
+        session.add(
+            SpanRow(
+                id=span_id,
+                version_id=f"{span_id}:{revision}",
+                block_id=block_id,
+                start=span.start,
+                end=span.end,
+                kind=span.kind,
+                gender=span.gender or None,
+                gender_confidence=span.gender_confidence or None,
+                speaker_id=span.speaker_id or None,
+                spoken=span.spoken or None,
+                origin="heuristic",
+                orphaned=False,
+                valid_from_revision=revision,
+                valid_to_revision=None,
+            )
+        )
 
     def _current_blocks(self, session: Session, chapter_id: str) -> list[BlockRow]:
         return list(
