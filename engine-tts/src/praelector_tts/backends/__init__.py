@@ -17,6 +17,7 @@ from praelector_tts.protocol import BackendDescriptor, TtsBackend
 #: backend id -> "module:ClassName". Real backends land in M3/M4.
 _REGISTRY: dict[str, str] = {
     "fake": "praelector_tts.backends.fake:FakeBackend",
+    "omnivoice": "praelector_tts.backends.omnivoice:OmniVoiceBackend",
 }
 
 

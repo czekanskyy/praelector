@@ -127,5 +127,5 @@ def test_an_unknown_backend_is_reported_with_the_known_ids() -> None:
     from praelector_tts.backends import create_backend
 
     with pytest.raises(UnknownBackendError) as excinfo:
-        create_backend("omnivoice")
-    assert excinfo.value.known == ["fake"]
+        create_backend("not-a-backend")
+    assert excinfo.value.known == ["fake", "omnivoice"]
