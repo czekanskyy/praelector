@@ -58,6 +58,7 @@ packages = ["src/praelector"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "src/praelector/text/data/speech_verbs_pl.txt" = "praelector/text/data/speech_verbs_pl.txt"
+"src/praelector/text/data/given_names_pl.tsv" = "praelector/text/data/given_names_pl.tsv"
 
 [tool.ruff]
 line-length = 100

@@ -8,7 +8,8 @@ detectors do not overlap a skip span or an earlier numeral. A block that is
 entirely a skip span is not scanned for dialogue. Nothing in the block
 sequence is mutated.
 
-Speaker gender and the lexicon are not this pass.
+The lexicon is not this pass. Gender uses the dialogue tiling and may look one
+block either side for a pronoun.
 """
 
 from __future__ import annotations
@@ -20,6 +21,7 @@ from praelector.domain.enums import BlockKind
 from praelector.ebook.frontmatter import TextCarrier, skip_candidates
 from praelector.text.acronyms import lexical_suggestions
 from praelector.text.dialogue import dialogue_suggestions
+from praelector.text.gender import gender_suggestions
 from praelector.text.normalize import normalization_suggestions
 from praelector.text.numerals_pl import numeral_suggestions
 from praelector.text.suggestion import Suggestion
@@ -68,6 +70,7 @@ def prepass(
             if _overlaps(item.start, item.end, claimed):
                 continue
             suggestions.append(replace(item, block_index=index))
+    suggestions.extend(gender_suggestions(texts))
     suggestions.sort(
         key=lambda item: (item.block_index, item.start, item.end, item.kind, item.reason)
     )
