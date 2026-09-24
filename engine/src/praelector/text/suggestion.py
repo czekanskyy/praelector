@@ -45,6 +45,8 @@ class Suggestion:
     auto: bool = False
     #: Structural payload for ``dialogue_split``. Empty for every other kind.
     segments: tuple[SegmentMark, ...] = ()
+    #: Set on ``speaker_gender`` when a name is explicit (DG-06). Empty otherwise.
+    speaker_id: str = ""
 
     def __post_init__(self) -> None:
         if self.start < 0 or self.end <= self.start:
@@ -72,6 +74,7 @@ def make_suggestion(
     detector: Detector = Detector.HEURISTIC,
     auto: bool = False,
     segments: tuple[SegmentMark, ...] = (),
+    speaker_id: str = "",
 ) -> Suggestion:
     """Build a suggestion whose ``original`` is taken from ``text``."""
     if not 0 <= start <= end <= len(text):
@@ -88,4 +91,5 @@ def make_suggestion(
         block_index=block_index,
         auto=auto,
         segments=segments,
+        speaker_id=speaker_id,
     )
