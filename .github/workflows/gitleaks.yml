@@ -22,6 +22,6 @@ jobs:
 
       # LM-03: no secret is ever committed. LLM and TTS tokens belong in the OS keyring,
       # never in the repo, and a leaked key cannot be un-leaked by a later commit.
-      - uses: gitleaks/gitleaks-action@v2
+      - uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
