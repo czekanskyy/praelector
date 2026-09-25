@@ -67,12 +67,16 @@ jobs:
         if: steps.pkg.outputs.present == 'true'
         run: uv run --no-project --python 3.12 python scripts/assert_no_torch.py engine/uv.lock
 
-      # Pinned: the default "release" follows Gyan's latest tag, and a git-snapshot
-      # tag makes setup-ffmpeg fail before pytest ("Cannot get latest release").
+      # Linux resolves "release" without gyan.dev. Windows "release" fetches
+      # https://www.gyan.dev/ffmpeg/builds/release-version, which Actions often
+      # cannot read ("Cannot get latest release"). 8.1.2 is on the first page of
+      # Gyan's GitHub releases, and that page is all this action searches.
       - uses: FedericoCarboni/setup-ffmpeg@v3
-        if: steps.pkg.outputs.present == 'true'
+        if: steps.pkg.outputs.present == 'true' && matrix.os != 'windows-latest'
+      - uses: FedericoCarboni/setup-ffmpeg@v3
+        if: steps.pkg.outputs.present == 'true' && matrix.os == 'windows-latest'
         with:
-          ffmpeg-version: "7.1"
+          ffmpeg-version: "8.1.2"
 
       # GPU-marked tests run only on the two reference machines; CI has no GPU
       - if: steps.pkg.outputs.present == 'true'

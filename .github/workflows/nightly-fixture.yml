@@ -28,11 +28,8 @@ jobs:
       - run: uv sync --project engine --group dev --frozen
       - run: uv sync --project engine-tts --extra cpu --group dev --frozen
 
-      # mux and the ffprobe chapter/duration assertions need a real ffmpeg (D-06).
-      # Pinned for the same reason as ci-engine: "release" follows a moving tag.
+      # mux and the ffprobe chapter/duration assertions need a real ffmpeg (D-06)
       - uses: FedericoCarboni/setup-ffmpeg@v3
-        with:
-          ffmpeg-version: "7.1"
 
       # The pipeline itself (ingest -> prep -> apply -> plan -> 300 chunks with the fake backend
       # -> pause -> restart -> resume -> partial mux -> full mux -> reader EPUB export, plus the
