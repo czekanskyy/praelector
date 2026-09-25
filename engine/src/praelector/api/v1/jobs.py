@@ -1,8 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Job routes (OPENAPI_SKETCH.md §7).
 
-History, the event replay a reconnecting UI needs, and pause / resume / cancel.
-Creating a job is still not on this router.
+Create a queued job, read its history, replay events, and pause / resume / cancel.
 """
 
 from __future__ import annotations
@@ -12,14 +11,18 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Query
 from fastapi import Path as PathParam
+from pydantic import BaseModel, Field
 
-from praelector.domain.enums import JobState
+from praelector.domain.enums import JobKind, JobState
 from praelector.errors import AppError, ErrorCode
 from praelector.jobs.catalog import job_events, list_jobs, load_job
 from praelector.jobs.checkpoint import JobLog, JobRecord
+from praelector.jobs.create import create_queued
 from praelector.jobs.state import JobEvent
 from praelector.state import AppState, get_state
+from praelector.store.db import session_scope
 from praelector.store.projects import OpenProject
+from praelector.store.tables import ProjectRow
 
 router = APIRouter(tags=["jobs"])
 
@@ -43,6 +46,39 @@ def list_project_jobs(
         if record.project_id == project_id
     ]
     return {"jobs": jobs}
+
+
+class JobCreateBody(BaseModel):
+    """``POST /projects/{id}/jobs``. Options are stored and not interpreted yet."""
+
+    kind: JobKind
+    options: dict[str, Any] = Field(default_factory=dict)
+
+
+@router.post("/projects/{project_id}/jobs", status_code=201)
+def create_project_job(
+    project_id: ProjectId,
+    body: JobCreateBody,
+    state: AppState = Depends(get_state),
+) -> dict[str, Any]:
+    """Queue a job. A live one is ``job.already_active``. No audio is rendered."""
+    opened = _open(state, project_id)
+    record = create_queued(
+        opened.layout.jobs,
+        project_id=project_id,
+        kind=body.kind,
+        revision=_revision(opened),
+        options=body.options,
+    )
+    return record.to_json()
+
+
+def _revision(opened: OpenProject) -> int:
+    with session_scope(opened.engine) as session:
+        row = session.get(ProjectRow, opened.id)
+    if row is None:
+        raise AppError(ErrorCode.PROJECT_NOT_OPEN, detail={"project_id": opened.id})
+    return row.current_revision
 
 
 @router.get("/jobs/{job_id}")
