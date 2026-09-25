@@ -664,7 +664,9 @@ What the app does today: open a project, ingest an ebook, edit chapter text (pri
 
 What the engine can do without a screen yet: heuristic readings, dialogue and gender, lexicon, apply, span revisions, reader EPUB export, GPU budget and monitor, runtime flavour and locked install, TTS protocol, worker client, registry, model cache, OmniVoice descriptor, voice ingest and slot assignment, job state machine, checkpoint, planner, chunker, reuse, fake sine render, mux argument lists, partial-chapter report, LGPL ffmpeg fetch.
 
-Not in the tree, even where an older box said otherwise: `llm/`, `jobs/prep_job.py`, the LLM settings screen, Chatterbox, Qwen3, `docs/plugins.md`, a live worker pool, a job HTTP API, crossfade, a real ffmpeg mux, and the kill-at-40% resume test.
+Opening a project quarantines a chunk whose wav does not match its sidecar (`store/reconcile.py`). `mux/run.py` hands an argument list to the ffmpeg tool. `tests/unit/test_crash_reuse.py` shows two committed chunks surviving crash recovery. The SQLite `chunk` table, a live `SIGKILL`, and a test that spawns ffmpeg are still absent.
+
+Not in the tree, even where an older box said otherwise: `llm/`, `jobs/prep_job.py`, the LLM settings screen, Chatterbox, Qwen3, `docs/plugins.md`, a live worker pool, a job HTTP API, and crossfade.
 
 ### M0 — Skeleton (week 1–2)
 
@@ -738,12 +740,12 @@ Not in the tree, even where an older box said otherwise: `llm/`, `jobs/prep_job.
 - [x] `feat(engine)`: `jobs/planner.py`, `jobs/chunker.py` — §8.2 — TTS-07, TTS-08
 - [x] `feat(engine)`: `domain/hashing.py` — `render_key` — JB-05
 - [x] `feat(engine)`: `jobs/scheduler.py` + `jobs/admission.py` — slot gate, pause admits nobody, one `tts.oom` retry — GPU-05. A live worker pool is still open.
-- [x] `feat(engine)`: `jobs/checkpoint.py`, `jobs/planfile.py`, `jobs/commit.py` — `job.json`, `events.jsonl`, `plan.jsonl`, atomic chunk publish, crash recovery to `paused` — JB-02, JB-07. Rebuilding the SQLite chunk index from sidecars is still open.
+- [x] `feat(engine)`: `jobs/checkpoint.py`, `jobs/planfile.py`, `jobs/commit.py`, `store/reconcile.py` — `job.json`, `events.jsonl`, `plan.jsonl`, atomic chunk publish, crash recovery to `paused`, and quarantine of a mismatched wav on open — JB-02, JB-07. The SQLite `chunk` table is still not created.
 - [x] `feat(engine)`: `jobs/state.py` + `jobs/manager.py` — §8.1 transitions, one global slot, pause drops partials, reset deletes audio only when asked — JB-01, JB-03, JB-04, JB-06, D-14
 - [x] `feat(engine)`: `jobs/metrics.py` — smoothed RTF, throughput and ETA — §8.4. The job screen does not show them yet — UI-03…UI-06
 - [ ] `feat(engine-tts)`: `backends/chatterbox.py` (MIT, `pl` supported, watermark flag) and `backends/qwen3.py` (Apache-2.0, **no `pl`**, gated) — TTS-02, D-17, D-22
 - [ ] `feat(ui)`: job monitor — stage label, current fragment, counts, dual RTF, ETA, VRAM vs budget, worker count, always-reachable pause/resume/stop, fallback warnings — UI-01…UI-07. The screen is an empty placeholder.
-- [ ] `test`: 20-chunk job with the `fake` backend: pause at 8, `SIGKILL` the engine, restart, assert 12 renders and 8 reuses; edit one block, assert exactly one re-render; illegal-transition table. The illegal-transition table is in `tests/unit/test_job_state.py`. The kill/restart scenario is not.
+- [ ] `test`: 20-chunk job with the `fake` backend: pause at 8, `SIGKILL` the engine, restart, assert 12 renders and 8 reuses; edit one block, assert exactly one re-render; illegal-transition table. The illegal-transition table is in `tests/unit/test_job_state.py`. `tests/unit/test_crash_reuse.py` covers the in-process case (two chunks committed, reopen, only the rest render). A live `SIGKILL` is not in CI.
 
 **Exit:** killing the app at 40 % and restarting does not redo finished audio (PRD §12).
 
@@ -751,11 +753,11 @@ Not in the tree, even where an older box said otherwise: `llm/`, `jobs/prep_job.
 
 - [x] `feat(engine)`: `mux/chapters.py`, `mux/silence.py`, `mux/paths.py` — concat list, inter-sentence silence WAV, retained chapter names keep the book number — TTS-08, MX-05. Crossfade is not applied.
 - [x] `feat(engine)`: `mux/metadata.py` — ffmetadata chapter file; atom mapping `title`, `artist`/`album_artist` = authors, `composer` = narrator (audiobook convention), `album`, `date`, `genre=Audiobook`, `language`, `description`/`comment`, ISBN into `description` — MX-02
-- [x] `feat(engine)`: `mux/m4b.py` — argument list for one ffmpeg invocation: concat demuxer + ffmetadata + `-c:a aac -b:a 64k -ar 44100 -ac 1 -movflags +faststart`, cover via `-disposition:v attached_pic` — MX-01, MX-04. The function does not run ffmpeg.
+- [x] `feat(engine)`: `mux/m4b.py` + `mux/run.py` — argument list for one ffmpeg invocation, and `run_ffmpeg` which hands that list to `MediaTool` — MX-01, MX-04. Tests do not spawn a binary. A non-zero exit is `audio.encode_failed`.
 - [x] `feat(engine)`: partial mux — include only chapters with a complete chunk set, write `output/partial_report.json`, keep original chapter numbering — MX-03
 - [x] `feat(engine)`: guided LGPL ffmpeg fetch into `<dataDir>/bin` with checksum, plus settings → PATH → data-dir resolution — MX-04, D-06
 - [ ] `feat(ui)`: Metadata & export screen — form, cover picker, full/partial mux, output reveal — MX-01…MX-03. The screen is an empty placeholder.
-- [x] `test`: ffmpeg arg-builder snapshots in `tests/unit/test_m4b.py`. Real-ffmpeg integration on Linux + Windows (duration, chapter count, marker offsets via `ffprobe`) is still open.
+- [x] `test`: ffmpeg arg-builder snapshots in `tests/unit/test_m4b.py`, and `tests/unit/test_mux_run.py` for the tool hand-off. Real-ffmpeg integration on Linux + Windows (duration, chapter count, marker offsets via `ffprobe`) is still open.
 
 ### M6 — Hardening and v1 release
 
