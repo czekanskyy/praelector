@@ -67,8 +67,12 @@ jobs:
         if: steps.pkg.outputs.present == 'true'
         run: uv run --no-project --python 3.12 python scripts/assert_no_torch.py engine/uv.lock
 
-      - uses: FedericoCarboni/setup-ffmpeg@v3      # real ffmpeg for mux tests
+      # Pinned: the default "release" follows Gyan's latest tag, and a git-snapshot
+      # tag makes setup-ffmpeg fail before pytest ("Cannot get latest release").
+      - uses: FedericoCarboni/setup-ffmpeg@v3
         if: steps.pkg.outputs.present == 'true'
+        with:
+          ffmpeg-version: "7.1"
 
       # GPU-marked tests run only on the two reference machines; CI has no GPU
       - if: steps.pkg.outputs.present == 'true'
