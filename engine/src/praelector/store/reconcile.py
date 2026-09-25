@@ -9,11 +9,17 @@ the worker put them.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+import json
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
+from sqlalchemy import Engine, delete
+
 from praelector.jobs.reuse import chunk_reusable
+from praelector.store.db import session_scope
+from praelector.store.project_dir import ProjectLayout
+from praelector.store.tables import ChunkRow
 
 Probe = Callable[[Path], float]
 
@@ -51,6 +57,39 @@ def reconcile_chunks(
                 if moved is not None:
                     quarantined.append(moved)
     return ChunkReconcile(reusable, quarantined)
+
+
+def write_chunk_index(engine: Engine, project_id: str, root: Path, keys: Sequence[str]) -> None:
+    """Replace this project's chunk rows with the keys that just reconciled.
+
+    A sidecar that disappeared between the scan and this write is omitted.
+    Rows for keys that are no longer on disk are deleted.
+    """
+    layout = ProjectLayout(root=root)
+    rows: list[ChunkRow] = []
+    for key in keys:
+        sidecar = layout.chunk_sidecar(key)
+        wav = layout.chunk_wav(key)
+        try:
+            meta = json.loads(sidecar.read_text(encoding="utf-8"))
+            size = meta["size"]
+            duration = float(meta["duration_s"])
+        except (OSError, json.JSONDecodeError, KeyError, TypeError, ValueError):
+            continue
+        if not isinstance(size, int) or not wav.is_file():
+            continue
+        rows.append(
+            ChunkRow(
+                render_key=key,
+                project_id=project_id,
+                size=size,
+                duration_s=duration,
+                rel_path=layout.relative(wav),
+            )
+        )
+    with session_scope(engine) as session:
+        session.execute(delete(ChunkRow).where(ChunkRow.project_id == project_id))
+        session.add_all(rows)
 
 
 def _stems(shard: Path) -> list[str]:

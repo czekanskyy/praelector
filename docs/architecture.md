@@ -138,7 +138,7 @@ mid-transaction:
 | Path | Role |
 | --- | --- |
 | `<project>/project.json` | manifest, so the Library can list projects without opening databases |
-| `<project>/jobs/<id>/job.json` · `plan.jsonl` · `events.jsonl` | **on-disk truth for resume.** On open, `store/reconcile.py` keeps a chunk whose WAV matches its sidecar and moves a mismatch to `audio/quarantine/`. The SQLite `chunk` table is not created yet (JB-07) |
+| `<project>/jobs/<id>/job.json` · `plan.jsonl` · `events.jsonl` | **on-disk truth for resume.** On open, `store/reconcile.py` keeps a chunk whose WAV matches its sidecar, moves a mismatch to `audio/quarantine/`, and rebuilds the `chunk` rows from the files that remain. Disk wins (JB-07) |
 | `<project>/audio/chunks/<rk[0:2]>/<render_key>.{wav,json}` | content-addressed, immutable once renamed into place (PLAN.md D-07) |
 
 Chunk audio is content-addressed at **project** level rather than job level, so

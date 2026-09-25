@@ -664,7 +664,7 @@ What the app does today: open a project, ingest an ebook, edit chapter text (pri
 
 What the engine can do without a screen yet: heuristic readings, dialogue and gender, lexicon, apply, span revisions, reader EPUB export, GPU budget and monitor, runtime flavour and locked install, TTS protocol, worker client, registry, model cache, OmniVoice descriptor, voice ingest and slot assignment, job state machine, checkpoint, planner, chunker, reuse, fake sine render, mux argument lists, partial-chapter report, LGPL ffmpeg fetch.
 
-Opening a project quarantines a chunk whose wav does not match its sidecar (`store/reconcile.py`). `mux/run.py` hands an argument list to the ffmpeg tool. `tests/unit/test_crash_reuse.py` shows two committed chunks surviving crash recovery. The SQLite `chunk` table, a live `SIGKILL`, and a test that spawns ffmpeg are still absent.
+Opening a project quarantines a chunk whose wav does not match its sidecar and rewrites the `chunk` table (render key, size, duration, path) from the files that remain. `mux/run.py` hands an argument list to the ffmpeg tool. `tests/unit/test_crash_reuse.py` shows two committed chunks surviving crash recovery. A live `SIGKILL`, a test that spawns ffmpeg, and the rest of the chunk columns in DATA_MODEL.md §9 are still absent.
 
 Not in the tree, even where an older box said otherwise: `llm/`, `jobs/prep_job.py`, the LLM settings screen, Chatterbox, Qwen3, `docs/plugins.md`, a live worker pool, a job HTTP API, and crossfade.
 
@@ -740,7 +740,7 @@ Not in the tree, even where an older box said otherwise: `llm/`, `jobs/prep_job.
 - [x] `feat(engine)`: `jobs/planner.py`, `jobs/chunker.py` — §8.2 — TTS-07, TTS-08
 - [x] `feat(engine)`: `domain/hashing.py` — `render_key` — JB-05
 - [x] `feat(engine)`: `jobs/scheduler.py` + `jobs/admission.py` — slot gate, pause admits nobody, one `tts.oom` retry — GPU-05. A live worker pool is still open.
-- [x] `feat(engine)`: `jobs/checkpoint.py`, `jobs/planfile.py`, `jobs/commit.py`, `store/reconcile.py` — `job.json`, `events.jsonl`, `plan.jsonl`, atomic chunk publish, crash recovery to `paused`, and quarantine of a mismatched wav on open — JB-02, JB-07. The SQLite `chunk` table is still not created.
+- [x] `feat(engine)`: `jobs/checkpoint.py`, `jobs/planfile.py`, `jobs/commit.py`, `store/reconcile.py` — `job.json`, `events.jsonl`, `plan.jsonl`, atomic chunk publish, crash recovery to `paused`, quarantine of a mismatched wav, and a `chunk` index rebuilt from the sidecars that remain — JB-02, JB-07. The row stores the render key, size, duration and path. The other columns in DATA_MODEL.md §9 are still absent.
 - [x] `feat(engine)`: `jobs/state.py` + `jobs/manager.py` — §8.1 transitions, one global slot, pause drops partials, reset deletes audio only when asked — JB-01, JB-03, JB-04, JB-06, D-14
 - [x] `feat(engine)`: `jobs/metrics.py` — smoothed RTF, throughput and ETA — §8.4. The job screen does not show them yet — UI-03…UI-06
 - [ ] `feat(engine-tts)`: `backends/chatterbox.py` (MIT, `pl` supported, watermark flag) and `backends/qwen3.py` (Apache-2.0, **no `pl`**, gated) — TTS-02, D-17, D-22
