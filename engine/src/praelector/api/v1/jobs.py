@@ -1,19 +1,23 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Read-only job routes (OPENAPI_SKETCH.md §7).
+"""Job routes (OPENAPI_SKETCH.md §7).
 
-History and the event replay a reconnecting UI needs. Creating, pausing
-and resuming a job are still not on this router.
+History, the event replay a reconnecting UI needs, and pause / resume / cancel.
+Creating a job is still not on this router.
 """
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Query
 from fastapi import Path as PathParam
 
+from praelector.domain.enums import JobState
 from praelector.errors import AppError, ErrorCode
 from praelector.jobs.catalog import job_events, list_jobs, load_job
+from praelector.jobs.checkpoint import JobLog, JobRecord
+from praelector.jobs.state import JobEvent
 from praelector.state import AppState, get_state
 from praelector.store.projects import OpenProject
 
@@ -63,3 +67,47 @@ def get_job_events(
     if record.project_id != opened.id:
         raise AppError(ErrorCode.JOB_NOT_FOUND, detail={"job_id": job_id})
     return {"events": job_events(opened.layout.jobs, job_id, since=since)}
+
+
+def _owned(state: AppState, job_id: str) -> tuple[OpenProject, JobRecord]:
+    opened = state.projects.require_current()
+    record = load_job(opened.layout.jobs, job_id)
+    if record.project_id != opened.id:
+        raise AppError(ErrorCode.JOB_NOT_FOUND, detail={"job_id": job_id})
+    return opened, record
+
+
+def _apply(opened: OpenProject, record: JobRecord, event: JobEvent) -> dict[str, Any]:
+    updated = JobLog(opened.layout.job_dir(record.id)).apply(record, event)
+    return updated.to_json()
+
+
+@router.post("/jobs/{job_id}/pause")
+def pause_job(job_id: JobId, state: AppState = Depends(get_state)) -> dict[str, Any]:
+    """Pause and delete ``*.part`` files under the project chunks directory."""
+    opened, record = _owned(state, job_id)
+    body = _apply(opened, record, JobEvent.PAUSE)
+    _drop_partials(opened.layout.chunks)
+    return body
+
+
+@router.post("/jobs/{job_id}/resume")
+def resume_job(job_id: JobId, state: AppState = Depends(get_state)) -> dict[str, Any]:
+    opened, record = _owned(state, job_id)
+    return _apply(opened, record, JobEvent.RESUME)
+
+
+@router.post("/jobs/{job_id}/cancel")
+def cancel_job(job_id: JobId, state: AppState = Depends(get_state)) -> dict[str, Any]:
+    """Cancel a queued job. Any other live state is a stop, which keeps finished audio."""
+    opened, record = _owned(state, job_id)
+    event = JobEvent.CANCEL if record.state is JobState.QUEUED else JobEvent.STOP
+    return _apply(opened, record, event)
+
+
+def _drop_partials(chunks: Path) -> None:
+    if not chunks.is_dir():
+        return
+    for path in chunks.rglob("*.part"):
+        if path.is_file():
+            path.unlink()
