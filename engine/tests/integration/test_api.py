@@ -179,6 +179,11 @@ def test_ws_honours_a_topic_subscription(
     with client.websocket_connect(f"/v1/ws?token={token}", subprotocols=[WS_SUBPROTOCOL]) as ws:
         ws.receive_json()
         ws.send_text(json.dumps({"op": "subscribe", "topics": ["job.state"]}))
+        # Subscribe is applied on the reader task. A pong is sent by that same
+        # task after the topic list, so it is proof the filter is in place
+        # before the publishes below.
+        ws.send_text(json.dumps({"op": "ping"}))
+        assert ws.receive_json()["op"] == "pong"
         app_state.events.publish(EventType.GPU_SAMPLE, {"device_index": 0})
         app_state.events.publish(EventType.JOB_STATE, {"state": "paused"}, job_id="job_a")
         event = ws.receive_json()
