@@ -15,6 +15,7 @@ from pathlib import Path
 
 from praelector.audio.ffmpeg import MediaTool, ToolResult
 from praelector.errors import AppError, ErrorCode
+from praelector.voices.waveform import write_peaks
 
 CHAIN_VERSION = "1"
 _DEFAULT_TARGET_LUFS = -23.0
@@ -102,9 +103,7 @@ def ingest_sample(
         clamped.replace(processed)
         duration = _duration(tool, processed)
     peaks = voices_dir / f"{profile_id}.peaks.json"
-    peaks.write_text(
-        json.dumps({"peaks": [0.0], "sample_rate": sample_rate}) + "\n", encoding="utf-8"
-    )
+    write_peaks(processed, peaks)
     digest = hashlib.blake2s(
         processed.read_bytes() + f"{target_lufs}|{sample_rate}|{CHAIN_VERSION}".encode(),
         digest_size=16,
