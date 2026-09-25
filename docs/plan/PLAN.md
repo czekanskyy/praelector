@@ -662,11 +662,11 @@ Status on 2026-09-25, read from the tree rather than from these boxes as they st
 
 What the app does today: open a project, ingest an ebook, edit chapter text (print and spoken, find/replace), reorder and rename chapters. Library, ingest, chapters and the editor are wired to the API. Suggestions, voices, the job monitor, metadata/export and settings are empty screens.
 
-What the engine can do without a screen yet: heuristic readings, dialogue and gender, lexicon, apply, span revisions, reader EPUB export, GPU budget and monitor, runtime flavour and locked install, TTS protocol, worker client, registry, model cache, OmniVoice descriptor, voice ingest and slot assignment, job state machine, checkpoint, planner, chunker, reuse, fake sine render, mux argument lists, partial-chapter report, LGPL ffmpeg fetch.
+What the engine can do without a screen yet: heuristic readings, dialogue and gender, lexicon, apply, span revisions, reader EPUB export, GPU budget and monitor, runtime flavour and locked install, TTS protocol, worker client, registry, model cache, OmniVoice descriptor, voice ingest and slot assignment, job state machine, checkpoint, planner, chunker, reuse, fake sine render, one fake-voice pass over a running job, mux argument lists, chapter WAV copy, M4B encode through an injected ffmpeg tool, partial-chapter report, LGPL ffmpeg fetch, and `GET` job history plus event replay.
 
 Opening a project quarantines a chunk whose wav does not match its sidecar and rewrites the `chunk` table (render key, size, duration, path) from the files that remain. `mux/run.py` hands an argument list to the ffmpeg tool. `tests/unit/test_crash_reuse.py` shows two committed chunks surviving crash recovery. A live `SIGKILL`, a test that spawns ffmpeg, and the rest of the chunk columns in DATA_MODEL.md §9 are still absent.
 
-Not in the tree, even where an older box said otherwise: `llm/`, `jobs/prep_job.py`, the LLM settings screen, Chatterbox, Qwen3, `docs/plugins.md`, a live worker pool, a job HTTP API, and crossfade.
+Not in the tree, even where an older box said otherwise: `llm/`, `jobs/prep_job.py`, the LLM settings screen, Chatterbox, Qwen3, a live worker pool, and crossfade. `docs/plugins.md` is the fake-backend walkthrough. Creating a job is not an HTTP route yet.
 
 ### M0 — Skeleton (week 1–2)
 
@@ -730,7 +730,7 @@ Not in the tree, even where an older box said otherwise: `llm/`, `jobs/prep_job.
 - [x] `feat(engine-tts)`: `backends/omnivoice.py` — default backend, `ref_text` required, Polish language id, fp16 — TTS-02, D-21, D-25
 - [x] `feat(engine)`: `voices/ingest.py` + `voices/assignment.py` — the §6.4 ingest chain and slot assignment — TTS-04, TTS-06. Profile CRUD and preview render are still open — TTS-03, TTS-09
 - [ ] `feat(ui)`: Voices screen — upload, waveform, trim/LUFS settings, per-slot assignment, schema-driven backend params panel, preview playback, license panel — TTS-03…TTS-06, TTS-09, NF-03. The screen is an empty placeholder.
-- [ ] `chore`: **freeze the plugin protocol**; write `docs/plugins.md` including a working `fake` backend walkthrough — PRD §12 success metric, risk "Plugin API churn"
+- [x] `docs`: `docs/plugins.md` — worker protocol and the `fake` backend walkthrough. The registry is `fake` and `omnivoice`. Chatterbox and Qwen3 are still unregistered — PRD §12
 - [x] `test`: budget math table (8/12/16 GB, CPU), descriptor schema validation, worker handshake and timeout, voice ingest chain — GPU-01, TTS-01, TTS-04. Golden LUFS against a real ffmpeg binary is not in CI.
 
 **Exit:** a paragraph previews through OmniVoice on both reference machines; the GPU panel shows device, VRAM, budget and worker count.
@@ -753,7 +753,7 @@ Not in the tree, even where an older box said otherwise: `llm/`, `jobs/prep_job.
 
 - [x] `feat(engine)`: `mux/chapters.py`, `mux/silence.py`, `mux/paths.py` — concat list, inter-sentence silence WAV, retained chapter names keep the book number — TTS-08, MX-05. Crossfade is not applied.
 - [x] `feat(engine)`: `mux/metadata.py` — ffmetadata chapter file; atom mapping `title`, `artist`/`album_artist` = authors, `composer` = narrator (audiobook convention), `album`, `date`, `genre=Audiobook`, `language`, `description`/`comment`, ISBN into `description` — MX-02
-- [x] `feat(engine)`: `mux/m4b.py` + `mux/run.py` — argument list for one ffmpeg invocation, and `run_ffmpeg` which hands that list to `MediaTool` — MX-01, MX-04. Tests do not spawn a binary. A non-zero exit is `audio.encode_failed`.
+- [x] `feat(engine)`: `mux/m4b.py`, `mux/run.py`, `mux/encode_chapters.py`, `mux/encode_m4b.py` — argument list, chapter WAV copy, and one M4B invocation, all through an injected `MediaTool` — MX-01, MX-04. Tests do not spawn a binary. A non-zero exit is `audio.encode_failed`.
 - [x] `feat(engine)`: partial mux — include only chapters with a complete chunk set, write `output/partial_report.json`, keep original chapter numbering — MX-03
 - [x] `feat(engine)`: guided LGPL ffmpeg fetch into `<dataDir>/bin` with checksum, plus settings → PATH → data-dir resolution — MX-04, D-06
 - [ ] `feat(ui)`: Metadata & export screen — form, cover picker, full/partial mux, output reveal — MX-01…MX-03. The screen is an empty placeholder.
@@ -765,7 +765,7 @@ Not in the tree, even where an older box said otherwise: `llm/`, `jobs/prep_job.
 - [ ] `chore`: measure real peak VRAM per backend on both machines; replace conservative defaults with `measured: true` values — GPU-03
 - [ ] `chore`: Windows NSIS installer + portable ZIP; Linux AppImage + tarball; `SHA256SUMS`; SmartScreen note — NF-11, D-24
 - [ ] `chore`: `NOTICE` completed from the dependency scan; `docs/licenses.md` with the §11 table; model license screens verified — NF-03
-- [ ] `docs`: `user-guide.md`, `plugins.md`, `gpu.md`, `llm-providers.md`, `packaging.md`, `troubleshooting.md` — NF-10
+- [ ] `docs`: `user-guide.md`, `gpu.md`, `llm-providers.md`, `packaging.md`, `troubleshooting.md` — NF-10. `plugins.md` is written.
 - [ ] `test`: full-book fixture run with `fake` backend in CI; manual full Polish novel on both machines in `narrator_male_female` — PRD §12
 - [ ] `perf`: warm start to UI < 5 s excluding model load; UI stays responsive during model load — NF-06, NF-07
 - [ ] `chore`: 100 % Polish catalogue coverage enforced in CI — IX-01
