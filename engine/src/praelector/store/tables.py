@@ -24,6 +24,7 @@ from sqlalchemy import (
     Integer,
     String,
     UniqueConstraint,
+    text,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -179,6 +180,43 @@ class SpanRow(Base):
     orphaned: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     valid_from_revision: Mapped[int] = mapped_column(Integer, nullable=False)
     valid_to_revision: Mapped[int | None] = mapped_column(Integer)
+
+
+class VoiceProfileRow(Base):
+    """One reference sample (DATA_MODEL.md §7). A null slot is unassigned."""
+
+    __tablename__ = "voice_profile"
+    __table_args__ = (
+        CheckConstraint(
+            "slot IS NULL OR slot IN ('narrator','dialogue','male','female')",
+            name="ck_voice_profile_slot",
+        ),
+        Index(
+            "ux_voice_slot",
+            "project_id",
+            "slot",
+            unique=True,
+            sqlite_where=text("slot IS NOT NULL"),
+        ),
+    )
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str] = mapped_column(ForeignKey("project.id"), nullable=False)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    slot: Mapped[str | None] = mapped_column(String)
+    source_filename: Mapped[str] = mapped_column(String, nullable=False)
+    source_sha256: Mapped[str] = mapped_column(String, nullable=False)
+    ref_text: Mapped[str] = mapped_column(String, nullable=False)
+    processed_rel: Mapped[str] = mapped_column(String, nullable=False)
+    sample_rate: Mapped[int] = mapped_column(Integer, nullable=False)
+    channels: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    duration_s: Mapped[float] = mapped_column(Float, nullable=False)
+    measured_lufs: Mapped[float | None] = mapped_column(Float)
+    target_lufs: Mapped[float] = mapped_column(Float, nullable=False, default=-23.0)
+    trim_applied: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    content_hash: Mapped[str] = mapped_column(String, nullable=False)
+    chain_version: Mapped[str] = mapped_column(String, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, nullable=False)
 
 
 class ChunkRow(Base):
