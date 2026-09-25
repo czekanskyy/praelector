@@ -19,9 +19,7 @@ from praelector.store.projects import OpenProject
 
 router = APIRouter(tags=["jobs"])
 
-ProjectId = Annotated[
-    str, PathParam(min_length=4, max_length=64, pattern=r"^prj_[0-9A-Z]{26}$")
-]
+ProjectId = Annotated[str, PathParam(min_length=4, max_length=64, pattern=r"^prj_[0-9A-Z]{26}$")]
 JobId = Annotated[str, PathParam(min_length=4, max_length=64, pattern=r"^job_[0-9A-Z]{26}$")]
 
 
