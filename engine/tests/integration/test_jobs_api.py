@@ -105,3 +105,42 @@ def test_job_routes_require_an_open_project(
     response = client.get(f"/v1/projects/{project.id}/jobs", headers=auth)
     assert response.status_code == 409
     assert response.json()["error"]["code"] == "project.not_open"
+
+
+def test_post_queues_one_job_and_refuses_a_second(
+    client: TestClient, auth: dict[str, str], app_state: AppState
+) -> None:
+    project = app_state.projects.create(name="Queue")
+    app_state.projects.open(project.id)
+    try:
+        created = client.post(
+            f"/v1/projects/{project.id}/jobs",
+            headers=auth,
+            json={"kind": "record", "options": {"auto_mux": True}},
+        )
+        assert created.status_code == 201
+        body = created.json()
+        assert body["state"] == "queued"
+        assert body["kind"] == "record"
+        assert body["options"] == {"auto_mux": True}
+        assert body["revision"] == 0
+
+        blocked = client.post(
+            f"/v1/projects/{project.id}/jobs",
+            headers=auth,
+            json={"kind": "prep"},
+        )
+        assert blocked.status_code == 409
+        assert blocked.json()["error"]["code"] == "job.already_active"
+
+        cancelled = client.post(f"/v1/jobs/{body['id']}/cancel", headers=auth)
+        assert cancelled.json()["state"] == "cancelled"
+        again = client.post(
+            f"/v1/projects/{project.id}/jobs",
+            headers=auth,
+            json={"kind": "prep"},
+        )
+        assert again.status_code == 201
+        assert again.json()["kind"] == "prep"
+    finally:
+        app_state.projects.close_current()
