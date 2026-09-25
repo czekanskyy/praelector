@@ -658,6 +658,14 @@ eta_seconds   = (remaining_chars / chars_per_sec) / throughput
 
 Each task lists the requirement IDs it satisfies. File paths are given where they are already decided.
 
+Status on 2026-09-25, read from the tree rather than from these boxes as they stood before that date. About 45% of the way to a usable v1. Engine libraries are closer to 60%. The window a person can use is closer to 30%.
+
+What the app does today: open a project, ingest an ebook, edit chapter text (print and spoken, find/replace), reorder and rename chapters. Library, ingest, chapters and the editor are wired to the API. Suggestions, voices, the job monitor, metadata/export and settings are empty screens.
+
+What the engine can do without a screen yet: heuristic readings, dialogue and gender, lexicon, apply, span revisions, reader EPUB export, GPU budget and monitor, runtime flavour and locked install, TTS protocol, worker client, registry, model cache, OmniVoice descriptor, voice ingest and slot assignment, job state machine, checkpoint, planner, chunker, reuse, fake sine render, mux argument lists, partial-chapter report, LGPL ffmpeg fetch.
+
+Not in the tree, even where an older box said otherwise: `llm/`, `jobs/prep_job.py`, the LLM settings screen, Chatterbox, Qwen3, `docs/plugins.md`, a live worker pool, a job HTTP API, crossfade, a real ffmpeg mux, and the kill-at-40% resume test.
+
 ### M0 — Skeleton (week 1–2)
 
 - [x] `chore`: monorepo scaffold per [REPO_LAYOUT.md](REPO_LAYOUT.md); `pnpm-workspace.yaml`, `justfile`, `.editorconfig`, `.gitignore` — PRD §8
@@ -676,19 +684,19 @@ Each task lists the requirement IDs it satisfies. File paths are given where the
 
 ### M1 — Ebook core
 
-- [ ] `feat(engine)`: format detection by magic bytes + extension — EB-01
-- [ ] `feat(engine)`: DRM refusal — inspect `META-INF/encryption.xml`; reject when encrypted items include OPF/XHTML or the algorithm is not one of the two font-obfuscation URIs; reject on `META-INF/sinf.xml` / `rights.xml`; **do not** reject legitimate font obfuscation — EB-01, EB-02
-- [ ] `feat(engine)`: fail-closed empty-text check (spine > 3 items but < 200 extractable chars) — EB-02
-- [ ] `feat(engine)`: `ebook/epub_read.py` — container → OPF → manifest/spine → NCX/nav; metadata, authors, language, cover, TOC — EB-01, EB-05
-- [ ] `feat(engine)`: `ebook/blocks.py` — XHTML → ordered blocks with `source_ref`; decorative-image drop; cover retained — EB-07, D-08
-- [ ] `feat(engine)`: `ebook/epub_write.py` — deterministic EPUB 3 writer (mimetype first, uncompressed) → `source/working.epub`, original never mutated — EB-06
-- [ ] `feat(engine)`: `ebook/calibre.py` — locate `ebook-convert`, run PDF/MOBI/AZW3 → EPUB in a temp dir, surface stderr, structured `ebook.calibre_missing` error with per-OS instructions — EB-03, EB-09, NF-04
-- [ ] `feat(engine)`: `ebook/pdf.py` — `pypdf` text-layer probe; < 200 chars in the first 5 pages ⇒ `ebook.no_text_layer` ("no OCR in v1") — EB-04
-- [ ] `feat(engine)`: `ebook/frontmatter.py` — skip-span heuristics — EB-08
-- [ ] `feat(engine)`: chapter tree from spine + TOC; ops rename / reorder / merge / split-at-offset / include-exclude — ED-01
-- [ ] `feat(engine)`: chapter plain-text get/put with block re-association by similarity; autosave; find/replace with dry-run — ED-02, ED-05, ED-07
-- [ ] `feat(ui)`: ingest flow with DRM and Calibre error states; chapter tree with drag-reorder; CodeMirror editor with span decorations; print-vs-spoken toggle; find/replace panel — ED-01…ED-06, ED-09
-- [ ] `test`: fixtures `epub2_minimal`, `epub3_minimal`, `epub3_polish_novel`, `drm_encrypted`, `font_obfuscated`, `no_text_layer.pdf`, `text_layer.pdf`; round-trip and refusal tests — §10
+- [x] `feat(engine)`: format detection by magic bytes + extension — EB-01
+- [x] `feat(engine)`: DRM refusal — inspect `META-INF/encryption.xml`; reject when encrypted items include OPF/XHTML or the algorithm is not one of the two font-obfuscation URIs; reject on `META-INF/sinf.xml` / `rights.xml`; **do not** reject legitimate font obfuscation — EB-01, EB-02
+- [x] `feat(engine)`: fail-closed empty-text check (spine > 3 items but < 200 extractable chars) — EB-02
+- [x] `feat(engine)`: `ebook/epub_read.py` — container → OPF → manifest/spine → NCX/nav; metadata, authors, language, cover, TOC — EB-01, EB-05
+- [x] `feat(engine)`: `ebook/blocks.py` — XHTML → ordered blocks with `source_ref`; decorative-image drop; cover retained — EB-07, D-08
+- [x] `feat(engine)`: `ebook/epub_write.py` — deterministic EPUB 3 writer (mimetype first, uncompressed) → `source/working.epub`, original never mutated — EB-06
+- [x] `feat(engine)`: `ebook/calibre.py` — locate `ebook-convert`, run PDF/MOBI/AZW3 → EPUB in a temp dir, surface stderr, structured `ebook.calibre_missing` error with per-OS instructions — EB-03, EB-09, NF-04
+- [x] `feat(engine)`: `ebook/pdf.py` — `pypdf` text-layer probe; < 200 chars in the first 5 pages ⇒ `ebook.no_text_layer` ("no OCR in v1") — EB-04
+- [x] `feat(engine)`: `ebook/frontmatter.py` — skip-span heuristics — EB-08
+- [x] `feat(engine)`: chapter tree from spine + TOC; ops rename / reorder / merge / split-at-offset / include-exclude — ED-01
+- [x] `feat(engine)`: chapter plain-text get/put with block re-association by similarity; autosave; find/replace with dry-run — ED-02, ED-05, ED-07
+- [ ] `feat(ui)`: ingest, chapter list (button reorder, not drag) and CodeMirror with print/spoken plus find/replace are wired. Still missing: span decorations and drag-reorder — ED-01…ED-06, ED-09
+- [x] `test`: round-trip and refusal tests in `tests/unit/test_ebook.py` and `tests/integration/test_ingest_probe.py` (fixtures are built in the test, not checked in as files) — §10
 
 **Exit:** a Polish EPUB imports into a chapter tree, is editable, and saves to `working.epub`; DRM and no-text-layer files fail with clear codes.
 
@@ -701,53 +709,53 @@ Each task lists the requirement IDs it satisfies. File paths are given where the
 - [x] `feat(engine)`: `text/dialogue.py` — the §5.2 state machine — **DG-01, DG-02**
 - [x] `feat(engine)`: `text/gender.py` — the §5.3 signal ladder, name lexicon with `-a` male exceptions, chapter speaker map — **DG-03, DG-04, DG-05, DG-06**
 - [x] `feat(engine)`: `text/lexicon.py` — global + project lexicon, applied before and after the LLM — AI-09
-- [x] `feat(engine)`: `llm/` — `LlmClient` protocol; `openai_compat` (Ollama, LM Studio, OpenAI, Groq, OpenRouter, xAI, vLLM), `anthropic`, `gemini`; profile CRUD + connection test; keyring secrets + encrypted fallback; per-task routing; usage counters; failover offer — LM-01…LM-07, AI-10
-- [x] `feat(engine)`: `jobs/prep_job.py` — heuristic pass then LLM pass with bounded context, schema validation, one retry, `failed` suggestions; cancel and partial results — AI-01, AI-03, D-15
-- [ ] `feat(engine)`: revisions and apply — SCD-2 block/span versioning, batch apply in reverse offset order, undo of a batch — AI-07
-- [ ] `feat(engine)`: reader EPUB export with `data-prl-*` attributes + `prl-spans.json` companion, and a "clean reader" variant — EX-01, EX-02, EX-03
-- [ ] `feat(ui)`: review queue with category/status/chapter filters, accept/reject/edit, accept-all-in-filter with undo, jump-to-span, per-category counts, keyboard shortcuts — AI-06, AI-11, ED-08, IX-03
-- [x] `feat(ui)`: Settings → LLM providers, including the cheap/free on-ramp copy (Groq, Google AI Studio, OpenRouter `:free`) and the explicit statement that ChatGPT Plus / Claude Pro / Grok / Gemini / Cursor **subscriptions are not API access** — LM-05, LM-06
+- [ ] `feat(engine)`: `llm/` — `LlmClient` protocol; `openai_compat` (Ollama, LM Studio, OpenAI, Groq, OpenRouter, xAI, vLLM), `anthropic`, `gemini`; profile CRUD + connection test; keyring secrets + encrypted fallback; per-task routing; usage counters; failover offer — LM-01…LM-07, AI-10
+- [ ] `feat(engine)`: `jobs/prep_job.py` — heuristic pass then LLM pass with bounded context, schema validation, one retry, `failed` suggestions; cancel and partial results — AI-01, AI-03, D-15
+- [x] `feat(engine)`: revisions and apply — SCD-2 block/span versioning, batch apply in reverse offset order — AI-07. Undo of a batch is still open.
+- [x] `feat(engine)`: reader EPUB export with `data-prl-*` attributes + `prl-spans.json` companion, and a "clean reader" variant — EX-01, EX-02, EX-03
+- [ ] `feat(ui)`: review queue with category/status/chapter filters, accept/reject/edit, accept-all-in-filter with undo, jump-to-span, per-category counts, keyboard shortcuts — AI-06, AI-11, ED-08, IX-03. The screen is an empty placeholder.
+- [ ] `feat(ui)`: Settings → LLM providers, including the cheap/free on-ramp copy (Groq, Google AI Studio, OpenRouter `:free`) and the explicit statement that ChatGPT Plus / Claude Pro / Grok / Gemini / Cursor **subscriptions are not API access** — LM-05, LM-06. The settings screen is an empty placeholder.
 - [x] `test`: the Polish golden chapter (§10.1) and the dialogue case table (§10.2)
 
 **Exit criterion (PRD):** a Polish novel chapter yields reviewable dialogue splits and gender tags.
 
 ### M3 — Voices and one backend
 
-- [ ] `feat(engine)`: `gpu/detect.py`, `gpu/budget.py`, `gpu/monitor.py` — GPU-01…GPU-06
-- [ ] `feat(engine)`: `runtime/provision.py` — bundled `uv`, flavour selection, locked install into `<dataDir>/runtimes/`, WS progress, `runtime.json`, mismatch detection — GPU-07, GPU-08, D-04
-- [ ] `feat(engine)`: `tts/protocol.py` + `tts/registry.py` + `tts/worker_client.py` — descriptor, capability flags, params schema, license metadata, worker spawn/handshake/timeout/kill — **TTS-01, TTS-05**, D-05
-- [ ] `feat(engine)`: `tts/models_cache.py` — asset download via `huggingface_hub` into the shared cache, sha256 verification, resumable, license acknowledgement gate — TTS-02, NF-03
-- [ ] `feat(engine-tts)`: `backends/omnivoice.py` — default backend, `ref_text` required, Polish language id, fp16 — TTS-02, D-21, D-25
-- [ ] `feat(engine)`: `voices/` — the §6.4 ingest chain, profile CRUD, slot assignment, preview render — TTS-03, TTS-04, TTS-06, TTS-09
-- [ ] `feat(ui)`: Voices screen — upload, waveform, trim/LUFS settings, per-slot assignment, schema-driven backend params panel, preview playback, license panel — TTS-03…TTS-06, TTS-09, NF-03
+- [x] `feat(engine)`: `gpu/detect.py`, `gpu/budget.py`, `gpu/monitor.py` — GPU-01…GPU-06
+- [x] `feat(engine)`: `runtime/provision.py` — bundled `uv`, flavour selection, locked install into `<dataDir>/runtimes/`, WS progress, `runtime.json`, mismatch detection — GPU-07, GPU-08, D-04
+- [x] `feat(engine)`: `tts/protocol.py` + `tts/registry.py` + `tts/worker_client.py` — descriptor, capability flags, params schema, license metadata, worker spawn/handshake/timeout/kill — **TTS-01, TTS-05**, D-05
+- [x] `feat(engine)`: `tts/models_cache.py` — asset download via `huggingface_hub` into the shared cache, sha256 verification, resumable, license acknowledgement gate — TTS-02, NF-03
+- [x] `feat(engine-tts)`: `backends/omnivoice.py` — default backend, `ref_text` required, Polish language id, fp16 — TTS-02, D-21, D-25
+- [x] `feat(engine)`: `voices/ingest.py` + `voices/assignment.py` — the §6.4 ingest chain and slot assignment — TTS-04, TTS-06. Profile CRUD and preview render are still open — TTS-03, TTS-09
+- [ ] `feat(ui)`: Voices screen — upload, waveform, trim/LUFS settings, per-slot assignment, schema-driven backend params panel, preview playback, license panel — TTS-03…TTS-06, TTS-09, NF-03. The screen is an empty placeholder.
 - [ ] `chore`: **freeze the plugin protocol**; write `docs/plugins.md` including a working `fake` backend walkthrough — PRD §12 success metric, risk "Plugin API churn"
-- [ ] `test`: budget math table (8/12/16 GB, CPU), descriptor schema validation, worker handshake and timeout, voice ingest chain golden durations/LUFS
+- [x] `test`: budget math table (8/12/16 GB, CPU), descriptor schema validation, worker handshake and timeout, voice ingest chain — GPU-01, TTS-01, TTS-04. Golden LUFS against a real ffmpeg binary is not in CI.
 
 **Exit:** a paragraph previews through OmniVoice on both reference machines; the GPU panel shows device, VRAM, budget and worker count.
 
 ### M4 — Job engine
 
-- [ ] `feat(engine)`: `jobs/planner.py`, `jobs/chunker.py` — §8.2 — TTS-07, TTS-08
-- [ ] `feat(engine)`: `domain/hashing.py` — `render_key` — JB-05
-- [ ] `feat(engine)`: `jobs/scheduler.py` — admission semaphore, worker pool, retry-on-OOM, admissions pause — GPU-05
-- [ ] `feat(engine)`: `jobs/checkpoint.py` — atomic chunk write + sidecar, `plan.jsonl`, `job.json`, `events.jsonl`, reconcile-on-open — JB-02, JB-07
-- [ ] `feat(engine)`: `jobs/state.py` + `jobs/manager.py` — §8.1 transitions, global job slot, pause/stop/resume/reset — JB-01, JB-03, JB-04, JB-06, D-14
-- [ ] `feat(engine)`: `jobs/metrics.py` — §8.4 — UI-03…UI-06
+- [x] `feat(engine)`: `jobs/planner.py`, `jobs/chunker.py` — §8.2 — TTS-07, TTS-08
+- [x] `feat(engine)`: `domain/hashing.py` — `render_key` — JB-05
+- [x] `feat(engine)`: `jobs/scheduler.py` + `jobs/admission.py` — slot gate, pause admits nobody, one `tts.oom` retry — GPU-05. A live worker pool is still open.
+- [x] `feat(engine)`: `jobs/checkpoint.py`, `jobs/planfile.py`, `jobs/commit.py` — `job.json`, `events.jsonl`, `plan.jsonl`, atomic chunk publish, crash recovery to `paused` — JB-02, JB-07. Rebuilding the SQLite chunk index from sidecars is still open.
+- [x] `feat(engine)`: `jobs/state.py` + `jobs/manager.py` — §8.1 transitions, one global slot, pause drops partials, reset deletes audio only when asked — JB-01, JB-03, JB-04, JB-06, D-14
+- [x] `feat(engine)`: `jobs/metrics.py` — smoothed RTF, throughput and ETA — §8.4. The job screen does not show them yet — UI-03…UI-06
 - [ ] `feat(engine-tts)`: `backends/chatterbox.py` (MIT, `pl` supported, watermark flag) and `backends/qwen3.py` (Apache-2.0, **no `pl`**, gated) — TTS-02, D-17, D-22
-- [ ] `feat(ui)`: job monitor — stage label, current fragment, counts, dual RTF, ETA, VRAM vs budget, worker count, always-reachable pause/resume/stop, fallback warnings — UI-01…UI-07
-- [ ] `test`: 20-chunk job with the `fake` backend: pause at 8, `SIGKILL` the engine, restart, assert 12 renders and 8 reuses; edit one block, assert exactly one re-render; illegal-transition table
+- [ ] `feat(ui)`: job monitor — stage label, current fragment, counts, dual RTF, ETA, VRAM vs budget, worker count, always-reachable pause/resume/stop, fallback warnings — UI-01…UI-07. The screen is an empty placeholder.
+- [ ] `test`: 20-chunk job with the `fake` backend: pause at 8, `SIGKILL` the engine, restart, assert 12 renders and 8 reuses; edit one block, assert exactly one re-render; illegal-transition table. The illegal-transition table is in `tests/unit/test_job_state.py`. The kill/restart scenario is not.
 
 **Exit:** killing the app at 40 % and restarting does not redo finished audio (PRD §12).
 
 ### M5 — M4B
 
-- [ ] `feat(engine)`: `mux/chapters.py` — per-chapter concat with configurable inter-sentence silence and optional crossfade; optional per-chapter WAV/FLAC retention — TTS-08, MX-05
-- [ ] `feat(engine)`: `mux/metadata.py` — ffmetadata chapter file; atom mapping `title`, `artist`/`album_artist` = authors, `composer` = narrator (audiobook convention), `album`, `date`, `genre=Audiobook`, `language`, `description`/`comment`, ISBN into `description`; cover via `-disposition:v attached_pic` — MX-02
-- [ ] `feat(engine)`: `mux/m4b.py` — single ffmpeg invocation: concat demuxer + ffmetadata + `-c:a aac -b:a 64k -ar 44100 -ac 1 -movflags +faststart` — MX-01, MX-04
-- [ ] `feat(engine)`: partial mux — include only chapters with a complete chunk set, write `output/partial_report.json`, keep original chapter numbering — MX-03
-- [ ] `feat(engine)`: guided LGPL ffmpeg fetch into `<dataDir>/bin` with checksum and license display — MX-04, D-06
-- [ ] `feat(ui)`: Metadata & export screen — form, cover picker, full/partial mux, output reveal — MX-01…MX-03
-- [ ] `test`: ffmpeg arg-builder snapshots; real-ffmpeg integration on Linux + Windows asserting duration, chapter count and marker offsets via `ffprobe`
+- [x] `feat(engine)`: `mux/chapters.py`, `mux/silence.py`, `mux/paths.py` — concat list, inter-sentence silence WAV, retained chapter names keep the book number — TTS-08, MX-05. Crossfade is not applied.
+- [x] `feat(engine)`: `mux/metadata.py` — ffmetadata chapter file; atom mapping `title`, `artist`/`album_artist` = authors, `composer` = narrator (audiobook convention), `album`, `date`, `genre=Audiobook`, `language`, `description`/`comment`, ISBN into `description` — MX-02
+- [x] `feat(engine)`: `mux/m4b.py` — argument list for one ffmpeg invocation: concat demuxer + ffmetadata + `-c:a aac -b:a 64k -ar 44100 -ac 1 -movflags +faststart`, cover via `-disposition:v attached_pic` — MX-01, MX-04. The function does not run ffmpeg.
+- [x] `feat(engine)`: partial mux — include only chapters with a complete chunk set, write `output/partial_report.json`, keep original chapter numbering — MX-03
+- [x] `feat(engine)`: guided LGPL ffmpeg fetch into `<dataDir>/bin` with checksum, plus settings → PATH → data-dir resolution — MX-04, D-06
+- [ ] `feat(ui)`: Metadata & export screen — form, cover picker, full/partial mux, output reveal — MX-01…MX-03. The screen is an empty placeholder.
+- [x] `test`: ffmpeg arg-builder snapshots in `tests/unit/test_m4b.py`. Real-ffmpeg integration on Linux + Windows (duration, chapter count, marker offsets via `ffprobe`) is still open.
 
 ### M6 — Hardening and v1 release
 
