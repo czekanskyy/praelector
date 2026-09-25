@@ -3,6 +3,16 @@
 
 from __future__ import annotations
 
-from praelector.api.v1 import chapters, gpu, health, ingest, jobs, projects, settings, ws
+from praelector.api.v1 import chapters, gpu, health, ingest, jobs, plan, projects, settings, ws
 
-__all__ = ["chapters", "gpu", "health", "ingest", "jobs", "projects", "settings", "ws"]
+__all__ = [
+    "chapters",
+    "gpu",
+    "health",
+    "ingest",
+    "jobs",
+    "plan",
+    "projects",
+    "settings",
+    "ws",
+]
