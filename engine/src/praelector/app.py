@@ -23,7 +23,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from praelector import __version__
-from praelector.api.v1 import chapters, gpu, health, ingest, jobs, projects, settings, ws
+from praelector.api.v1 import chapters, gpu, health, ingest, jobs, plan, projects, settings, ws
 from praelector.config import RuntimeEnv, load_runtime_env
 from praelector.errors import TraceMiddleware, register_error_handlers
 from praelector.logging import register_secret
@@ -100,6 +100,7 @@ def create_app(env: RuntimeEnv | None = None, *, state: AppState | None = None) 
     app.include_router(ingest.router, prefix=API_PREFIX)
     app.include_router(chapters.router, prefix=API_PREFIX)
     app.include_router(jobs.router, prefix=API_PREFIX)
+    app.include_router(plan.router, prefix=API_PREFIX)
     app.include_router(gpu.router, prefix=API_PREFIX)
     app.include_router(ws.router, prefix=API_PREFIX)
     return app
