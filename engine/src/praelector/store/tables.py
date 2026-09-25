@@ -179,3 +179,15 @@ class SpanRow(Base):
     orphaned: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     valid_from_revision: Mapped[int] = mapped_column(Integer, nullable=False)
     valid_to_revision: Mapped[int | None] = mapped_column(Integer)
+
+
+class ChunkRow(Base):
+    """One reusable chunk (DATA_MODEL.md §9). Rebuilt from sidecars on open."""
+
+    __tablename__ = "chunk"
+
+    render_key: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str] = mapped_column(ForeignKey("project.id"), nullable=False)
+    size: Mapped[int] = mapped_column(Integer, nullable=False)
+    duration_s: Mapped[float] = mapped_column(Float, nullable=False)
+    rel_path: Mapped[str] = mapped_column(String, nullable=False)

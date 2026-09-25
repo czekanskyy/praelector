@@ -41,7 +41,7 @@ from praelector.store.manifest import (
     write_manifest,
 )
 from praelector.store.project_dir import ProjectLayout, find_project_dirs, layout_for
-from praelector.store.reconcile import reconcile_chunks
+from praelector.store.reconcile import reconcile_chunks, write_chunk_index
 from praelector.store.tables import ProjectRow, RevisionRow, to_db_time
 
 logger = logging.getLogger(__name__)
@@ -276,6 +276,7 @@ class ProjectStore:
             revision = run_migrations(layout.db)
             engine = create_project_engine(layout.db)
             reconciled = reconcile_chunks(layout.chunks, layout.quarantine, probe=wav_seconds)
+            write_chunk_index(engine, project_id, layout.root, reconciled.reusable)
         except Exception:
             lock.release()
             raise
