@@ -18,6 +18,7 @@ from typing import Any
 
 from praelector import SCHEMA_VERSION
 from praelector.domain.enums import TERMINAL_JOB_STATES, EventType, JobKind, JobState
+from praelector.errors import AppError, ErrorCode
 from praelector.jobs.state import JobEvent, recover, stage_for, transition
 from praelector.store.atomic import canonical_json, write_json_atomic
 from praelector.store.tables import to_db_time
@@ -147,6 +148,38 @@ class JobLog:
                 "stage": stage_for(nxt, kind=record.kind),
                 "paused_reason": paused_reason,
             },
+            when=when,
+        )
+        write_json_atomic(self.job_path, updated.to_json())
+        return updated
+
+    def note_progress(
+        self,
+        record: JobRecord,
+        *,
+        cursor: dict[str, int],
+        counts: dict[str, int],
+        metrics: dict[str, float],
+    ) -> JobRecord:
+        """Record cursor and counts without changing state. Only a running job."""
+        if record.state is not JobState.RUNNING:
+            raise AppError(
+                ErrorCode.JOB_INVALID_TRANSITION,
+                detail={"state": record.state, "event": "progress"},
+            )
+        when = self._clock()
+        updated = replace(
+            record,
+            cursor=dict(cursor),
+            counts=dict(counts),
+            metrics=dict(metrics),
+            updated_at=to_db_time(when),
+            last_seq=record.last_seq + 1,
+        )
+        self._append(
+            updated,
+            event_type=EventType.JOB_PROGRESS,
+            payload={"cursor": cursor, "counts": counts},
             when=when,
         )
         write_json_atomic(self.job_path, updated.to_json())
