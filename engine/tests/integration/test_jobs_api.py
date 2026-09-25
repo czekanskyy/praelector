@@ -58,6 +58,46 @@ def test_an_open_project_lists_its_jobs_and_replays_events(
         app_state.projects.close_current()
 
 
+def test_pause_drops_partials_and_cancel_stops_a_running_job(
+    client: TestClient, auth: dict[str, str], app_state: AppState
+) -> None:
+    project = app_state.projects.create(name="Control")
+    opened = app_state.projects.open(project.id)
+    job_id = new_id(IdPrefix.JOB)
+    stamp = "2026-09-25T00:00:00Z"
+    log = JobLog(opened.layout.job_dir(job_id))
+    log.apply(
+        log.create(
+            JobRecord(
+                id=job_id,
+                project_id=project.id,
+                kind=JobKind.RECORD,
+                state=JobState.QUEUED,
+                revision=1,
+                created_at=stamp,
+                updated_at=stamp,
+            )
+        ),
+        JobEvent.START,
+    )
+    part = opened.layout.chunks / "ab" / "clip.wav.part"
+    part.parent.mkdir(parents=True)
+    part.write_bytes(b"partial")
+    try:
+        paused = client.post(f"/v1/jobs/{job_id}/pause", headers=auth)
+        assert paused.status_code == 200
+        assert paused.json()["state"] == "paused"
+        assert not part.exists()
+
+        resumed = client.post(f"/v1/jobs/{job_id}/resume", headers=auth)
+        assert resumed.json()["state"] == "running"
+
+        stopped = client.post(f"/v1/jobs/{job_id}/cancel", headers=auth)
+        assert stopped.json()["state"] == "cancelled"
+    finally:
+        app_state.projects.close_current()
+
+
 def test_job_routes_require_an_open_project(
     client: TestClient, auth: dict[str, str], app_state: AppState
 ) -> None:
