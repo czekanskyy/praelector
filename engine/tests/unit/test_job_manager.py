@@ -11,6 +11,7 @@ import pytest
 from praelector.domain.enums import JobKind, JobState
 from praelector.errors import AppError, ErrorCode
 from praelector.jobs.checkpoint import JobLog, JobRecord
+from praelector.jobs.chunker import PlanItem
 from praelector.jobs.manager import JobManager
 
 
@@ -44,6 +45,20 @@ def test_a_second_job_is_rejected_while_one_is_live(tmp_path: Path) -> None:
     with pytest.raises(AppError) as caught:
         manager.adopt(JobLog(tmp_path / "job_02", clock=_clock), _record("job_02"))
     assert caught.value.code is ErrorCode.JOB_ALREADY_ACTIVE
+
+
+def test_render_writes_the_wav_and_enters_muxing(tmp_path: Path) -> None:
+    manager, _log = _manager(tmp_path)
+    manager.start()
+    item = PlanItem(0, "chp_1", "narrator", "a" * 14, "tts", "k0")
+
+    def paths(plan_item: PlanItem) -> tuple[Path, Path, Path]:
+        wav = tmp_path / f"{plan_item.render_key}.wav"
+        return wav.with_name(wav.name + ".part"), wav, wav.with_suffix(".json")
+
+    done = manager.render([item], paths_for=paths, reusable=lambda _item: False)
+    assert done.state is JobState.MUXING
+    assert (tmp_path / "k0.wav").is_file()
 
 
 def test_pause_deletes_partials_and_resume_continues(tmp_path: Path) -> None:

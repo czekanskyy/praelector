@@ -9,13 +9,18 @@ Reset drops the slot and deletes chunk audio only when asked.
 from __future__ import annotations
 
 import shutil
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from pathlib import Path
 
 from praelector.domain.enums import ACTIVE_JOB_STATES, JobState
 from praelector.errors import AppError, ErrorCode
 from praelector.jobs.checkpoint import JobLog, JobRecord
+from praelector.jobs.chunker import PlanItem
+from praelector.jobs.fake_run import render_pass
 from praelector.jobs.state import JobEvent
+
+Paths = Callable[[PlanItem], tuple[Path, Path, Path]]
+Reusable = Callable[[PlanItem], bool]
 
 
 class JobManager:
@@ -38,6 +43,21 @@ class JobManager:
 
     def start(self) -> JobRecord:
         return self._apply(JobEvent.START)
+
+    def render(
+        self,
+        items: Sequence[PlanItem],
+        *,
+        paths_for: Paths,
+        reusable: Reusable,
+    ) -> JobRecord:
+        """One fake-voice pass. The slot keeps the updated record."""
+        log = self._log
+        record = self._require()
+        if log is None:
+            raise AppError(ErrorCode.JOB_NOT_FOUND)
+        self._record = render_pass(log, record, items, paths_for=paths_for, reusable=reusable)
+        return self._record
 
     def pause(self, *, parts: Sequence[Path] = ()) -> JobRecord:
         """Pause, then delete each partial. Finished WAVs stay."""
