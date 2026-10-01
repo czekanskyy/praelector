@@ -19,6 +19,6 @@ jobs:
       contents: write          # creates the tag when the release PR is merged
       pull-requests: write     # opens and force-pushes the release PR
     steps:
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v5
         with:
           target-branch: main
