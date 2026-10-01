@@ -35,7 +35,7 @@ jobs:
             echo "engine is not in this revision yet; the suite runs once it lands"
           fi
 
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v7
         if: steps.pkg.outputs.present == 'true'
         with:
           enable-cache: true
