@@ -24,13 +24,13 @@ dependencies = ["pydantic>=2.9"]
 [project.optional-dependencies]
 # One torch version per extra, never a union: there is no fat wheel and no
 # attempt to make one environment serve both vendors (PLAN.md D-03).
-cpu = ["torch==2.13.0"]
-cuda = ["torch==2.13.0"]
+cpu = ["torch==2.14.0"]
+cuda = ["torch==2.14.0"]
 # Linux-only: PyTorch publishes no ROCm wheels for Windows, and AMD's own
 # Windows wheels are experimental (PLAN.md D-20). The provisioner refuses this
 # flavour on Windows and offers `cpu` instead.
 rocm = [
-  "torch==2.12.0; sys_platform == 'linux'",
+  "torch==2.14.0; sys_platform == 'linux'",
   # AMD's torch wheels require the `rocm` meta-package, whose own dependencies
   # (`rocm-sdk-libraries`, `rocm-sdk-core`, `triton`) are published on PyPI too,
   # at versions that do not satisfy AMD's pins. uv considers only the first index
