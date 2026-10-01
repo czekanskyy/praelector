@@ -48,7 +48,7 @@ jobs:
       - if: steps.pkg.outputs.present == 'true'
         run: node scripts/i18n_check.mjs     # IX-01 / IX-02
 
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v7
         if: steps.pkg.outputs.present == 'true'
       - name: schemas are not stale
         if: steps.pkg.outputs.present == 'true'

@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v7
       # engine/ arrives in PR 2. license_check.py already treats a missing project
       # directory as a warning (it says so in --help); uv sync does not.
       - name: sync engine when it is in the tree
