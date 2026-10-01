@@ -19,7 +19,7 @@ jobs:
       pull-requests: read
     steps:
       # main is squash-merge only, so the PR title becomes the commit message release-please reads (NF-09)
-      - uses: amannn/action-semantic-pull-request@v5
+      - uses: amannn/action-semantic-pull-request@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
