@@ -41,7 +41,7 @@ def test_create_lists_and_keeps_one_narrator(runtime_env: RuntimeEnv) -> None:
     detail = store.create(name="Voices")
     opened = store.open(detail.id)
     try:
-        assert opened.db_revision == "0005_voice_profiles"
+        assert opened.db_revision == "0006_lexicon"
         with session_scope(opened.engine) as session:
             narrator = _create(session, detail.id, name="Ada", slot="narrator")
             spare = _create(session, detail.id, name="Ben", slot=None)

@@ -28,7 +28,7 @@ def test_open_keeps_a_matching_chunk_and_forgets_one_that_was_removed(
 
     opened = store.open(detail.id)
     try:
-        assert opened.db_revision == "0005_voice_profiles"
+        assert opened.db_revision == "0006_lexicon"
         with session_scope(opened.engine) as session:
             row = session.get(ChunkRow, good)
             assert row is not None

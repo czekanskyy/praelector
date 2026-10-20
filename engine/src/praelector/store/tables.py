@@ -28,9 +28,10 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from praelector.domain.enums import VoiceMode
+from praelector.domain.enums import SuggestionCategory, VoiceMode
 
 _VOICE_MODES = ", ".join(f"'{mode}'" for mode in VoiceMode)
+_SUGGESTION_CATEGORIES = ", ".join(f"'{item.value}'" for item in SuggestionCategory)
 
 
 class Base(DeclarativeBase):
@@ -216,6 +217,41 @@ class VoiceProfileRow(Base):
     trim_applied: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     content_hash: Mapped[str] = mapped_column(String, nullable=False)
     chain_version: Mapped[str] = mapped_column(String, nullable=False)
+    created_at: Mapped[str] = mapped_column(String, nullable=False)
+
+
+class LexiconEntryRow(Base):
+    """One project pronunciation rule (DATA_MODEL.md §12).
+
+    Global rules live in a separate database. This table is project-scoped,
+    so ``project_id`` is required.
+    """
+
+    __tablename__ = "lexicon_entry"
+    __table_args__ = (
+        UniqueConstraint(
+            "project_id",
+            "pattern",
+            "is_regex",
+            name="uq_lexicon_pattern",
+        ),
+        CheckConstraint(
+            f"category IN ({_SUGGESTION_CATEGORIES})",
+            name="ck_lexicon_category",
+        ),
+        Index("ix_lexicon_project", "project_id", "priority"),
+    )
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    project_id: Mapped[str] = mapped_column(ForeignKey("project.id"), nullable=False)
+    pattern: Mapped[str] = mapped_column(String, nullable=False)
+    is_regex: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    spoken: Mapped[str] = mapped_column(String, nullable=False)
+    language: Mapped[str] = mapped_column(String, nullable=False, default="pl")
+    category: Mapped[str] = mapped_column(String, nullable=False, default="dict_hit")
+    auto_apply: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    case_sensitive: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    priority: Mapped[int] = mapped_column(Integer, nullable=False, default=100)
     created_at: Mapped[str] = mapped_column(String, nullable=False)
 
 
